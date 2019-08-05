@@ -10,10 +10,6 @@ using UnityEngine;
 
 namespace Unity_Collections.SpatialTree
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The spatial 3 d cell.
     /// </summary>
@@ -25,12 +21,12 @@ namespace Unity_Collections.SpatialTree
         /// <summary>
         ///     The max cell pool items.
         /// </summary>
-        public const int MaxCellPoolItems = 1024;
+        private const int MaxCellPoolItems = 1024;
 
         /// <summary>
         ///     The max child array pool items.
         /// </summary>
-        public const int MaxChildArrayPoolItems = 128;
+        private const int MaxChildArrayPoolItems = 128;
 
         /// <summary>
         ///     Gets the amount of columns to create per axis per subdivision.
@@ -56,12 +52,12 @@ namespace Unity_Collections.SpatialTree
         /// <summary>
         ///     The cell pool.
         /// </summary>
-        public static readonly Stack<Spatial3DCell<T>> CellPool;
+        private static readonly Stack<Spatial3DCell<T>> CellPool;
 
         /// <summary>
         ///     The child array pool.
         /// </summary>
-        public static readonly Stack<IList<Spatial3DCell<T>>> ChildArrayPool;
+        private static readonly Stack<IList<Spatial3DCell<T>>> ChildArrayPool;
 
         /// <summary>
         ///     The items.
@@ -134,36 +130,29 @@ namespace Unity_Collections.SpatialTree
         /// <param name="size">
         ///     The size.
         /// </param>
+        /// <param name="addChildren">Should the child array be attached.</param>
         /// <returns>
         ///     The <see cref="Spatial3DCell" />.
         /// </returns>
         [NotNull]
-        public static Spatial3DCell<T> GetCell(Vector3 start, Vector3 size)
+        public static Spatial3DCell<T> GetCell(Vector3 start, Vector3 size, bool addChildren = false)
         {
-            var poolSize = CellPool.Count;
+            Spatial3DCell<T> cell;
+
             if (CellPool.Count > 0)
             {
-                var cell = CellPool.Pop();
+                cell = CellPool.Pop();
                 cell.Start = start;
                 cell.Size = size;
-                return cell;
+            }
+            else
+            {
+                cell = new Spatial3DCell<T>(start, size);
             }
 
-            return new Spatial3DCell<T>(start, size);
-        }
+            if (addChildren) cell.Children = GetChildArray();
 
-        /// <summary>
-        ///     The get child array.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="Spatial3DCell" />.
-        /// </returns>
-        [NotNull]
-        public static Spatial3DCell<T>[] GetChildArray()
-        {
-            if (ChildArrayPool.Count > 0) return (Spatial3DCell<T>[]) ChildArrayPool.Pop();
-
-            return new Spatial3DCell<T>[SubdivisionAmount * SubdivisionAmount * SubdivisionAmount];
+            return cell;
         }
 
         /// <summary>
@@ -188,12 +177,26 @@ namespace Unity_Collections.SpatialTree
         }
 
         /// <summary>
+        ///     The get child array.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="Spatial3DCell" />.
+        /// </returns>
+        [NotNull]
+        private static Spatial3DCell<T>[] GetChildArray()
+        {
+            if (ChildArrayPool.Count > 0) return (Spatial3DCell<T>[]) ChildArrayPool.Pop();
+
+            return new Spatial3DCell<T>[SubdivisionAmount * SubdivisionAmount * SubdivisionAmount];
+        }
+
+        /// <summary>
         ///     The pool.
         /// </summary>
         /// <param name="childArray">
         ///     The child array.
         /// </param>
-        public static void Pool([NotNull] Spatial3DCell<T>[] childArray)
+        private static void Pool([NotNull] Spatial3DCell<T>[] childArray)
         {
             if (ChildArrayPool.Count >= MaxChildArrayPoolItems) return;
 

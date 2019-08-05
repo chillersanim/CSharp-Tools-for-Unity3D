@@ -57,7 +57,7 @@ namespace Unity_Collections.SpatialTree
         {
             initialSize = new Vector3(3, 3, 3);
             initialOffset = Vector3.zero;
-            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2f, initialSize);
+            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2f, initialSize, false);
         }
 
         /// <summary>
@@ -316,8 +316,10 @@ namespace Unity_Collections.SpatialTree
         /// </summary>
         private void Grow()
         {
-            var sc = Spatial3DCell<T>.SubdivisionAmount;
-            var start = root.Start - sc / 2 * root.Size;
+            const int sc = Spatial3DCell<T>.SubdivisionAmount;
+            const int scCenter = sc / 2;
+
+            var start = root.Start - scCenter * root.Size;
             var size = root.Size * sc;
 
             if (root.Children == null)
@@ -327,9 +329,8 @@ namespace Unity_Collections.SpatialTree
             }
             else
             {
-                var newRoot = Spatial3DCell<T>.GetCell(start, size);
+                var newRoot = Spatial3DCell<T>.GetCell(start, size, true);
                 newRoot.TotalItemAmount = root.TotalItemAmount;
-                newRoot.Children = Spatial3DCell<T>.GetChildArray();
                 newRoot.Children[newRoot.Children.Length / 2] = root;
                 root = newRoot;
             }
