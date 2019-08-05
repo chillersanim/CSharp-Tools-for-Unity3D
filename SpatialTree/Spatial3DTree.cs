@@ -7,10 +7,11 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using Unity_Collections.SpatialTree.Enumerators;
 
 #endregion
 
-namespace Assets.Scripts.Common.SpatialTree
+namespace Unity_Collections.SpatialTree
 {
     #region Usings
 

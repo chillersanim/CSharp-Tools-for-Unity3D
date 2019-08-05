@@ -1,9 +1,8 @@
 ﻿// Copyright © 2019 Jasper Ermatinger
 
-using Assets.Scripts.Common.SpatialTree;
 using UnityEngine;
 
-namespace ScriptTools.Collections.SpatialGrid3D
+namespace Unity_Collections.SpatialTree.Enumerators
 {
     public sealed class InverseSphereCastEnumerator<T> : Spatial3DTreeExclusionEnumeratorBase<T> where T : class
     {

@@ -8,7 +8,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Assets.Scripts.Common.SpatialTree
+namespace Unity_Collections.SpatialTree
 {
     #region Usings
 

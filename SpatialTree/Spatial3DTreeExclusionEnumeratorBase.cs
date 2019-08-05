@@ -3,11 +3,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.Common.SpatialTree;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace ScriptTools.Collections.SpatialGrid3D
+namespace Unity_Collections.SpatialTree
 {
     public abstract class Spatial3DTreeExclusionEnumeratorBase<T> : IEnumerator<T> where T : class
     {

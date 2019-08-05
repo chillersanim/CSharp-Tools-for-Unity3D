@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 #endregion
 
-namespace Assets.Scripts.Common.SpatialTree
+namespace Unity_Collections.SpatialTree.Enumerators
 {
     #region Usings
 

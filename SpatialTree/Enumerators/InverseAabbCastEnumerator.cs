@@ -1,9 +1,8 @@
 ﻿// Copyright © 2019 Jasper Ermatinger
 
-using Assets.Scripts.Common.SpatialTree;
 using UnityEngine;
 
-namespace ScriptTools.Collections.SpatialGrid3D
+namespace Unity_Collections.SpatialTree.Enumerators
 {
     public sealed class InverseAabbCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T> where T : class
     {

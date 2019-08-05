@@ -4,12 +4,11 @@
 
 using System;
 using JetBrains.Annotations;
-using ScriptTools.Collections.SpatialGrid3D;
 using UnityEngine;
 
 #endregion
 
-namespace Assets.Scripts.Common.SpatialTree
+namespace Unity_Collections.SpatialTree.Enumerators
 {
     #region Usings
 

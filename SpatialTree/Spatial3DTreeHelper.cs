@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using Assets.Scripts.Common.SpatialTree;
 using JetBrains.Annotations;
 using UnityEngine;
+using Unity_Collections.SpatialTree.Enumerators;
 
-namespace Assets.Unity_Collections.SpatialTree
+namespace Unity_Collections.SpatialTree
 {
     public static class Spatial3DTreeHelper
     {
