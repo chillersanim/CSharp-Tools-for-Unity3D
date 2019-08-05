@@ -3,6 +3,13 @@
 The Unity Collection repo contains some useful collections I've made for myself and wanted to share.  
 Here is an overview over the supported collections.
 
+You can use it for personal and commercial stuff.  
+You are free to modify the code as you wish.  
+Just don't upload my source code somewhere public without my written permission.
+
+The code was hand tested and used in some project, but I haven't thoroughly tested it.  
+**_I DO NOT GUARANTEE THE CORRECTNESS OF THE CODE, USE ON YOUR OWN RISK!_**
+
 ### Spatial3DTree  
 A generic collection that offers an efficient point lookup in 3D space using a custom octree implementation.  
 
