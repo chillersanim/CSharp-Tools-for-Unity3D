@@ -14,6 +14,11 @@ namespace Unity_Collections.SpatialTree.Enumerators
             this.max = max;
         }
 
+        /// <summary>
+        /// Starts over the enumerator, allows for enumerator reuse
+        /// </summary>
+        /// <param name="min">The min vertex of the aabb.</param>
+        /// <param name="max">The max vertex of the aabb.</param>
         public void Restart(Vector3 min, Vector3 max)
         {
             this.min = min;
@@ -22,7 +27,7 @@ namespace Unity_Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbInside(Vector3 start, Vector3 end)
+        protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
         {
             return min.x <= end.x && min.y <= end.y && min.z <= end.z &&
                    max.x >= start.x && max.y >= start.y && max.z >= start.z;

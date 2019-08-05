@@ -93,7 +93,7 @@ namespace Unity_Collections.SpatialTree
                     if (cc.Children.Length > ci)
                     {
                         var child = cc.Children[ci];
-                        if (child != null && IsAabbInside(child.Start, child.End))
+                        if (child != null && IsAabbIntersecting(child.Start, child.End))
                         {
                             path[path.Count - 1] = new PathEntry(cc, ci);
                             path.Add(new PathEntry(child, -1));
@@ -133,7 +133,7 @@ namespace Unity_Collections.SpatialTree
         /// <returns>
         ///     <c>true</c> if the aabb is inside; otherwise, <c>false</c>.
         /// </returns>
-        protected abstract bool IsAabbInside(Vector3 start, Vector3 end);
+        protected abstract bool IsAabbIntersecting(Vector3 start, Vector3 end);
 
         /// <summary>
         ///     Determines whether the point is inside the search area.

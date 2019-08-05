@@ -66,7 +66,7 @@ namespace Unity_Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbInside(Vector3 start, Vector3 end)
+        protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
         {
             var x = Mathf.Clamp(center.x, start.x, end.x) - center.x;
             var y = Mathf.Clamp(center.y, start.y, end.y) - center.y;

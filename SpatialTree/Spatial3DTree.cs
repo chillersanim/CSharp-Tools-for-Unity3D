@@ -7,16 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using Unity_Collections.Core;
 using Unity_Collections.SpatialTree.Enumerators;
 
 #endregion
 
 namespace Unity_Collections.SpatialTree
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The spatial 3 d tree.
     /// </summary>
@@ -26,55 +23,57 @@ namespace Unity_Collections.SpatialTree
         where T : class
     {
         /// <summary>
-        ///     The enumerator.
-        /// </summary>
-        [NotNull] private readonly SphereCastEnumerator<T> enumerator;
-
-        /// <summary>
         ///     The initial offset.
         /// </summary>
-        public Vector3 InitialOffset;
+        private Vector3 initialOffset;
 
         /// <summary>
         ///     The initial size.
         /// </summary>
-        public Vector3 InitialSize;
+        private Vector3 initialSize;
 
         /// <summary>
         ///     The root.
         /// </summary>
-        [NotNull] public Spatial3DCell<T> Root;
+        [NotNull] private Spatial3DCell<T> root;
 
-        /// <summary>
-        ///     The shape enumerator.
-        /// </summary>
-        [CanBeNull] private ShapeCastEnumerator<T> shapeEnumerator;
+        public Vector3 InitialOffset{
+            get { return initialOffset; }
+            set { initialOffset = value; }
+        }
 
+        public Vector3 InitialSize
+        {
+            get { return initialSize; }
+            set { initialSize = value; }
+        }
+
+        [NotNull] public Spatial3DCell<T> Root => root;
+        
         /// <summary>
         ///     Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
         /// </summary>
         public Spatial3DTree()
         {
-            InitialSize = new Vector3(3, 3, 3);
-            InitialOffset = Vector3.zero;
-            Root = Spatial3DCell<T>.GetCell(InitialOffset - InitialSize / 2f, InitialSize);
-            enumerator = new SphereCastEnumerator<T>(this, Vector3.zero, 1f);
+            initialSize = new Vector3(3, 3, 3);
+            initialOffset = Vector3.zero;
+            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2f, initialSize);
         }
 
         /// <summary>
         ///     The count.
         /// </summary>
-        public int Count => Root.TotalItemAmount;
+        public int Count => root.TotalItemAmount;
 
         /// <summary>
         ///     The depth.
         /// </summary>
-        public int Depth => Root.GetDepth();
+        public int Depth => root.GetDepth();
 
         /// <summary>
         ///     The total cell count.
         /// </summary>
-        public int TotalCellCount => Root.GetCellCount();
+        public int TotalCellCount => root.GetCellCount();
 
         /// <summary>
         ///     The get enumerator.
@@ -107,11 +106,52 @@ namespace Unity_Collections.SpatialTree
         /// <param name="position">
         ///     The position.
         /// </param>
-        public void Add(T item, Vector3 position)
+        public void Add([NotNull]T item, Vector3 position)
         {
+            if (Equals(item, null))
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             while (!FitsInRoot(position)) Grow();
 
-            Root.AddItem(item, position, 1);
+            root.AddItem(item, position, 1);
+        }
+
+        public void AddRange([NotNull] IList<T> items, IList<Vector3> positions)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (positions == null)
+            {
+                throw new ArgumentNullException(nameof(positions));
+            }
+
+            if (items.Count != positions.Count)
+            {
+                throw new ArgumentException("The amount of items doesn't match the amount of positions.");
+            }
+
+            if (items.Count == 0)
+            {
+                return;
+            }
+
+            var bounds = positions.GetBounds();
+
+            while (!FitsInRoot(bounds.min) || !FitsInRoot(bounds.max))
+            {
+                Grow();
+            }
+
+            var cnt = items.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                root.AddItem(items[i], positions[i], 1);
+            }
         }
 
         /// <summary>
@@ -119,8 +159,8 @@ namespace Unity_Collections.SpatialTree
         /// </summary>
         public void Clear()
         {
-            Spatial3DCell<T>.Pool(Root);
-            Root = Spatial3DCell<T>.GetCell(InitialOffset - InitialSize / 2, InitialSize);
+            Spatial3DCell<T>.Pool(root);
+            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2, initialSize);
         }
 
         /// <summary>
@@ -135,9 +175,14 @@ namespace Unity_Collections.SpatialTree
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool Contains(T item, Vector3 position)
+        public bool Contains([CanBeNull]T item, Vector3 position)
         {
-            return Root.Contains(item, position);
+            if (Equals(item, null))
+            {
+                return false;
+            }
+
+            return root.Contains(item, position);
         }
 
         /// <summary>
@@ -155,11 +200,16 @@ namespace Unity_Collections.SpatialTree
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool MoveItem(T item, Vector3 from, Vector3 to)
+        public bool MoveItem([NotNull]T item, Vector3 from, Vector3 to)
         {
+            if (Equals(item, null))
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             while (!FitsInRoot(to)) Grow();
 
-            var result = Root.MoveItem(item, from, to, 1);
+            var result = root.MoveItem(item, from, to, 1);
 
             while (CanShrink()) Shrink();
 
@@ -178,121 +228,18 @@ namespace Unity_Collections.SpatialTree
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool Remove(T item, Vector3 position)
+        public bool Remove([CanBeNull]T item, Vector3 position)
         {
-            var result = Root.RemoveItem(item, position);
+            if (Equals(item, null))
+            {
+                return false;
+            }
+
+            var result = root.RemoveItem(item, position);
 
             while (CanShrink()) Shrink();
 
             return result;
-        }
-
-        /// <summary>
-        ///     The shape cast enumerator.
-        /// </summary>
-        /// <param name="shape">
-        ///     The shape.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="IEnumerator" />.
-        /// </returns>
-        public IEnumerator<T> ShapeCastEnumerator(IShape shape)
-        {
-            return new ShapeCastEnumerator<T>(this, shape);
-        }
-
-        /// <summary>
-        ///     The sphere cast.
-        /// </summary>
-        /// <param name="center">
-        ///     The center.
-        /// </param>
-        /// <param name="radius">
-        ///     The radius.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="IEnumerable" />.
-        /// </returns>
-        public IList<T> SphereCast(Vector3 center, float radius)
-        {
-            var result = new List<T>();
-            enumerator.Restart(center, radius);
-
-            while (enumerator.MoveNext()) result.Add(enumerator.Current);
-
-            return result;
-        }
-
-        /// <summary>
-        ///     The sphere cast.
-        /// </summary>
-        /// <param name="center">
-        ///     The center.
-        /// </param>
-        /// <param name="radius">
-        ///     The radius.
-        /// </param>
-        /// <param name="result">
-        ///     The result.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="int" />.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
-        public int SphereCast(Vector3 center, float radius, T[] result)
-        {
-            if (result == null) throw new ArgumentNullException();
-
-            if (result.Length == 0) return 0;
-
-            var length = 0;
-            enumerator.Restart(center, radius);
-
-            while (length < result.Length && enumerator.MoveNext())
-            {
-                result[length] = enumerator.Current;
-                length++;
-            }
-
-            return length;
-        }
-
-        /// <summary>
-        ///     The sphere cast.
-        /// </summary>
-        /// <param name="center">
-        ///     The center.
-        /// </param>
-        /// <param name="radius">
-        ///     The radius.
-        /// </param>
-        /// <param name="result">
-        ///     The result.
-        /// </param>
-        public void SphereCast(Vector3 center, float radius, IList<T> result)
-        {
-            result.Clear();
-            enumerator.Restart(center, radius);
-
-            while (enumerator.MoveNext()) result.Add(enumerator.Current);
-        }
-
-        /// <summary>
-        ///     The sphere cast enumerator.
-        /// </summary>
-        /// <param name="center">
-        ///     The center.
-        /// </param>
-        /// <param name="radius">
-        ///     The radius.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="IEnumerator" />.
-        /// </returns>
-        public IEnumerator<T> SphereCastEnumerator(Vector3 center, float radius)
-        {
-            return new SphereCastEnumerator<T>(this, center, radius);
         }
 
         /// <summary>
@@ -303,27 +250,27 @@ namespace Unity_Collections.SpatialTree
         /// </returns>
         private bool CanShrink()
         {
-            if (Root.Size.x <= InitialSize.x) return false;
+            if (root.Size.x <= initialSize.x) return false;
 
-            if (Root.Children == null)
+            if (root.Children == null)
             {
                 var sc = Spatial3DCell<T>.SubdivisionAmount;
-                var centerSize = Root.Size / sc;
-                var centerStart = Root.Start + centerSize * (sc / 2);
+                var centerSize = root.Size / sc;
+                var centerStart = root.Start + centerSize * (sc / 2);
 
-                for (var i = 0; i < Root.Items.Count; i++)
-                    if (!FitsInAabb(Root.Items[i].Position, centerStart, centerSize))
+                for (var i = 0; i < root.Items.Count; i++)
+                    if (!FitsInAabb(root.Items[i].Position, centerStart, centerSize))
                         return false;
 
                 return true;
             }
 
-            var middle = Root.Children.Length / 2;
+            var middle = root.Children.Length / 2;
 
-            if (Root.Children[middle] == null) return false;
+            if (root.Children[middle] == null) return false;
 
-            for (var i = 0; i < Root.Children.Length; i++)
-                if (i != middle && Root.Children[i] != null && Root.Children[i].TotalItemAmount != 0)
+            for (var i = 0; i < root.Children.Length; i++)
+                if (i != middle && root.Children[i] != null && root.Children[i].TotalItemAmount != 0)
                     return false;
 
             return true;
@@ -361,7 +308,7 @@ namespace Unity_Collections.SpatialTree
         /// </returns>
         private bool FitsInRoot(Vector3 position)
         {
-            return FitsInAabb(position, Root.Start, Root.End);
+            return FitsInAabb(position, root.Start, root.End);
         }
 
         /// <summary>
@@ -370,21 +317,21 @@ namespace Unity_Collections.SpatialTree
         private void Grow()
         {
             var sc = Spatial3DCell<T>.SubdivisionAmount;
-            var start = Root.Start - sc / 2 * Root.Size;
-            var size = Root.Size * sc;
+            var start = root.Start - sc / 2 * root.Size;
+            var size = root.Size * sc;
 
-            if (Root.Children == null)
+            if (root.Children == null)
             {
-                Root.Start = start;
-                Root.Size = size;
+                root.Start = start;
+                root.Size = size;
             }
             else
             {
                 var newRoot = Spatial3DCell<T>.GetCell(start, size);
-                newRoot.TotalItemAmount = Root.TotalItemAmount;
+                newRoot.TotalItemAmount = root.TotalItemAmount;
                 newRoot.Children = Spatial3DCell<T>.GetChildArray();
-                newRoot.Children[newRoot.Children.Length / 2] = Root;
-                Root = newRoot;
+                newRoot.Children[newRoot.Children.Length / 2] = root;
+                root = newRoot;
             }
         }
 
@@ -395,19 +342,19 @@ namespace Unity_Collections.SpatialTree
         {
             Debug.Assert(CanShrink(), "The tree cannot be shrunk.");
 
-            if (Root.Children == null)
+            if (root.Children == null)
             {
                 var sc = Spatial3DCell<T>.SubdivisionAmount;
-                Root.Size = Root.Size / sc;
-                Root.Start = Root.Start + Root.Size * (sc / 2);
+                root.Size = root.Size / sc;
+                root.Start = root.Start + root.Size * (sc / 2);
             }
             else
             {
-                var middle = Root.Children.Length / 2;
-                var center = Root.Children[middle];
-                Root.Children[middle] = null;
-                Spatial3DCell<T>.Pool(Root);
-                Root = center;
+                var middle = root.Children.Length / 2;
+                var center = root.Children[middle];
+                root.Children[middle] = null;
+                Spatial3DCell<T>.Pool(root);
+                root = center;
 
                 Debug.Assert(center != null);
             }

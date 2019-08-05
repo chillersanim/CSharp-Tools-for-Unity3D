@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity_Collections.SpatialTree.Enumerators
 {
-    public sealed class InverseAabbCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T> where T : class
+    public sealed class InverseAabbCastEnumerator<T> : Spatial3DTreeExclusionEnumeratorBase<T> where T : class
     {
         private Vector3 min, max;
 
@@ -21,18 +21,16 @@ namespace Unity_Collections.SpatialTree.Enumerators
             Reset();
         }
 
-        /// <inheritdoc />
-        protected override bool IsAabbInside(Vector3 start, Vector3 end)
+        protected override bool IsAabbNotFullyInside(Vector3 start, Vector3 end)
         {
-            return min.x <= end.x && min.y <= end.y && min.z <= end.z &&
-                   max.x >= start.x && max.y >= start.y && max.z >= start.z;
+            return min.x < start.x && min.y < start.y && min.z < start.z ||
+                   max.x > end.x && max.y > end.y && max.z > end.z;
         }
 
-        /// <inheritdoc />
-        protected override bool IsPointInside(Vector3 point)
+        protected override bool IsPointOutside(Vector3 point)
         {
-            return point.x >= min.x && point.y >= min.y && point.y >= min.z &&
-                   point.x <= max.x && point.y <= max.y && point.z <= max.z;
+            return point.x < min.x && point.y < min.y && point.y < min.z ||
+                   point.x > max.x && point.y > max.y && point.z > max.z;
         }
     }
 }

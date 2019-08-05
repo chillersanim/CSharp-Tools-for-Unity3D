@@ -24,7 +24,7 @@ namespace Unity_Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbOutside(Vector3 start, Vector3 end)
+        protected override bool IsAabbNotFullyInside(Vector3 start, Vector3 end)
         {
             var a = start - center;
             var b = end - center;

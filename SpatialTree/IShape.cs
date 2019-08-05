@@ -53,6 +53,6 @@ namespace Unity_Collections.SpatialTree
         ///     - There is at least one point in the aabb space that is inside the shape and<br />
         ///     - There is at least one point in the aabb space that is outside the shape.
         /// </remarks>
-        bool IsAabbPartiallyOutside(Vector3 start, Vector3 end);
+        bool IsAabbNotFullyInside(Vector3 start, Vector3 end);
     }
 }

@@ -54,7 +54,7 @@ namespace Unity_Collections.SpatialTree
                     if (cc.Children.Length > ci)
                     {
                         var child = cc.Children[ci];
-                        if (child != null && IsAabbOutside(child.Start, child.End))
+                        if (child != null && IsAabbNotFullyInside(child.Start, child.End))
                         {
                             path[path.Count - 1] = new PathEntry(cc, ci);
                             path.Add(new PathEntry(child, -1));
@@ -94,12 +94,12 @@ namespace Unity_Collections.SpatialTree
         }
 
         /// <summary>
-        ///     Determines whether the axis aligned bounding box (aabb) is inside the search area.
+        ///     Determines whether the axis aligned bounding box (aabb) is not fully inside the search area.
         /// </summary>
         /// <param name="start">The start of the aabb.</param>
         /// <param name="end">The end of the aabb.</param>
         /// <returns><c>true</c> if the aabb is inside; otherwise, <c>false</c>.</returns>
-        protected abstract bool IsAabbOutside(Vector3 start, Vector3 end);
+        protected abstract bool IsAabbNotFullyInside(Vector3 start, Vector3 end);
 
         /// <summary>
         ///     Determines whether the point is inside the search area.
