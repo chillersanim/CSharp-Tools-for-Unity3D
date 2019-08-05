@@ -8,11 +8,12 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 using Unity_Collections.Core;
+using Unity_Collections.SpatialTree;
 using Unity_Collections.SpatialTree.Enumerators;
 
 #endregion
 
-namespace Unity_Collections.SpatialTree
+namespace Unity_Collections
 {
     /// <summary>
     ///     The spatial 3 d tree.

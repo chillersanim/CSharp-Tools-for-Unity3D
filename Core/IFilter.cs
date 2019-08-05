@@ -1,5 +1,4 @@
-﻿// COGARCH COGARCH_Common IFilter.cs
-// Copyright © Jasper Ermatinger
+﻿// Copyright © 2019 Jasper Ermatinger
 
 #region usings
 
@@ -7,12 +6,8 @@ using JetBrains.Annotations;
 
 #endregion
 
-namespace Common
+namespace Unity_Collections.Core
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The Filter interface.
     /// </summary>

@@ -1,11 +1,10 @@
-﻿using System;
+﻿// Copyright © 2019 Jasper Ermatinger
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Random = UnityEngine.Random;
 
-namespace Assets.Unity_Collections.Core
+namespace Unity_Collections.Core
 {
     public static class CollectionUtil
     {

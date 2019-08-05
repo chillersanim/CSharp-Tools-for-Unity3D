@@ -1,5 +1,4 @@
-﻿// COGARCH COGARCH_Common ObservableCollectionMapper.cs
-// Copyright © Jasper Ermatinger
+﻿// Copyright © 2019 Jasper Ermatinger
 
 #region usings
 
@@ -7,7 +6,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using JetBrains.Annotations;
 using INotifyCollectionChanged = System.Collections.Specialized.INotifyCollectionChanged;
 using NotifyCollectionChangedAction = System.Collections.Specialized.NotifyCollectionChangedAction;
@@ -16,12 +14,8 @@ using NotifyCollectionChangedEventHandler = System.Collections.Specialized.Notif
 
 #endregion
 
-namespace Common
+namespace Unity_Collections
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The observable collection mapper.
     /// </summary>
@@ -31,7 +25,6 @@ namespace Common
     /// </typeparam>
     public class ObservableCollectionMapper<TSource, TTarget> : IReadOnlyCollection<TTarget>, INotifyCollectionChanged
     {
-
         /// <summary>
         ///     The factory.
         /// </summary>

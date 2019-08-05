@@ -1,5 +1,4 @@
-﻿// COGARCH COGARCH_Common FilteredCollection.cs
-// Copyright © Jasper Ermatinger
+﻿// Copyright © 2019 Jasper Ermatinger
 
 #region usings
 
@@ -10,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Unity_Collections.Core;
 using INotifyCollectionChanged = System.Collections.Specialized.INotifyCollectionChanged;
 using NotifyCollectionChangedAction = System.Collections.Specialized.NotifyCollectionChangedAction;
 using NotifyCollectionChangedEventArgs = System.Collections.Specialized.NotifyCollectionChangedEventArgs;
@@ -17,18 +17,14 @@ using NotifyCollectionChangedEventHandler = System.Collections.Specialized.Notif
 
 #endregion
 
-namespace Common
+namespace Unity_Collections
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The filtered collection.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public class FilteredCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+    public class ObservableFilteredCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         /// <summary>
         ///     The data.
@@ -58,10 +54,10 @@ namespace Common
         /// <summary>
         ///     The is item observable.
         /// </summary>
-        private bool isItemObservable;
+        private readonly bool isItemObservable;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="FilteredCollection{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ObservableObservableFilteredCollection{T}" /> class.
         /// </summary>
         /// <param name="source">
         ///     The source.
@@ -72,7 +68,7 @@ namespace Common
         /// <param name="usedProperties">
         ///     The used properties.
         /// </param>
-        public FilteredCollection(ICollection<T> source, [NotNull] IFilter<T> filter, params string[] usedProperties)
+        public ObservableFilteredCollection(ICollection<T> source, [NotNull] IFilter<T> filter, params string[] usedProperties)
         {
             data = new List<T>();
             this.source = source ?? throw new ArgumentNullException(nameof(source));
@@ -90,7 +86,7 @@ namespace Common
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="FilteredCollection{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ObservableObservableFilteredCollection{T}" /> class.
         /// </summary>
         /// <param name="source">
         ///     The source.
@@ -101,7 +97,7 @@ namespace Common
         /// <param name="usedProperties">
         ///     The used properties.
         /// </param>
-        public FilteredCollection(
+        public ObservableFilteredCollection(
             [NotNull] ICollection<T> source,
             [NotNull] Func<T, bool> filter,
             params string[] usedProperties)
