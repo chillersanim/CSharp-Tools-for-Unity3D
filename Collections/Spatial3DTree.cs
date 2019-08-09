@@ -10,6 +10,7 @@ using UnityEngine;
 using Unity_Collections.Core;
 using Unity_Collections.SpatialTree;
 using Unity_Collections.SpatialTree.Enumerators;
+using Unity_Tools.Core;
 
 #endregion
 
@@ -20,45 +21,61 @@ namespace Unity_Collections
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public class Spatial3DTree<T> : IEnumerable<T>
+    public class Spatial3DTree<T> : I3DCollection<T>
         where T : class
     {
         /// <summary>
         ///     The initial offset.
         /// </summary>
-        private Vector3 initialOffset;
+        private readonly Vector3 center;
 
         /// <summary>
         ///     The initial size.
         /// </summary>
-        private Vector3 initialSize;
+        private readonly Vector3 initialSize;
+
+        private readonly SphereCastEnumerator<T> sphereCaster;
+
+        private readonly AabbCastEnumerator<T> aabbCaster;
+
+        private readonly List<T> castCache;
 
         /// <summary>
         ///     The root.
         /// </summary>
         [NotNull] private Spatial3DCell<T> root;
 
-        public Vector3 InitialOffset{
-            get { return initialOffset; }
-            set { initialOffset = value; }
+        public Vector3 Center{
+            get { return center; }
         }
 
         public Vector3 InitialSize
         {
             get { return initialSize; }
-            set { initialSize = value; }
         }
 
         [NotNull] public Spatial3DCell<T> Root => root;
-        
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
         /// </summary>
-        public Spatial3DTree()
+        public Spatial3DTree() : this(new Vector3(3, 3, 3), Vector3.zero)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
+        /// </summary>
+        /// <param name="size">The initial size of the root.</param>
+        /// <param name="center">The center of the root.</param>
+        public Spatial3DTree(Vector3 size, Vector3 center)
         {
-            initialSize = new Vector3(3, 3, 3);
-            initialOffset = Vector3.zero;
-            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2f, initialSize, false);
+            initialSize = size;
+            this.center = center;
+            root = Spatial3DCell<T>.GetCell(this.center - initialSize / 2f, initialSize, false);
+            castCache = new List<T>();
+
+            this.sphereCaster = new SphereCastEnumerator<T>(this, this.center, 0f);
+            this.aabbCaster = new AabbCastEnumerator<T>(this, this.center, this.center);
         }
 
         /// <summary>
@@ -141,7 +158,7 @@ namespace Unity_Collections
                 return;
             }
 
-            var bounds = positions.GetBounds();
+            var bounds = positions.Bounds();
 
             while (!FitsInRoot(bounds.min) || !FitsInRoot(bounds.max))
             {
@@ -161,7 +178,7 @@ namespace Unity_Collections
         public void Clear()
         {
             Spatial3DCell<T>.Pool(root);
-            root = Spatial3DCell<T>.GetCell(initialOffset - initialSize / 2, initialSize);
+            root = Spatial3DCell<T>.GetCell(center - initialSize / 2, initialSize);
         }
 
         /// <summary>
@@ -241,6 +258,23 @@ namespace Unity_Collections
             while (CanShrink()) Shrink();
 
             return result;
+        }
+
+        public T[] FindInRadius(Vector3 center, float radius)
+        {
+            sphereCaster.Restart(center, radius);
+            castCache.Clear();
+            sphereCaster.ToArray(castCache);
+            return castCache.ToArray();
+        }
+
+        public T[] FindInAabb(Vector3 center, Vector3 size)
+        {
+            var halfSize = size / 2f;
+            aabbCaster.Restart(center - halfSize, center + halfSize);
+            castCache.Clear();
+            aabbCaster.ToArray(castCache);
+            return castCache.ToArray();
         }
 
         /// <summary>

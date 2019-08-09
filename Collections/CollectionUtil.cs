@@ -52,5 +52,13 @@ namespace Unity_Collections.Core
 
             return result;
         }
+
+        public static void ToArray<T>(this IEnumerator<T> enumerator, IList<T> output)
+        {
+            while (enumerator.MoveNext())
+            {
+                output.Add(enumerator.Current);
+            }
+        }
     }
 }
