@@ -3,7 +3,7 @@
 // Filename:         ShapeCastEnumerator.cs
 // 
 // Created:          05.08.2019  11:45
-// Last modified:    09.08.2019  15:44
+// Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,6 +20,7 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
+// 
 
 using System;
 using JetBrains.Annotations;

@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         IItemReceiver.cs
+// Filename:         PP_GenerateLightmapUv's.cs
 // 
-// Created:          09.08.2019  15:28
+// Created:          09.08.2019  15:48
 // Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
@@ -21,21 +21,54 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-namespace Unity_Tools.Pipeline
+#region usings
+
+using UnityEditor;
+using UnityEngine;
+
+#endregion
+
+namespace Unity_Tools.Pipeline.Specialized
 {
+    #region Usings
+
+    #endregion
+
     /// <summary>
-    ///     The ItemReceiver interface.
+    ///     The p p_ generate lightmap uvs.
     /// </summary>
-    /// <typeparam name="T">
-    /// </typeparam>
-    public interface IItemReceiver<in T> : IPipelineNode
+    public class PP_GenerateLightmapUvs : PipelineItemWorker<GameObject>
     {
         /// <summary>
-        ///     The add item.
+        ///     The work on item.
         /// </summary>
         /// <param name="item">
         ///     The item.
         /// </param>
-        void AddItem(T item);
+        protected override void WorkOnItem(GameObject item)
+        {
+#if UNITY_EDITOR
+            if (item == null)
+            {
+                return;
+            }
+
+            var mf = item.GetComponent<MeshFilter>();
+
+            if (mf == null)
+            {
+                return;
+            }
+
+            var sm = mf.sharedMesh;
+
+            if (sm == null)
+            {
+                return;
+            }
+
+            Unwrapping.GenerateSecondaryUVSet(sm);
+#endif
+        }
     }
 }

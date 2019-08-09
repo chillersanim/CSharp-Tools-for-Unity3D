@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         PipelineFilter.cs
+// Filename:         PP_RemoveComponents.cs
 // 
-// Created:          09.08.2019  15:28
+// Created:          09.08.2019  15:48
 // Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
@@ -21,51 +21,41 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-namespace Unity_Tools.Pipeline
+#region usings
+
+using UnityEngine;
+using Unity_Tools.Core;
+
+#endregion
+
+namespace Unity_Tools.Pipeline.Specialized
 {
+    #region Usings
+
+    #endregion
+
     /// <summary>
-    ///     The pipeline filter.
+    ///     The p p_ remove components.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public abstract class PipelineFilter<T> : PipelineWorker<T, T>
+    public sealed class PP_RemoveComponents<T> : PipelineItemWorker<GameObject>
+        where T : Component
     {
         /// <summary>
-        ///     The process next item.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public override bool ProcessNextItem()
-        {
-            if (!HasWaitingItems)
-            {
-                return false;
-            }
-
-            var item = GetNextItem();
-            var result = Test(item);
-
-            if (result)
-            {
-                foreach (var output in FollowupSteps)
-                {
-                    output.AddItem(item);
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        ///     The test.
+        ///     The work on item.
         /// </summary>
         /// <param name="item">
         ///     The item.
         /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        protected abstract bool Test(T item);
+        protected override void WorkOnItem(GameObject item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            item.RemoveComponents<T>();
+        }
     }
 }

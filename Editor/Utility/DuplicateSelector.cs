@@ -3,7 +3,7 @@
 // Filename:         DuplicateSelector.cs
 // 
 // Created:          09.08.2019  14:20
-// Last modified:    09.08.2019  15:44
+// Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,6 +20,7 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
+// 
 
 using System.Collections.Generic;
 using System.Linq;

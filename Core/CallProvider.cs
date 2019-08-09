@@ -3,7 +3,7 @@
 // Filename:         CallProvider.cs
 // 
 // Created:          09.08.2019  15:29
-// Last modified:    09.08.2019  15:44
+// Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,6 +20,7 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
+// 
 
 using System;
 using System.Collections.Generic;

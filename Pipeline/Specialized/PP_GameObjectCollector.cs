@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         PipelineEnd.cs
+// Filename:         PP_GameObjectCollector.cs
 // 
-// Created:          09.08.2019  15:28
+// Created:          09.08.2019  15:48
 // Last modified:    09.08.2019  15:54
 // 
 // --------------------------------------------------------------------------------------
@@ -21,65 +21,74 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
+#region usings
 
-using System.Collections.Generic;
+using UnityEngine;
 
-namespace Unity_Tools.Pipeline
+#endregion
+
+namespace Unity_Tools.Pipeline.Specialized
 {
+    #region Usings
+
+    #endregion
+
     /// <summary>
-    ///     The pipeline end.
+    ///     The p p_ game object collector.
     /// </summary>
-    /// <typeparam name="T">
-    /// </typeparam>
-    public class PipelineEnd<T> : IItemReceiver<T>
+    public class PP_GameObjectCollector : PipelineStart<GameObject>
     {
         /// <summary>
-        ///     The collected.
+        ///     The all game objects.
         /// </summary>
-        private readonly List<T> collected;
+        private GameObject[] allGameObjects;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PipelineEnd{T}" /> class.
+        ///     The index.
         /// </summary>
-        public PipelineEnd()
-        {
-            collected = new List<T>();
-            Collected = collected.AsReadOnly();
-        }
+        private int index;
 
         /// <summary>
-        ///     Gets the collected.
+        ///     The amount left.
         /// </summary>
-        public IReadOnlyList<T> Collected { get; }
-
-        /// <summary>
-        ///     The add item.
-        /// </summary>
-        /// <param name="item">
-        ///     The item.
-        /// </param>
-        public void AddItem(T item)
-        {
-            collected.Add(item);
-        }
+        public int AmountLeft => allGameObjects.Length - index;
 
         /// <summary>
         ///     The initialize.
         /// </summary>
-        public void Initialize()
+        public override void Initialize()
         {
-            collected.Clear();
+            allGameObjects = Object.FindObjectsOfType<GameObject>();
+            index = 0;
         }
 
         /// <summary>
-        ///     The process next item.
+        ///     The get next item.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="GameObject" />.
+        /// </returns>
+        protected override GameObject GetNextItem()
+        {
+            var item = allGameObjects[index];
+            index++;
+            return item;
+        }
+
+        /// <summary>
+        ///     The has items.
         /// </summary>
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool ProcessNextItem()
+        protected override bool HasItems()
         {
-            return false;
+            if (allGameObjects == null)
+            {
+                return false;
+            }
+
+            return index < allGameObjects.Length - 1;
         }
     }
 }
