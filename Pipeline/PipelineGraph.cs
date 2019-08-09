@@ -61,18 +61,18 @@ namespace Unity_Tools.Pipeline
         /// <summary>
         ///     The do work.
         /// </summary>
-        /// <param name="maxTime">
+        /// <param name="maxMilliseconds">
         ///     The max time.
         /// </param>
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool DoWork(float maxTime)
+        public bool DoWork(float maxMilliseconds)
         {
             stopwatch.Reset();
             stopwatch.Start();
 
-            while (stopwatch.Elapsed.TotalMilliseconds < maxTime)
+            while (stopwatch.Elapsed.TotalMilliseconds < maxMilliseconds)
             {
                 var hadWork = false;
 
