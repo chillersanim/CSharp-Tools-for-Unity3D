@@ -1,32 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Solution:         Unity Tools
+// Project:          Assembly-CSharp
+// Filename:         ReplaceColliderExample.cs
+// 
+// Created:          09.08.2019  16:53
+// Last modified:    09.08.2019  16:54
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+
 using UnityEngine;
-using Unity_Tools.Pipeline;
 using Unity_Tools.Pipeline.Specialized;
 
-namespace Assets.Unity_Tools
+namespace Unity_Tools.Pipeline.Example
 {
     public class ReplaceColliderExample : MonoBehaviour
     {
-        public PipelineGraph graph;
+        public PipelineGraph pipelineGraph;
 
         void OnEnable()
         {
-            graph = BuildPipeline();
-            graph.Initialize();
+            pipelineGraph = BuildPipeline();
+            pipelineGraph.Initialize();
         }
 
         void Update()
         {
-            graph.DoWork(5.0f);
+            pipelineGraph.DoWork(2.0f);
         }
 
         public PipelineGraph BuildPipeline()
         {
-            // Create the pipeline graph
+            // Create the pipeline pipelineGraph
             var graph = new PipelineGraph();
 
             // Create the pipeline nodes
@@ -35,7 +53,7 @@ namespace Assets.Unity_Tools
             var removeOldCollider = new PP_RemoveComponents<Collider>();
             var addCollider = new PP_AddCollider();
 
-            // Add nodes to graph
+            // Add nodes to pipelineGraph
             graph.AddNode(getGameObjects);
             graph.AddNode(meshRendererFilter);
             graph.AddNode(removeOldCollider);

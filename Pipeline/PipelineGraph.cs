@@ -28,7 +28,7 @@ using System.Diagnostics;
 namespace Unity_Tools.Pipeline
 {
     /// <summary>
-    ///     The pipeline graph.
+    ///     The pipeline pipelineGraph.
     /// </summary>
     public class PipelineGraph
     {
