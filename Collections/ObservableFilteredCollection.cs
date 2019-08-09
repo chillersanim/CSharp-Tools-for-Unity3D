@@ -1,23 +1,37 @@
-﻿// Copyright © 2019 Jasper Ermatinger
-
-#region usings
+﻿// Solution:         Unity Tools
+// Project:          Assembly-CSharp
+// Filename:         ObservableFilteredCollection.cs
+// 
+// Created:          05.08.2019  15:19
+// Last modified:    09.08.2019  15:44
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Unity_Collections.Core;
-using INotifyCollectionChanged = System.Collections.Specialized.INotifyCollectionChanged;
-using NotifyCollectionChangedAction = System.Collections.Specialized.NotifyCollectionChangedAction;
-using NotifyCollectionChangedEventArgs = System.Collections.Specialized.NotifyCollectionChangedEventArgs;
-using NotifyCollectionChangedEventHandler = System.Collections.Specialized.NotifyCollectionChangedEventHandler;
+using Unity_Tools.Core;
 
-#endregion
-
-namespace Unity_Collections
+namespace Unity_Tools.Collections
 {
     /// <summary>
     ///     The filtered collection.
@@ -37,6 +51,11 @@ namespace Unity_Collections
         [NotNull] private readonly IFilter<T> filter;
 
         /// <summary>
+        ///     The is item observable.
+        /// </summary>
+        private readonly bool isItemObservable;
+
+        /// <summary>
         ///     The source.
         /// </summary>
         [NotNull] private readonly ICollection<T> source;
@@ -50,11 +69,6 @@ namespace Unity_Collections
         ///     The ignore change.
         /// </summary>
         private bool ignoreChange;
-
-        /// <summary>
-        ///     The is item observable.
-        /// </summary>
-        private readonly bool isItemObservable;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ObservableObservableFilteredCollection{T}" /> class.

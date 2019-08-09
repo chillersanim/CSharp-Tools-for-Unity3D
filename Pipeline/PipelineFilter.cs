@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         IFilter.cs
+// Filename:         PipelineFilter.cs
 // 
-// Created:          05.08.2019  15:18
+// Created:          09.08.2019  15:28
 // Last modified:    09.08.2019  15:44
 // 
 // --------------------------------------------------------------------------------------
@@ -20,27 +20,51 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
-using JetBrains.Annotations;
-
-namespace Unity_Tools.Core
+namespace Unity_Tools.Pipeline
 {
     /// <summary>
-    ///     The Filter interface.
+    ///     The pipeline filter.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public interface IFilter<in T>
+    public abstract class PipelineFilter<T> : PipelineWorker<T, T>
     {
         /// <summary>
-        ///     Evaluates whether the item matches the filter criterias.
+        ///     The process next item.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="bool" />.
+        /// </returns>
+        public override bool ProcessNextItem()
+        {
+            if (!HasWaitingItems)
+            {
+                return false;
+            }
+
+            var item = GetNextItem();
+            var result = Test(item);
+
+            if (result)
+            {
+                foreach (var output in FollowupSteps)
+                {
+                    output.AddItem(item);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///     The test.
         /// </summary>
         /// <param name="item">
         ///     The item.
         /// </param>
         /// <returns>
-        ///     Returns <c>true</c> if the item matches the filter criterias, <c>false</c> otherwise.
+        ///     The <see cref="bool" />.
         /// </returns>
-        bool Filter([CanBeNull] T item);
+        protected abstract bool Test(T item);
     }
 }

@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         IFilter.cs
+// Filename:         IItemReceiver.cs
 // 
-// Created:          05.08.2019  15:18
+// Created:          09.08.2019  15:28
 // Last modified:    09.08.2019  15:44
 // 
 // --------------------------------------------------------------------------------------
@@ -20,27 +20,21 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
-using JetBrains.Annotations;
-
-namespace Unity_Tools.Core
+namespace Unity_Tools.Pipeline
 {
     /// <summary>
-    ///     The Filter interface.
+    ///     The ItemReceiver interface.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public interface IFilter<in T>
+    public interface IItemReceiver<in T> : IPipelineNode
     {
         /// <summary>
-        ///     Evaluates whether the item matches the filter criterias.
+        ///     The add item.
         /// </summary>
         /// <param name="item">
         ///     The item.
         /// </param>
-        /// <returns>
-        ///     Returns <c>true</c> if the item matches the filter criterias, <c>false</c> otherwise.
-        /// </returns>
-        bool Filter([CanBeNull] T item);
+        void AddItem(T item);
     }
 }

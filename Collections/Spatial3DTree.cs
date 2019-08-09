@@ -1,20 +1,36 @@
-﻿// Copyright © 2019 Jasper Ermatinger
-
-#region usings
+﻿// Solution:         Unity Tools
+// Project:          Assembly-CSharp
+// Filename:         Spatial3DTree.cs
+// 
+// Created:          05.08.2019  15:19
+// Last modified:    09.08.2019  15:44
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
-using Unity_Collections.Core;
-using Unity_Collections.SpatialTree;
-using Unity_Collections.SpatialTree.Enumerators;
+using Unity_Tools.Collections.SpatialTree;
+using Unity_Tools.Collections.SpatialTree.Enumerators;
 using Unity_Tools.Core;
 
-#endregion
-
-namespace Unity_Collections
+namespace Unity_Tools.Collections
 {
     /// <summary>
     ///     The spatial 3 d tree.
@@ -24,6 +40,10 @@ namespace Unity_Collections
     public class Spatial3DTree<T> : I3DCollection<T>
         where T : class
     {
+        private readonly AabbCastEnumerator<T> aabbCaster;
+
+        private readonly List<T> castCache;
+
         /// <summary>
         ///     The initial offset.
         /// </summary>
@@ -36,25 +56,10 @@ namespace Unity_Collections
 
         private readonly SphereCastEnumerator<T> sphereCaster;
 
-        private readonly AabbCastEnumerator<T> aabbCaster;
-
-        private readonly List<T> castCache;
-
         /// <summary>
         ///     The root.
         /// </summary>
         [NotNull] private Spatial3DCell<T> root;
-
-        public Vector3 Center{
-            get { return center; }
-        }
-
-        public Vector3 InitialSize
-        {
-            get { return initialSize; }
-        }
-
-        [NotNull] public Spatial3DCell<T> Root => root;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
@@ -78,10 +83,16 @@ namespace Unity_Collections
             this.aabbCaster = new AabbCastEnumerator<T>(this, this.center, this.center);
         }
 
-        /// <summary>
-        ///     The count.
-        /// </summary>
-        public int Count => root.TotalItemAmount;
+        public Vector3 Center{
+            get { return center; }
+        }
+
+        public Vector3 InitialSize
+        {
+            get { return initialSize; }
+        }
+
+        [NotNull] public Spatial3DCell<T> Root => root;
 
         /// <summary>
         ///     The depth.
@@ -92,6 +103,11 @@ namespace Unity_Collections
         ///     The total cell count.
         /// </summary>
         public int TotalCellCount => root.GetCellCount();
+
+        /// <summary>
+        ///     The count.
+        /// </summary>
+        public int Count => root.TotalItemAmount;
 
         /// <summary>
         ///     The get enumerator.
@@ -134,42 +150,6 @@ namespace Unity_Collections
             while (!FitsInRoot(position)) Grow();
 
             root.AddItem(item, position, 1);
-        }
-
-        public void AddRange([NotNull] IList<T> items, IList<Vector3> positions)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-
-            if (positions == null)
-            {
-                throw new ArgumentNullException(nameof(positions));
-            }
-
-            if (items.Count != positions.Count)
-            {
-                throw new ArgumentException("The amount of items doesn't match the amount of positions.");
-            }
-
-            if (items.Count == 0)
-            {
-                return;
-            }
-
-            var bounds = positions.Bounds();
-
-            while (!FitsInRoot(bounds.min) || !FitsInRoot(bounds.max))
-            {
-                Grow();
-            }
-
-            var cnt = items.Count;
-            for (var i = 0; i < cnt; i++)
-            {
-                root.AddItem(items[i], positions[i], 1);
-            }
         }
 
         /// <summary>
@@ -275,6 +255,42 @@ namespace Unity_Collections
             castCache.Clear();
             aabbCaster.ToArray(castCache);
             return castCache.ToArray();
+        }
+
+        public void AddRange([NotNull] IList<T> items, IList<Vector3> positions)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (positions == null)
+            {
+                throw new ArgumentNullException(nameof(positions));
+            }
+
+            if (items.Count != positions.Count)
+            {
+                throw new ArgumentException("The amount of items doesn't match the amount of positions.");
+            }
+
+            if (items.Count == 0)
+            {
+                return;
+            }
+
+            var bounds = positions.Bounds();
+
+            while (!FitsInRoot(bounds.min) || !FitsInRoot(bounds.max))
+            {
+                Grow();
+            }
+
+            var cnt = items.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                root.AddItem(items[i], positions[i], 1);
+            }
         }
 
         /// <summary>

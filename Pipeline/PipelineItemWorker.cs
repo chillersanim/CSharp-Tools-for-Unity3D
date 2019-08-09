@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         IFilter.cs
+// Filename:         PipelineItemWorker.cs
 // 
-// Created:          05.08.2019  15:18
+// Created:          09.08.2019  15:28
 // Last modified:    09.08.2019  15:44
 // 
 // --------------------------------------------------------------------------------------
@@ -20,27 +20,45 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
-using JetBrains.Annotations;
-
-namespace Unity_Tools.Core
+namespace Unity_Tools.Pipeline
 {
     /// <summary>
-    ///     The Filter interface.
+    ///     The pipeline item worker.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public interface IFilter<in T>
+    public abstract class PipelineItemWorker<T> : PipelineWorker<T, T>
     {
         /// <summary>
-        ///     Evaluates whether the item matches the filter criterias.
+        ///     The process next item.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="bool" />.
+        /// </returns>
+        public override bool ProcessNextItem()
+        {
+            if (!HasWaitingItems)
+            {
+                return false;
+            }
+
+            var item = GetNextItem();
+            WorkOnItem(item);
+
+            foreach (var output in FollowupSteps)
+            {
+                output.AddItem(item);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///     The work on item.
         /// </summary>
         /// <param name="item">
         ///     The item.
         /// </param>
-        /// <returns>
-        ///     Returns <c>true</c> if the item matches the filter criterias, <c>false</c> otherwise.
-        /// </returns>
-        bool Filter([CanBeNull] T item);
+        protected abstract void WorkOnItem(T item);
     }
 }

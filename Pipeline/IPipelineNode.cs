@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          Assembly-CSharp
-// Filename:         IFilter.cs
+// Filename:         IPipelineNode.cs
 // 
-// Created:          05.08.2019  15:18
+// Created:          09.08.2019  15:28
 // Last modified:    09.08.2019  15:44
 // 
 // --------------------------------------------------------------------------------------
@@ -20,27 +20,24 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
-using JetBrains.Annotations;
-
-namespace Unity_Tools.Core
+namespace Unity_Tools.Pipeline
 {
     /// <summary>
-    ///     The Filter interface.
+    ///     The PipelineNode interface.
     /// </summary>
-    /// <typeparam name="T">
-    /// </typeparam>
-    public interface IFilter<in T>
+    public interface IPipelineNode
     {
         /// <summary>
-        ///     Evaluates whether the item matches the filter criterias.
+        ///     The initialize.
         /// </summary>
-        /// <param name="item">
-        ///     The item.
-        /// </param>
+        void Initialize();
+
+        /// <summary>
+        ///     The process next item.
+        /// </summary>
         /// <returns>
-        ///     Returns <c>true</c> if the item matches the filter criterias, <c>false</c> otherwise.
+        ///     The <see cref="bool" />.
         /// </returns>
-        bool Filter([CanBeNull] T item);
+        bool ProcessNextItem();
     }
 }
