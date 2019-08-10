@@ -30,7 +30,7 @@ using Unity_Tools.Core;
 
 namespace Unity_Tools.Collections
 {
-    public class Simple3DCollection<T> : I3DCollection<T> where T : class
+    public class Simple3DCollection<T> : I3DCollection<T>
     {
         [NotNull]
         private readonly IList<ItemEntry> items;
@@ -144,14 +144,11 @@ namespace Unity_Tools.Collections
 
         public T[] FindInAabb(Vector3 center, Vector3 size)
         {
-            var halfSize = size / 2f;
-            var min = center - halfSize;
-            var max = center + halfSize;
             searchCache.Clear();
 
             foreach (var entry in items)
             {
-                if (entry.Position.IsInAabb(min, max))
+                if (entry.Position.IsInAabb(center, size))
                 {
                     searchCache.Add(entry.Item);
                 }
@@ -168,7 +165,7 @@ namespace Unity_Tools.Collections
 
             public bool Equals(T other, Vector3 otherPosition)
             {
-                return this.Position == otherPosition && this.Item == other;
+                return this.Position == otherPosition && Equals(this.Item, other);
             }
 
             public ItemEntry(T item, Vector3 position)

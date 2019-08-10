@@ -35,7 +35,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     /// <typeparam name="T">
     /// </typeparam>
     public sealed class Spatial3DTreeEnumerator<T> : IEnumerator<T>
-        where T : class
     {
         /// <summary>
         ///     The path.

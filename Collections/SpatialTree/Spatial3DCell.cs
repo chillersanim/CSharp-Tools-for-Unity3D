@@ -34,7 +34,6 @@ namespace Unity_Tools.Collections.SpatialTree
     /// <typeparam name="T">
     /// </typeparam>
     public class Spatial3DCell<T>
-        where T : class
     {
         /// <summary>
         ///     The max cell pool items.

@@ -30,16 +30,18 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     {
         private Vector3 min, max;
 
-        public InverseAabbCastEnumerator(Spatial3DTree<T> tree, Vector3 min, Vector3 max) : base(tree)
+        public InverseAabbCastEnumerator(Spatial3DTree<T> tree, Vector3 center, Vector3 size) : base(tree)
         {
-            this.min = min;
-            this.max = max;
+            var halfSize = size / 2f;
+            this.min = center - halfSize;
+            this.max = center + halfSize;
         }
 
-        public void Restart(Vector3 min, Vector3 max)
+        public void Restart(Vector3 center, Vector3 size)
         {
-            this.min = min;
-            this.max = max;
+            var halfSize = size / 2f;
+            this.min = center - halfSize;
+            this.max = center + halfSize;
             Reset();
         }
 

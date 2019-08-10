@@ -23,6 +23,7 @@
 // 
 
 using UnityEngine;
+using Unity_Tools.Core;
 
 namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {
@@ -32,7 +33,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     /// <typeparam name="T">
     /// </typeparam>
     public sealed class SphereCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T>
-        where T : class
     {
         /// <summary>
         ///     The center.
@@ -82,21 +82,15 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
         /// <inheritdoc />
         protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
         {
-            var x = Mathf.Clamp(center.x, start.x, end.x) - center.x;
-            var y = Mathf.Clamp(center.y, start.y, end.y) - center.y;
-            var z = Mathf.Clamp(center.z, start.z, end.z) - center.z;
-
-            return x * x + y * y + z * z <= sqrRadius;
+            var vectorToNearest = center.ClampComponents(start, end) - center;
+            return vectorToNearest.sqrMagnitude <= sqrRadius;
         }
 
         /// <inheritdoc />
         protected override bool IsPointInside(Vector3 point)
         {
-            var x = point.x - center.x;
-            var y = point.y - center.y;
-            var z = point.z - center.z;
-
-            return x * x + y * y + z * z <= sqrRadius;
+            var sqrDist = (point - center).sqrMagnitude;
+            return sqrDist <= sqrRadius;
         }
     }
 }

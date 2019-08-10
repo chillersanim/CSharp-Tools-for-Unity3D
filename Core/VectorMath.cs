@@ -244,15 +244,12 @@ namespace Unity_Tools.Core
         [PublicAPI]
         public static bool IsInAabb(this Vector3 vector, Vector3 center, Vector3 size)
         {
-            var sx = center.x - size.x / 2f;
-            var sy = center.y - size.y / 2f;
-            var sz = center.z - size.z / 2f;
-            var ex = sx + size.x;
-            var ey = sy + size.y;
-            var ez = sz + size.z;
+            var halfSize = size / 2f;
+            var min = center - halfSize;
+            var max = center + halfSize;
 
-            return vector.x >= sx && vector.y >= sy && vector.z >= sz &&
-                   vector.x <= ex && vector.y <= ey && vector.z <= ez;
+            return vector.x >= min.x && vector.y >= min.y && vector.z >= min.z &&
+                   vector.x <= max.x && vector.y <= max.y && vector.z <= max.z;
         }
 
         /// <summary>
@@ -411,6 +408,46 @@ namespace Unity_Tools.Core
                 Mathf.Min(a.z, b.z),
                 Mathf.Min(a.w, b.w)
             );
+        }
+
+        /// <summary>
+        /// Scales the vector component wise by another vector.
+        /// </summary>
+        /// <param name="v">The vector.</param>
+        /// <param name="scale">The scale.</param>
+        public static Vector2 ScaleComponents(this Vector2 v, Vector2 scale)
+        {
+            return new Vector2(v.x * scale.x, v.y * scale.y);
+        }
+
+        /// <summary>
+        /// Scales the vector component wise by another vector.
+        /// </summary>
+        /// <param name="v">The vector.</param>
+        /// <param name="scale">The scale.</param>
+        public static Vector2Int ScaleComponents(this Vector2Int v, Vector2Int scale)
+        {
+            return new Vector2Int(v.x * scale.x, v.y * scale.y);
+        }
+
+        /// <summary>
+        /// Scales the vector component wise by another vector.
+        /// </summary>
+        /// <param name="v">The vector.</param>
+        /// <param name="scale">The scale.</param>
+        public static Vector3 ScaleComponents(this Vector3 v, Vector3 scale)
+        {
+            return new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
+        }
+
+        /// <summary>
+        /// Scales the vector component wise by another vector.
+        /// </summary>
+        /// <param name="v">The vector.</param>
+        /// <param name="scale">The scale.</param>
+        public static Vector3Int ScaleComponents(this Vector3Int v, Vector3Int scale)
+        {
+            return new Vector3Int(v.x * scale.x, v.y * scale.y, v.z * scale.z);
         }
 
         /// <summary>

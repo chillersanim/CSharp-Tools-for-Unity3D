@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEditor.WindowsStandalone;
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Collections
@@ -75,12 +76,20 @@ namespace Unity_Tools.Collections
             return result;
         }
 
-        public static void ToArray<T>(this IEnumerator<T> enumerator, IList<T> output)
+        public static void CopyTo<T>(this IEnumerator<T> enumerator, IList<T> output)
         {
             while (enumerator.MoveNext())
             {
                 output.Add(enumerator.Current);
             }
+        }
+
+
+        public static T[] ToArray<T>(this IEnumerator<T> enumerator)
+        {
+            var result = new List<T>();
+            enumerator.CopyTo(result);
+            return result.ToArray();
         }
     }
 }

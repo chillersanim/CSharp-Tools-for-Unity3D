@@ -39,7 +39,6 @@ namespace Unity_Tools.Collections
     /// <typeparam name="T">
     /// </typeparam>
     public class Spatial3DTree<T> : I3DCollection<T>
-        where T : class
     {
         private readonly AabbCastEnumerator<T> aabbCaster;
 
@@ -245,16 +244,15 @@ namespace Unity_Tools.Collections
         {
             sphereCaster.Restart(center, radius);
             castCache.Clear();
-            sphereCaster.ToArray(castCache);
+            sphereCaster.CopyTo(castCache);
             return castCache.ToArray();
         }
 
         public T[] FindInAabb(Vector3 center, Vector3 size)
         {
-            var halfSize = size / 2f;
-            aabbCaster.Restart(center - halfSize, center + halfSize);
+            aabbCaster.Restart(center, size);
             castCache.Clear();
-            aabbCaster.ToArray(castCache);
+            aabbCaster.CopyTo(castCache);
             return castCache.ToArray();
         }
 

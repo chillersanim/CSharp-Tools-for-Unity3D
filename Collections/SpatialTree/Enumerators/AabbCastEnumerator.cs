@@ -26,25 +26,25 @@ using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {
-    public sealed class AabbCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T> where T : class
+    public sealed class AabbCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T>
     {
         private Vector3 min, max;
 
-        public AabbCastEnumerator(Spatial3DTree<T> tree, Vector3 min, Vector3 max) : base(tree)
+        public AabbCastEnumerator(Spatial3DTree<T> tree, Vector3 center, Vector3 size) : base(tree)
         {
-            this.min = min;
-            this.max = max;
+            var halfSize = size / 2f;
+            this.min = center - halfSize;
+            this.max = center + halfSize;
         }
 
         /// <summary>
         /// Starts over the enumerator, allows for enumerator reuse
         /// </summary>
-        /// <param name="min">The min vertex of the aabb.</param>
-        /// <param name="max">The max vertex of the aabb.</param>
-        public void Restart(Vector3 min, Vector3 max)
+        public void Restart(Vector3 center, Vector3 size)
         {
-            this.min = min;
-            this.max = max;
+            var halfSize = size / 2f;
+            this.min = center - halfSize;
+            this.max = center + halfSize;
             Reset();
         }
 

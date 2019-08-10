@@ -32,7 +32,7 @@ namespace Unity_Tools.Core
     /// Interface for generic 3D collections.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
-    public interface I3DCollection<T> : IEnumerable<T> where T : class
+    public interface I3DCollection<T> : IEnumerable<T>
     {
         /// <summary>
         /// The amount of items in the collection.
