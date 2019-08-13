@@ -13,7 +13,7 @@ namespace Assets.Unity_Tools.Tests
     public abstract class I3DCollectionTest<T>
     {
         [Test]
-        public void InsertionTest([NUnit.Framework.Range(1, 1001, 250)]int pointAmount)
+        public void InsertionTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount)
         {
             GenerateTestData(pointAmount, out var instance, out var items, out _, out _);
             var dict = items.ToDictionary(item => item.Key, item => item.Value);
@@ -29,7 +29,7 @@ namespace Assets.Unity_Tools.Tests
         }
 
         [Test]
-        public void MoveTest([NUnit.Framework.Range(1, 1001, 250)]int pointAmount, [Values(0.1f, 0.5f, 0.9f, 1f)]float changePercent)
+        public void MoveTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount, [Values(0.1f, 0.5f, 0.9f, 1f)]float changePercent)
         {
             GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
             var dict = items.ToDictionary(item => item.Key, item => item.Value);
@@ -56,7 +56,7 @@ namespace Assets.Unity_Tools.Tests
         }
 
         [Test]
-        public void RemovalTest([NUnit.Framework.Range(1, 1001, 250)]int pointAmount)
+        public void RemovalTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount)
         {
             GenerateTestData(pointAmount, out var instance, out var items, out _, out _);
 
@@ -71,7 +71,7 @@ namespace Assets.Unity_Tools.Tests
         }
 
         [Test]
-        public void SphereCastTest([NUnit.Framework.Range(1, 1001, 250)] int pointAmount)
+        public void SphereCastTest([NUnit.Framework.Range(0, 1000, 250)] int pointAmount)
         {
             GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
 
@@ -90,7 +90,7 @@ namespace Assets.Unity_Tools.Tests
         }
 
         [Test]
-        public void AabbCastTest([NUnit.Framework.Range(1, 1001, 250)] int pointAmount)
+        public void AabbCastTest([NUnit.Framework.Range(0, 1000, 250)] int pointAmount)
         {
             GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
 

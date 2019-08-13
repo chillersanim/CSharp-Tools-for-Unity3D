@@ -33,6 +33,10 @@ namespace Unity_Tools.Core
     /// </summary>
     public static class VectorMath
     {
+        public static readonly Vector2 NaN2 = new Vector2(float.NaN, float.NaN);
+
+        public static readonly Vector3 NaN3 = new Vector3(float.NaN, float.NaN, float.NaN);
+
         public static Vector2 AbsComponents(this Vector2 vector)
         {
             return new Vector2(Mathf.Abs(vector.x), Mathf.Abs(vector.y));

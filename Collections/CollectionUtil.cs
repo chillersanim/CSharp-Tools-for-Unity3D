@@ -36,7 +36,7 @@ namespace Unity_Tools.Collections
         /// </summary>
         /// <typeparam name="T">The type of the item.</typeparam>
         /// <param name="items">The items to be randomized</param>
-        public static void RandomizeOrder<T>(IList<T> items)
+        public static void RandomizeOrder<T>(this IList<T> items)
         {
             if (items == null)
             {
@@ -53,7 +53,7 @@ namespace Unity_Tools.Collections
             }
         }
 
-        public static TOut[] Map<TIn, TOut>(IList<TIn> items, Func<TIn, TOut> mapper)
+        public static TOut[] Map<TIn, TOut>(this IList<TIn> items, Func<TIn, TOut> mapper)
         {
             if (items == null)
             {
@@ -76,6 +76,29 @@ namespace Unity_Tools.Collections
             return result;
         }
 
+        public static T[] Create<T>(int length, T first, Func<T, T> next)
+        {
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
+            }
+
+            if (length == 0)
+            {
+                return Array.Empty<T>();
+            }
+
+            var result = new T[length];
+            result[0] = first;
+
+            for (var i = 1; i < length; i++)
+            {
+                result[i] = next(result[i - 1]);
+            }
+
+            return result;
+        }
+
         public static void CopyTo<T>(this IEnumerator<T> enumerator, IList<T> output)
         {
             while (enumerator.MoveNext())
@@ -83,8 +106,7 @@ namespace Unity_Tools.Collections
                 output.Add(enumerator.Current);
             }
         }
-
-
+        
         public static T[] ToArray<T>(this IEnumerator<T> enumerator)
         {
             var result = new List<T>();
