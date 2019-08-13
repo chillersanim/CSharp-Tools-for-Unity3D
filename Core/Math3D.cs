@@ -86,7 +86,7 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The nearest point in the AABB
         /// </returns>
-        public static Vector3 ClosestPositionInAabb(Vector3 p, Vector3 min, Vector3 max)
+        public static Vector3 ClosestPointInAabb(Vector3 p, Vector3 min, Vector3 max)
         {
             return p.ClampComponents(min, max);
         }
@@ -107,7 +107,7 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     Returns the nearest point in the sphere to the point
         /// </returns>
-        public static Vector3 ClosestPositionInSphere(Vector3 p, Vector3 c, float r)
+        public static Vector3 ClosestPointInSphere(Vector3 p, Vector3 c, float r)
         {
             return Vector3.ClampMagnitude(p - c, r);
         }
@@ -128,7 +128,7 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The nearest point on the line
         /// </returns>
-        public static Vector3 ClosestPositionOnLine(Vector3 p, Vector3 a, Vector3 b)
+        public static Vector3 ClosestPointOnLine(Vector3 p, Vector3 a, Vector3 b)
         {
             return a + RelativeClosestPositionToLine(p, a, b) * (b - a);
         }
@@ -149,7 +149,7 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The nearest point on the line segment to the point
         /// </returns>
-        public static Vector3 ClosestPositionOnLineSegment(Vector3 p, Vector3 start, Vector3 end)
+        public static Vector3 ClosestPointOnLineSegment(Vector3 p, Vector3 start, Vector3 end)
         {
             return start + Mathf.Clamp01(RelativeClosestPositionToLine(p, start, end)) * (end - start);
         }
@@ -170,7 +170,7 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The closest position on the ray to the point
         /// </returns>
-        public static Vector3 ClosestPositionOnRay(Vector3 p, Vector3 start, Vector3 direction)
+        public static Vector3 ClosestPointOnRay(Vector3 p, Vector3 start, Vector3 direction)
         {
             return start + Mathf.Max(0, RelativeClosestPositionToLine(p, start, start + direction)) * direction;
         }

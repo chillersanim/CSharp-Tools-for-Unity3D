@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Assets.Unity_Tools.Core.Polyline;
 using NUnit.Framework;
 using Unity_Tools.Collections;
+using Unity_Tools.Core.Polyline;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -147,7 +148,7 @@ namespace Assets.Unity_Tools.Tests
             }
 
             points = new Vector3[pointAmount];
-            length = 0f;
+            var preciseLength = 0.0;
 
             var prev = Vector3.zero;
             points[0] = prev;
@@ -156,8 +157,10 @@ namespace Assets.Unity_Tools.Tests
             {
                 var nextPoint = prev + Random.onUnitSphere * Random.Range(0, 10f);
                 points[i] = nextPoint;
-                length += (points[i] - points[i - 1]).magnitude;
+                preciseLength += (points[i] - points[i - 1]).magnitude;
             }
+
+            length = (float) preciseLength;
         }
     }
 }

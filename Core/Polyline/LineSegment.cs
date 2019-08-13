@@ -78,7 +78,7 @@ namespace Unity_Tools.Core.Polyline
         /// <inheritdoc/>
         public Vector3 ClosestPoint(Vector3 point)
         {
-            return Math3D.ClosestPositionOnLineSegment(point, start, end);
+            return Math3D.ClosestPointOnLineSegment(point, start, end);
         }
 
         /// <inheritdoc/>
