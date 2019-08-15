@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         InverseShapeCastEnumerator.cs
 // 
 // Created:          05.08.2019  11:45
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,8 +23,6 @@
 // 
 
 using System;
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {

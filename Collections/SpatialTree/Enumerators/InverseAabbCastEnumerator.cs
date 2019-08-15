@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         InverseAabbCastEnumerator.cs
 // 
 // Created:          05.08.2019  11:42
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,8 +21,6 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-
-using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {

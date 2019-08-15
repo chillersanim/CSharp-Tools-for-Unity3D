@@ -1,5 +1,28 @@
-﻿using System;
-using UnityEngine;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         LineSegment.cs
+// 
+// Created:          13.08.2019  13:45
+// Last modified:    15.08.2019  17:57
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+
+using System;
 
 namespace Unity_Tools.Core.Polyline
 {
@@ -7,13 +30,27 @@ namespace Unity_Tools.Core.Polyline
     public class LineSegment : IPolyline
     {
         [SerializeField]
-        private Vector3 start;
-
-        [SerializeField]
         private Vector3 end;
 
         [SerializeField]
         private float length;
+
+        [SerializeField]
+        private Vector3 start;
+
+        public LineSegment()
+        {
+            this.start = Vector3.zero;
+            this.end = Vector3.zero;
+            this.length = 0f;
+        }
+
+        public LineSegment(Vector3 start, Vector3 end)
+        {
+            this.start = start;
+            this.end = end;
+            this.length = Vector3.Distance(start, end);
+        }
 
         public Vector3 Start
         {
@@ -37,20 +74,6 @@ namespace Unity_Tools.Core.Polyline
 
         /// <inheritdoc/>
         public float Length => length;
-
-        public LineSegment()
-        {
-            this.start = Vector3.zero;
-            this.end = Vector3.zero;
-            this.length = 0f;
-        }
-
-        public LineSegment(Vector3 start, Vector3 end)
-        {
-            this.start = start;
-            this.end = end;
-            this.length = Vector3.Distance(start, end);
-        }
 
         /// <inheritdoc/>
         public Vector3 GetPointAtPosition(float position)

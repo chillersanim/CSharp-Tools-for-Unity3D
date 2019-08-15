@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         CollectionUtil.cs
 // 
 // Created:          05.08.2019  13:51
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEditor.WindowsStandalone;
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Collections
@@ -106,7 +105,7 @@ namespace Unity_Tools.Collections
                 output.Add(enumerator.Current);
             }
         }
-        
+
         public static T[] ToArray<T>(this IEnumerator<T> enumerator)
         {
             var result = new List<T>();

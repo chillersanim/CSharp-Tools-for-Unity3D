@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         ObservableCollectionMapper.cs
 // 
 // Created:          05.08.2019  15:19
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -27,7 +27,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using JetBrains.Annotations;
 
 namespace Unity_Tools.Collections
 {

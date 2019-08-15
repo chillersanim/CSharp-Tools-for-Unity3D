@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         VectorMath.cs
 // 
 // Created:          09.08.2019  15:13
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,8 +23,6 @@
 // 
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Unity_Tools.Core
 {

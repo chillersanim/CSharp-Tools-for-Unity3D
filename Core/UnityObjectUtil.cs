@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         UnityObjectUtil.cs
 // 
 // Created:          09.08.2019  15:49
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,7 +24,6 @@
 #region usings
 
 using System;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 #endregion

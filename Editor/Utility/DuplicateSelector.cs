@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp-Editor
+// Project:          UnityTools_Editor
 // Filename:         DuplicateSelector.cs
 // 
 // Created:          09.08.2019  14:20
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,11 +23,7 @@
 // 
 
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
-using UnityEngine;
 using Unity_Tools.Collections;
-using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Editor.Utility
 {

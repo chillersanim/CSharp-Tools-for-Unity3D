@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         SingletonBehaviour.cs
 // 
 // Created:          09.08.2019  15:25
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,9 +21,6 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Unity_Tools.Core
 {

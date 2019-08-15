@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         Spatial3DTree.cs
 // 
 // Created:          05.08.2019  15:19
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,8 +25,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
 using Unity_Tools.Collections.SpatialTree;
 using Unity_Tools.Collections.SpatialTree.Enumerators;
 using Unity_Tools.Core;

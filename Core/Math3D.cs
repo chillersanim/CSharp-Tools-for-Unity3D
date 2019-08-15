@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         Math3D.cs
 // 
 // Created:          09.08.2019  15:29
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,8 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Unity_Tools.Core
 {

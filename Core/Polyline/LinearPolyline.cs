@@ -1,26 +1,45 @@
-﻿using System;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         LinearPolyline.cs
+// 
+// Created:          13.08.2019  13:45
+// Last modified:    15.08.2019  17:57
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity_Tools.Core.Polyline;
-using UnityEngine;
 
 namespace Assets.Unity_Tools.Core.Polyline
 {
     [Serializable]
     public class LinearPolyline : IPolyline, IList<Vector3>, IReadOnlyList<Vector3>
     {
-        [SerializeField]
-        private readonly List<Vector3> points;
-
         /// <summary>
         /// Contain the distance from the start point to the point at the given index (distance along the polyline).
         /// </summary>
         [SerializeField]
         private readonly List<float> distances;
 
-        public float Length => distances[distances.Count - 1];
-
-        public int Count => points.Count;
+        [SerializeField]
+        private readonly List<Vector3> points;
 
         public LinearPolyline()
         {
@@ -43,25 +62,7 @@ namespace Assets.Unity_Tools.Core.Polyline
             }
         }
 
-        public Vector3 GetPointAtPosition(float position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Vector3 GetDirectionAtPosition(float position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Vector3 ClosestPoint(Vector3 point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public float ClosestPosition(Vector3 point)
-        {
-            throw new NotImplementedException();
-        }
+        public int Count => points.Count;
 
         public IEnumerator<Vector3> GetEnumerator()
         {
@@ -238,6 +239,28 @@ namespace Assets.Unity_Tools.Core.Polyline
                     }
                 }
             }
+        }
+
+        public float Length => distances[distances.Count - 1];
+
+        public Vector3 GetPointAtPosition(float position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Vector3 GetDirectionAtPosition(float position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Vector3 ClosestPoint(Vector3 point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float ClosestPosition(Vector3 point)
+        {
+            throw new NotImplementedException();
         }
 
         #region Hidden

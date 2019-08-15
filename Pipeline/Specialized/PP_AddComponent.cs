@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         PP_AddComponent.cs
 // 
 // Created:          09.08.2019  15:48
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:57
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,8 +22,6 @@
 // copies or substantial portions of the Software.
 // 
 #region usings
-
-using UnityEngine;
 
 #endregion
 
