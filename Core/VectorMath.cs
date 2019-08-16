@@ -22,6 +22,7 @@
 // copies or substantial portions of the Software.
 // 
 
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -412,6 +413,15 @@ namespace Unity_Tools.Core
                 Mathf.Min(a.z, b.z),
                 Mathf.Min(a.w, b.w)
             );
+        }
+
+        public static double PreciseDistance(Vector3 a, Vector3 b)
+        {
+            var x = (double) (a.x) - b.x;
+            var y = (double) (a.y) - b.y;
+            var z = (double) (a.z) - b.z;
+
+            return Math.Sqrt(x * x + y * y + z * z);
         }
 
         /// <summary>

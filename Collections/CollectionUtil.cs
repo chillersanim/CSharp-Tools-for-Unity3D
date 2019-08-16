@@ -36,7 +36,7 @@ namespace Unity_Tools.Collections
         /// </summary>
         /// <typeparam name="T">The type of the item.</typeparam>
         /// <param name="items">The items to be randomized</param>
-        public static void RandomizeOrder<T>(this IList<T> items)
+        public static void Shuffle<T>(this IList<T> items)
         {
             if (items == null)
             {

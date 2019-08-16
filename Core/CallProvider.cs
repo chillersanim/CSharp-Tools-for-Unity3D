@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         CallProvider.cs
 // 
 // Created:          09.08.2019  15:29
-// Last modified:    09.08.2019  15:54
+// Last modified:    15.08.2019  17:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Unity_Tools.Core
@@ -271,8 +270,8 @@ namespace Unity_Tools.Core
 
             if (!Application.isPlaying)
             {
-                EditorApplication.update += UpdateTick;
-                EditorApplication.update += FixedUpdateTick;
+                UnityEditor.EditorApplication.update += UpdateTick;
+                UnityEditor.EditorApplication.update += FixedUpdateTick;
             }
         }
 
@@ -325,8 +324,8 @@ namespace Unity_Tools.Core
         {
             if (!Application.isPlaying)
             {
-                EditorApplication.update -= UpdateTick;
-                EditorApplication.update -= FixedUpdateTick;
+                UnityEditor.EditorApplication.update -= UpdateTick;
+                UnityEditor.EditorApplication.update -= FixedUpdateTick;
             }
         }
 

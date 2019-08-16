@@ -1,14 +1,37 @@
-﻿using System;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools_Tests
+// Filename:         I3DCollectionTest.cs
+// 
+// Created:          10.08.2019  14:41
+// Last modified:    15.08.2019  17:57
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.Tilemaps;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.Unity_Tools.Tests
+namespace Unity_Tools.Tests
 {
     public abstract class I3DCollectionTest<T>
     {

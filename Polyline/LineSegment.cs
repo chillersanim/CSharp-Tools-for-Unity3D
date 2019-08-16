@@ -1,7 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using Unity_Tools.Core;
 
-namespace Unity_Tools.Core.Polyline
+namespace Unity_Tools.Polyline
 {
     [Serializable]
     public class LineSegment : IPolyline

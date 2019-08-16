@@ -1,18 +1,15 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
-using Assets.Unity_Tools.Core.Polyline;
-using NUnit.Framework;
 using Unity_Tools.Collections;
-using Unity_Tools.Core.Polyline;
+using Unity_Tools.Core;
+using Unity_Tools.Polyline;
 using UnityEngine;
+
 using Random = UnityEngine.Random;
 
-namespace Assets.Unity_Tools.Tests
+namespace Unity_Tools.Tests
 {
     public class LinearPolylineTest
     {
@@ -50,7 +47,7 @@ namespace Assets.Unity_Tools.Tests
 
             var polyline = new LinearPolyline();
             var randomPoints = new List<Vector3>(points);
-            randomPoints.RandomizeOrder();
+            randomPoints.Shuffle();
 
             var insertedPoints = new List<Vector3>();
 
@@ -67,10 +64,10 @@ namespace Assets.Unity_Tools.Tests
             Assert.AreEqual(insertedPoints.Count, points.Length);
             Assert.AreEqual(polyline.Count, insertedPoints.Count);
 
-            var length = 0f;
+            var length = 0.0;
             for (var i = 1; i < insertedPoints.Count; i++)
             {
-                length += (insertedPoints[i] - insertedPoints[i - 1]).magnitude;
+                length += VectorMath.PreciseDistance(insertedPoints[i], insertedPoints[i - 1]);
             }
 
             if (pointAmount < 2 && Math.Abs(polyline.Length) < 1e-6f)
@@ -78,7 +75,7 @@ namespace Assets.Unity_Tools.Tests
                 Assert.Pass();
             }
 
-            Assert.AreEqual(polyline.Length / length, 1, 1e-5f, length.ToString(CultureInfo.InvariantCulture)); 
+            Assert.AreEqual(polyline.Length, length, 1e-5, length.ToString(CultureInfo.InvariantCulture)); 
         }
 
         [Test]
@@ -90,7 +87,7 @@ namespace Assets.Unity_Tools.Tests
             var polyline = new LinearPolyline(points);
 
             var replacementOrder = CollectionUtil.Create(points.Length, 0, i => i + 1);
-            replacementOrder.RandomizeOrder();
+            replacementOrder.Shuffle();
 
             for (var i = 0; i < pointAmount; i++)
             {

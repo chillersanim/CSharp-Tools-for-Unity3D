@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity_Tools.Core;
 
-namespace Unity_Tools.Core.Polyline
+namespace Unity_Tools.Polyline
 {
     [Serializable]
     public class LinearPolyline : IPolyline, IList<Vector3>, IReadOnlyList<Vector3>
@@ -15,23 +16,23 @@ namespace Unity_Tools.Core.Polyline
         /// Contain the distance from the start point to the point at the given index (distance along the polyline).
         /// </summary>
         [SerializeField]
-        private readonly List<float> distances;
+        private readonly List<double> distances;
 
-        public float Length => distances[distances.Count - 1];
+        public float Length => (float)distances[distances.Count - 1];
 
         public int Count => points.Count;
 
         public LinearPolyline()
         {
             this.points = new List<Vector3>();
-            distances = new List<float>();
+            distances = new List<double>();
             distances.Add(0);
         }
 
         public LinearPolyline(params Vector3[] points)
         {
             this.points = new List<Vector3>(points);
-            this.distances = new List<float>(points.Length);
+            this.distances = new List<double>(points.Length);
             
             RecalculateLength();
         }
@@ -64,7 +65,7 @@ namespace Unity_Tools.Core.Polyline
             var to = points[index + 1];
             var localPosition = (position - distances[index]) / Length;
 
-            return (to - from) * localPosition;
+            return (to - from) * (float)localPosition;
         }
 
         public Vector3 GetDirectionAtPosition(float position)
@@ -96,7 +97,7 @@ namespace Unity_Tools.Core.Polyline
             var fromDist = distances[index];
             var toDist = distances[index + 1];
 
-            return (to - from) / (toDist - fromDist);
+            return (to - from) / (float)(toDist - fromDist);
         }
 
         public Vector3 ClosestPoint(Vector3 point)
@@ -168,7 +169,7 @@ namespace Unity_Tools.Core.Polyline
 
             var distanceToStart = distances[minDistIndex - 1];
             var start = points[minDistIndex - 1];
-            return distanceToStart + (minDistPoint - start).magnitude;
+            return (float) (distanceToStart + (minDistPoint - start).magnitude);
         }
 
         public IEnumerator<Vector3> GetEnumerator()
@@ -217,17 +218,17 @@ namespace Unity_Tools.Core.Polyline
             
             if (points.Count >= 2)
             {
-                float change;
+                double change;
 
                 if (index == 0)
                 {
                     distances.Insert(0, 0f);
-                    change = (points[1] - point).magnitude;
+                    change = VectorMath.PreciseDistance(points[1], point); 
                 }
                 else if (index == points.Count - 1)
                 {
-                    change = 0f;
-                    var length = (point - points[index - 1]).magnitude;
+                    change = 0.0;
+                    var length = VectorMath.PreciseDistance(point, points[index - 1]);
                     var prevLength = distances[distances.Count - 1];
                     distances.Add(prevLength + length);
                 }
@@ -237,8 +238,8 @@ namespace Unity_Tools.Core.Polyline
                     var next = points[index + 1];
                     var prevLength = distances[index - 1];
 
-                    var l0 = (point - prev).magnitude;
-                    var l1 = (next - point).magnitude;
+                    var l0 = VectorMath.PreciseDistance(point, prev);
+                    var l1 = VectorMath.PreciseDistance(next, point);
                     var lOld = distances[index] - prevLength;
 
                     distances.Insert(index, prevLength + l0);
@@ -246,7 +247,7 @@ namespace Unity_Tools.Core.Polyline
                     change = l0 + l1 - lOld;
                 }
 
-                // Propagate changes of length
+                // Propagate the distance change along subsequent distances
                 for (var i = index + 1; i < distances.Count; i++)
                 {
                     distances[i] += change;
@@ -267,7 +268,7 @@ namespace Unity_Tools.Core.Polyline
             }
             else
             {
-                float change;
+                double change;
 
                 if (index == 0)
                 {
@@ -317,7 +318,7 @@ namespace Unity_Tools.Core.Polyline
             for (var i = 1; i < points.Count; i++)
             {
                 length += (points[i] - points[i - 1]).magnitude;
-                distances.Add((float) length);
+                distances.Add(length);
             }
         }
 
@@ -331,7 +332,7 @@ namespace Unity_Tools.Core.Polyline
 
                 if (points.Count >= 2)
                 {
-                    float change;
+                    double change;
 
                     if (index == 0)
                     {
@@ -343,7 +344,7 @@ namespace Unity_Tools.Core.Polyline
                     {
                         var prev = points[index - 1];
                         distances[index] = (value - prev).magnitude + distances[index - 1];
-                        change = 0f;
+                        change = 0.0;
                     }
                     else
                     {
@@ -351,8 +352,8 @@ namespace Unity_Tools.Core.Polyline
                         var next = points[index + 1];
                         var lp = distances[index - 1];
                         var ln = distances[index + 1];
-                        var l0 = (value - prev).magnitude;
-                        var l1 = (next - value).magnitude;
+                        double l0 = (value - prev).magnitude;
+                        double l1 = (next - value).magnitude;
 
                         distances[index] = l0 + lp;
                         change = l0 + l1 - (ln - lp);

@@ -1,10 +1,11 @@
-﻿
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using Unity_Tools.Collections;
-using UnityEngine;
 
-namespace Assets.Unity_Tools.Tests
+using Random = UnityEngine.Random;
+
+namespace Unity_Tools.Tests
 {
     public class CollectionUtilTest
     {
