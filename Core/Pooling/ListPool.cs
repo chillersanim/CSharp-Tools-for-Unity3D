@@ -1,38 +1,43 @@
-﻿using System;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         ListPool.cs
+// 
+// Created:          16.08.2019  15:30
+// Last modified:    16.08.2019  16:31
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Unity_Tools.Core.Pooling
 {
     public class ListPool<T> : IPool<List<T>>
     {
-        private int maxSize;
-        private int maxListCapacity;
-
         private readonly List<List<T>> lists;
+        private int maxListCapacity;
+        private int maxSize;
 
-        public int MaxSize
+        public ListPool()
         {
-            get => maxSize;
-            set
-            {
-                if (maxSize == value)
-                {
-                    return;
-                }
-
-                maxSize = value;
-
-                if (maxSize < 1)
-                {
-                    maxSize = 1;
-                }
-
-                while (lists.Count > maxSize)
-                {
-                    ExtractSmallest(0);
-                }
-            }
+            maxSize = 128;
+            maxListCapacity = 4096;
+            lists = new List<List<T>>();
         }
 
         public int MaxListCapacity
@@ -62,27 +67,33 @@ namespace Unity_Tools.Core.Pooling
             }
         }
 
-        public ListPool()
+        public int MaxSize
         {
-            maxSize = 128;
-            maxListCapacity = 4096;
-            lists = new List<List<T>>();
+            get => maxSize;
+            set
+            {
+                if (maxSize == value)
+                {
+                    return;
+                }
+
+                maxSize = value;
+
+                if (maxSize < 1)
+                {
+                    maxSize = 1;
+                }
+
+                while (lists.Count > maxSize)
+                {
+                    ExtractSmallest(0);
+                }
+            }
         }
 
         public List<T> Get()
         {
             var smallest = ExtractSmallest(0);
-            if (smallest == null)
-            {
-                return new List<T>();
-            }
-
-            return smallest;
-        }
-
-        public List<T> Get(int minCapacity)
-        {
-            var smallest = ExtractSmallest(minCapacity);
             if (smallest == null)
             {
                 return new List<T>();
@@ -111,6 +122,17 @@ namespace Unity_Tools.Core.Pooling
             }
 
             lists.Add(item);
+        }
+
+        public List<T> Get(int minCapacity)
+        {
+            var smallest = ExtractSmallest(minCapacity);
+            if (smallest == null)
+            {
+                return new List<T>();
+            }
+
+            return smallest;
         }
 
         private List<T> ExtractSmallest(int requiredCapacity)

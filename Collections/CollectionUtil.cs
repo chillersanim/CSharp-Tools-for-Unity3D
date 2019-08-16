@@ -1,9 +1,9 @@
 ﻿// Solution:         Unity Tools
-// Project:          Assembly-CSharp
+// Project:          UnityTools
 // Filename:         CollectionUtil.cs
 // 
-// Created:          05.08.2019  13:51
-// Last modified:    09.08.2019  15:54
+// Created:          16.08.2019  14:13
+// Last modified:    16.08.2019  16:31
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEditor.WindowsStandalone;
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Collections
@@ -106,7 +105,7 @@ namespace Unity_Tools.Collections
                 output.Add(enumerator.Current);
             }
         }
-        
+
         public static T[] ToArray<T>(this IEnumerator<T> enumerator)
         {
             var result = new List<T>();
@@ -126,7 +125,7 @@ namespace Unity_Tools.Collections
             var comparer = Comparer<T>.Default;
             return BinarySearchLocation(items, value, comparer);
         }
-         
+
         /// <summary>
         /// Searches for the index after the last element that is still smaller than the value.
         /// </summary>
@@ -158,6 +157,5 @@ namespace Unity_Tools.Collections
 
             return start;
         }
-        
     }
 }

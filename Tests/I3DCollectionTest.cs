@@ -3,7 +3,7 @@
 // Filename:         I3DCollectionTest.cs
 // 
 // Created:          10.08.2019  14:41
-// Last modified:    15.08.2019  17:57
+// Last modified:    16.08.2019  16:31
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,14 +22,12 @@
 // copies or substantial portions of the Software.
 // 
 
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
-using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Tests
 {

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PolylineExtensions.cs
 // 
-// Created:          13.08.2019  13:45
-// Last modified:    15.08.2019  17:57
+// Created:          16.08.2019  14:17
+// Last modified:    16.08.2019  16:31
 // 
 // --------------------------------------------------------------------------------------
 // 

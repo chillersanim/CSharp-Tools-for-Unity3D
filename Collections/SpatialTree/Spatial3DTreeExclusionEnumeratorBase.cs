@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTreeExclusionEnumeratorBase.cs
 // 
 // Created:          05.08.2019  11:43
-// Last modified:    15.08.2019  17:56
+// Last modified:    16.08.2019  16:31
 // 
 // --------------------------------------------------------------------------------------
 // 
