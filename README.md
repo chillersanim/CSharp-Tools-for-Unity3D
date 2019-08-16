@@ -33,6 +33,9 @@ Currently in C# Tools for Unity available:
  - Octree implementation for 3D points
    - Search for items in Sphere, AABB, Custom shape
    - Auto resize to fit items, no matter the size
+ - AVL Tree for generic key value pairs
+   - Allows common tree operations
+   - Add, Remove, Contains, TryGet, etc.
  - Collection mappers
    - Filter a source collection and get a filtered collection that reflects changes in the source
    - Map items of a source collection and get a mapped collection that reflects changes in the source
