@@ -112,5 +112,51 @@ namespace Unity_Tools.Collections
             enumerator.CopyTo(result);
             return result.ToArray();
         }
+
+        /// <summary>
+        /// Searches for the index after the last element that is still smaller than the value.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <param name="items">The list to search. Must be ordered in ascending order.</param>
+        /// <param name="value">The value to look for.</param>
+        /// <returns>Returns the zero based index.</returns>
+        public static int BinarySearchLocation<T>(this IList<T> items, T value)
+        {
+            var comparer = Comparer<T>.Default;
+            return BinarySearchLocation(items, value, comparer);
+        }
+         
+        /// <summary>
+        /// Searches for the index after the last element that is still smaller than the value.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <param name="items">The list to search. Must be ordered in ascending order.</param>
+        /// <param name="value">The value to look for.</param>
+        /// <param name="comparer">The comparer to use for item comparison.</param>
+        /// <returns>Returns the zero based index.</returns>
+        public static int BinarySearchLocation<T>(this IList<T> items, T value, IComparer<T> comparer)
+        {
+            var start = 0;
+            var end = items.Count;
+
+            while (end > start)
+            {
+                var current = start + (end - start) / 2;
+                var item = items[current];
+                var compared = comparer.Compare(item, value);
+
+                if (compared < 0)
+                {
+                    start = current + 1;
+                }
+                else
+                {
+                    end = current;
+                }
+            }
+
+            return start;
+        }
+        
     }
 }
