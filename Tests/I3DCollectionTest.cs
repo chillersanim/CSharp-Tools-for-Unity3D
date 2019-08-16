@@ -2,8 +2,8 @@
 // Project:          UnityTools_Tests
 // Filename:         I3DCollectionTest.cs
 // 
-// Created:          10.08.2019  14:41
-// Last modified:    16.08.2019  16:31
+// Created:          16.08.2019  16:33
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -28,8 +28,6 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
-
-using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Tests
 {

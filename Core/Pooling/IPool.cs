@@ -3,7 +3,7 @@
 // Filename:         IPool.cs
 // 
 // Created:          16.08.2019  15:56
-// Last modified:    16.08.2019  16:31
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,7 +21,6 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-
 namespace Unity_Tools.Core.Pooling
 {
     public interface IPool<T> where T : class

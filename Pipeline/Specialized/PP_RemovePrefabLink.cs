@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PP_RemovePrefabLink.cs
 // 
-// Created:          09.08.2019  15:48
-// Last modified:    16.08.2019  16:31
+// Created:          16.08.2019  16:33
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,6 +22,7 @@
 // copies or substantial portions of the Software.
 // 
 
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity_Tools.Pipeline.Specialized
@@ -46,12 +47,12 @@ namespace Unity_Tools.Pipeline.Specialized
                 return;
             }
             
-            if (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(item))
+            if (PrefabUtility.IsPartOfAnyPrefab(item))
             {
-                UnityEditor.PrefabUtility.UnpackPrefabInstance(
-                    UnityEditor.PrefabUtility.GetOutermostPrefabInstanceRoot(item),
-                    UnityEditor.PrefabUnpackMode.Completely,
-                    UnityEditor.InteractionMode.AutomatedAction);
+                PrefabUtility.UnpackPrefabInstance(
+                    PrefabUtility.GetOutermostPrefabInstanceRoot(item),
+                    PrefabUnpackMode.Completely,
+                    InteractionMode.AutomatedAction);
             }
 #endif
         }

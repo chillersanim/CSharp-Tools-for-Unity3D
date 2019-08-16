@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         LinearPolyline.cs
 // 
-// Created:          16.08.2019  14:17
-// Last modified:    16.08.2019  16:31
+// Created:          16.08.2019  16:33
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -56,7 +56,7 @@ namespace Unity_Tools.Polyline
             
             RecalculateLength();
         }
-        
+
         public int Count => points.Count;
 
         public IEnumerator<Vector3> GetEnumerator()
@@ -235,7 +235,7 @@ namespace Unity_Tools.Polyline
                 }
             }
         }
-        
+
         public float Length => (float)distances[distances.Count - 1];
 
         public Vector3 GetPointAtPosition(float position)

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PP_GenerateLightmapUv's.cs
 // 
-// Created:          09.08.2019  15:48
-// Last modified:    16.08.2019  16:31
+// Created:          16.08.2019  16:33
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,7 +25,9 @@
 
 #endregion
 
+using UnityEditor;
 using UnityEngine;
+
 namespace Unity_Tools.Pipeline.Specialized
 {
     #region Usings
@@ -65,7 +67,7 @@ namespace Unity_Tools.Pipeline.Specialized
                 return;
             }
 
-            UnityEditor.Unwrapping.GenerateSecondaryUVSet(sm);
+            Unwrapping.GenerateSecondaryUVSet(sm);
 #endif
         }
     }

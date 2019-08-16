@@ -3,7 +3,7 @@
 // Filename:         PoolBase.cs
 // 
 // Created:          16.08.2019  14:17
-// Last modified:    16.08.2019  16:31
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -54,6 +54,7 @@ namespace Unity_Tools.Core.Pooling
                 }
             }
         } // ReSharper disable StaticMemberInGenericType
+
         private static readonly bool ImplementsReusable;
 
         private static readonly bool ImplementsDisposable;

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PipelineItemFactory.cs
 // 
-// Created:          09.08.2019  15:28
-// Last modified:    16.08.2019  16:31
+// Created:          16.08.2019  16:33
+// Last modified:    16.08.2019  16:56
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,8 +21,6 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
-
-
 namespace Unity_Tools.Pipeline
 {
     /// <summary>
