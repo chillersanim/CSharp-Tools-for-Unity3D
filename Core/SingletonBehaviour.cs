@@ -3,11 +3,7 @@
 // Filename:         SingletonBehaviour.cs
 // 
 // Created:          09.08.2019  15:25
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,6 +21,9 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
+
+using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Unity_Tools.Core
 {

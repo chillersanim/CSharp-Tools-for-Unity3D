@@ -3,11 +3,7 @@
 // Filename:         PP_AddCollider.cs
 // 
 // Created:          09.08.2019  15:48
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -28,6 +24,8 @@
 #region usings
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEngine;
 using Unity_Tools.Core;
 
 #endregion

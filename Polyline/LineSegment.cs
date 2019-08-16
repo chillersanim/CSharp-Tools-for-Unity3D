@@ -2,13 +2,8 @@
 // Project:          UnityTools
 // Filename:         LineSegment.cs
 // 
-<<<<<<< HEAD:Polyline/LineSegment.cs
 // Created:          16.08.2019  14:17
 // Last modified:    16.08.2019  16:31
-=======
-// Created:          13.08.2019  13:45
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master:Core/Polyline/LineSegment.cs
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -28,11 +23,8 @@
 // 
 
 using System;
-<<<<<<< HEAD:Polyline/LineSegment.cs
 using UnityEngine;
 using Unity_Tools.Core;
-=======
->>>>>>> refs/remotes/origin/master:Core/Polyline/LineSegment.cs
 
 namespace Unity_Tools.Polyline
 {

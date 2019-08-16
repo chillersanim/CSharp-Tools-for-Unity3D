@@ -3,11 +3,7 @@
 // Filename:         UnityObjectUtil.cs
 // 
 // Created:          09.08.2019  15:49
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -28,6 +24,7 @@
 #region usings
 
 using System;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 #endregion

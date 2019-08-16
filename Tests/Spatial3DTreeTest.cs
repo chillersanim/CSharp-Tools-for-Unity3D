@@ -3,11 +3,7 @@
 // Filename:         Spatial3DTreeTest.cs
 // 
 // Created:          10.08.2019  15:17
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 

@@ -3,11 +3,7 @@
 // Filename:         PP_SetStaticFlag.cs
 // 
 // Created:          09.08.2019  15:48
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -33,10 +29,6 @@ using UnityEngine;
 
 namespace Unity_Tools.Pipeline.Specialized
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The p p_ set static flag.
     /// </summary>

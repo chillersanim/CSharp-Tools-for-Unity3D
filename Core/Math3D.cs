@@ -2,13 +2,8 @@
 // Project:          UnityTools
 // Filename:         Math3D.cs
 // 
-<<<<<<< HEAD
 // Created:          16.08.2019  14:13
 // Last modified:    16.08.2019  16:31
-=======
-// Created:          09.08.2019  15:29
-// Last modified:    15.08.2019  17:57
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -29,6 +24,8 @@
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Unity_Tools.Core
 {

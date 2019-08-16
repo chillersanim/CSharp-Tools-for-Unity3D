@@ -3,11 +3,7 @@
 // Filename:         ObservableCollectionMapper.cs
 // 
 // Created:          05.08.2019  15:19
-<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
-=======
-// Last modified:    15.08.2019  17:56
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -31,6 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using JetBrains.Annotations;
 
 namespace Unity_Tools.Collections
 {

@@ -23,7 +23,11 @@
 // 
 
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
 using Unity_Tools.Collections;
+using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Editor.Utility
 {

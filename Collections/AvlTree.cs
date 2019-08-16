@@ -2,13 +2,8 @@
 // Project:          UnityTools
 // Filename:         AvlTree.cs
 // 
-<<<<<<< HEAD
 // Created:          15.08.2019  17:58
 // Last modified:    16.08.2019  16:31
-=======
-// Created:          15.08.2019  17:45
-// Last modified:    15.08.2019  17:56
->>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
