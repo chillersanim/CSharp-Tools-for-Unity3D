@@ -2,8 +2,13 @@
 // Project:          UnityTools
 // Filename:         LinearPolyline.cs
 // 
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
 // Created:          16.08.2019  14:17
 // Last modified:    16.08.2019  16:31
+=======
+// Created:          13.08.2019  13:45
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,8 +30,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+<<<<<<< HEAD
+using Unity_Tools.Core.Polyline;
+=======
 using UnityEngine;
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
 using Unity_Tools.Core;
+=======
+>>>>>>> f85f2b1d9549097f6566cba01b3e83a1d59a635b
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
 
 namespace Unity_Tools.Polyline
 {
@@ -57,7 +69,148 @@ namespace Unity_Tools.Polyline
             RecalculateLength();
         }
 
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
         public int Count => points.Count;
+=======
+<<<<<<< HEAD
+        public int Count => points.Count;
+=======
+        public Vector3 GetPointAtPosition(float position)
+        {
+            if (points.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "The polyline has no points, thus cannot get a point at a position.");
+            }
+
+            if (position < 0 || position > Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            if (points.Count == 1)
+            {
+                return points[0];
+            }
+
+            var index = distances.BinarySearch(position);
+            if (index == points.Count - 1)
+            {
+                index--;
+            }
+
+            var from = points[index];
+            var to = points[index + 1];
+            var localPosition = (position - distances[index]) / Length;
+
+            return (to - from) * localPosition;
+        }
+
+        public Vector3 GetDirectionAtPosition(float position)
+        {
+            if (points.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "The polyline has no points, thus cannot get a point at a position.");
+            }
+
+            if (position < 0 || position > Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            if (points.Count == 1)
+            {
+                return points[0];
+            }
+
+            var index = distances.BinarySearch(position);
+            if (index == points.Count - 1)
+            {
+                index--;
+            }
+
+            var from = points[index];
+            var to = points[index + 1];
+            var fromDist = distances[index];
+            var toDist = distances[index + 1];
+
+            return (to - from) / (toDist - fromDist);
+        }
+
+        public Vector3 ClosestPoint(Vector3 point)
+        {
+            if (points.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "The polyline has no points, thus cannot get a point at a position.");
+            }
+
+            if (points.Count == 1)
+            {
+                return points[0];
+            }
+
+            var minSqrDist = float.PositiveInfinity;
+            var minDistPoint = Vector3.zero;
+
+            for (var i = 1; i < points.Count; i++)
+            {
+                var from = points[i - 1];
+                var to = points[i];
+
+                var segmentPoint = Math3D.ClosestPointOnLineSegment(point, from, to);
+                var sqrDist = (segmentPoint - point).sqrMagnitude;
+
+                if(sqrDist < minSqrDist)
+                {
+                    minSqrDist = sqrDist;
+                    minDistPoint = segmentPoint;
+                }
+            }
+
+            return minDistPoint;
+        }
+
+        public float ClosestPosition(Vector3 point)
+        {
+            if (points.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "The polyline has no points, thus cannot get a point at a position.");
+            }
+
+            if (points.Count == 1)
+            {
+                return 0f;
+            }
+
+            var minSqrDist = float.PositiveInfinity;
+            var minDistPoint = Vector3.zero;
+            var minDistIndex = -1;
+
+            for (var i = 1; i < points.Count; i++)
+            {
+                var from = points[i - 1];
+                var to = points[i];
+
+                var segmentPoint = Math3D.ClosestPointOnLineSegment(point, from, to);
+                var sqrDist = (segmentPoint - point).sqrMagnitude;
+
+                if (sqrDist < minSqrDist)
+                {
+                    minSqrDist = sqrDist;
+                    minDistPoint = segmentPoint;
+                    minDistIndex = i;
+                }
+            }
+
+            var distanceToStart = distances[minDistIndex - 1];
+            var start = points[minDistIndex - 1];
+            return distanceToStart + (minDistPoint - start).magnitude;
+        }
+>>>>>>> f85f2b1d9549097f6566cba01b3e83a1d59a635b
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
 
         public IEnumerator<Vector3> GetEnumerator()
         {
@@ -236,6 +389,7 @@ namespace Unity_Tools.Polyline
             }
         }
 
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
         public float Length => (float)distances[distances.Count - 1];
 
         public Vector3 GetPointAtPosition(float position)
@@ -267,10 +421,18 @@ namespace Unity_Tools.Polyline
             var localPosition = (position - distances[index]) / Length;
 
             return (to - from) * (float)localPosition;
+=======
+        public float Length => distances[distances.Count - 1];
+
+        public Vector3 GetPointAtPosition(float position)
+        {
+            throw new NotImplementedException();
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
         }
 
         public Vector3 GetDirectionAtPosition(float position)
         {
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
             if (points.Count == 0)
             {
                 throw new InvalidOperationException(
@@ -299,10 +461,14 @@ namespace Unity_Tools.Polyline
             var toDist = distances[index + 1];
 
             return (to - from) / (float)(toDist - fromDist);
+=======
+            throw new NotImplementedException();
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
         }
 
         public Vector3 ClosestPoint(Vector3 point)
         {
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
             if (points.Count == 0)
             {
                 throw new InvalidOperationException(
@@ -333,10 +499,14 @@ namespace Unity_Tools.Polyline
             }
 
             return minDistPoint;
+=======
+            throw new NotImplementedException();
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
         }
 
         public float ClosestPosition(Vector3 point)
         {
+<<<<<<< HEAD:Polyline/LinearPolyline.cs
             if (points.Count == 0)
             {
                 throw new InvalidOperationException(
@@ -389,6 +559,9 @@ namespace Unity_Tools.Polyline
                 length += (points[i] - points[i - 1]).magnitude;
                 distances.Add(length);
             }
+=======
+            throw new NotImplementedException();
+>>>>>>> refs/remotes/origin/master:Core/Polyline/LinearPolyline.cs
         }
 
         #region Hidden

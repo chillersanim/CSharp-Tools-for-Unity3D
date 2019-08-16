@@ -2,8 +2,13 @@
 // Project:          UnityTools
 // Filename:         CollectionUtil.cs
 // 
+<<<<<<< HEAD
 // Created:          16.08.2019  14:13
 // Last modified:    16.08.2019  16:31
+=======
+// Created:          05.08.2019  13:51
+// Last modified:    15.08.2019  17:56
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 

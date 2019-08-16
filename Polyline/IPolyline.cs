@@ -2,8 +2,13 @@
 // Project:          UnityTools
 // Filename:         IPolyline.cs
 // 
+<<<<<<< HEAD:Polyline/IPolyline.cs
 // Created:          16.08.2019  14:17
 // Last modified:    16.08.2019  16:31
+=======
+// Created:          13.08.2019  13:45
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master:Core/Polyline/IPolyline.cs
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,7 +28,10 @@
 // 
 
 using System;
+<<<<<<< HEAD:Polyline/IPolyline.cs
 using UnityEngine;
+=======
+>>>>>>> refs/remotes/origin/master:Core/Polyline/IPolyline.cs
 
 namespace Unity_Tools.Polyline
 {

@@ -3,7 +3,11 @@
 // Filename:         Spatial3DTreeHelper.cs
 // 
 // Created:          05.08.2019  11:27
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:56
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,8 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
 using Unity_Tools.Collections.SpatialTree.Enumerators;
 
 namespace Unity_Tools.Collections.SpatialTree

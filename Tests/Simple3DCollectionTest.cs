@@ -3,7 +3,11 @@
 // Filename:         Simple3DCollectionTest.cs
 // 
 // Created:          10.08.2019  16:01
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 

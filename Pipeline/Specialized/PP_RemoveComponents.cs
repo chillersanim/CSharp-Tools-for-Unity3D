@@ -3,7 +3,11 @@
 // Filename:         PP_RemoveComponents.cs
 // 
 // Created:          09.08.2019  15:48
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,9 +29,12 @@
 
 #endregion
 
+<<<<<<< HEAD
 using UnityEngine;
 using Unity_Tools.Core;
 
+=======
+>>>>>>> refs/remotes/origin/master
 namespace Unity_Tools.Pipeline.Specialized
 {
     #region Usings

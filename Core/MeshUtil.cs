@@ -3,7 +3,11 @@
 // Filename:         MeshUtil.cs
 // 
 // Created:          09.08.2019  15:50
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,7 +29,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 #endregion
 

@@ -3,7 +3,11 @@
 // Filename:         Spatial3DCell.cs
 // 
 // Created:          05.08.2019  11:26
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:56
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,8 +27,6 @@
 // 
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree
 {

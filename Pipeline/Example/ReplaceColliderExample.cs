@@ -3,7 +3,11 @@
 // Filename:         ReplaceColliderExample.cs
 // 
 // Created:          09.08.2019  16:53
+<<<<<<< HEAD
 // Last modified:    16.08.2019  16:31
+=======
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,7 +26,6 @@
 // copies or substantial portions of the Software.
 // 
 
-using UnityEngine;
 using Unity_Tools.Pipeline.Specialized;
 
 namespace Unity_Tools.Pipeline.Example

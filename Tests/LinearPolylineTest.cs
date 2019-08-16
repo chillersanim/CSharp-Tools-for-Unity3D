@@ -2,8 +2,13 @@
 // Project:          UnityTools_Tests
 // Filename:         LinearPolylineTest.cs
 // 
+<<<<<<< HEAD
 // Created:          16.08.2019  14:13
 // Last modified:    16.08.2019  16:31
+=======
+// Created:          13.08.2019  13:45
+// Last modified:    15.08.2019  17:57
+>>>>>>> refs/remotes/origin/master
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,11 +30,21 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+<<<<<<< HEAD
 using NUnit.Framework;
 using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
 using Unity_Tools.Polyline;
+=======
+using Assets.Unity_Tools.Core.Polyline;
+using Unity_Tools.Collections;
+<<<<<<< HEAD
+=======
+using Unity_Tools.Core.Polyline;
+using UnityEngine;
+>>>>>>> f85f2b1d9549097f6566cba01b3e83a1d59a635b
+>>>>>>> refs/remotes/origin/master
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Tests
