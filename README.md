@@ -13,9 +13,11 @@ This collection is a work in progress and prone to changes.
 Currently in C# Tools for Unity available:  
 
 **Core** [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki/Core)] 
- - [Math3D ](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/Math3D.cs)
+ - [Math3D](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/Math3D.cs)
    - Many useful methods for common 3D math operations
    - Nearest point, intersection, etc.
+ - [Nums](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/Nums.cs)
+   - General purpose operations (Generic GetHashCode, Sort, Revert)
  - [VectorMath](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/VectorMath.cs)
    - Many useful methods for vector operations (for Vector2, Vector2Int, Vector3, Vector3Int)
    - Component modifications (clamp, min, max, etc. for individual components)
@@ -30,6 +32,12 @@ Currently in C# Tools for Unity available:
  - [UnityObjectUtil](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/UnityObjectUtil.cs)
    - Some usefull methods for unity object modifications
    - GetOrAddComponent, GetOrCreateChild, GetOrCreateHierarchy, MakeObjectNameUnique, etc.
+ - [Object pooling](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Core/Pooling)  
+   - Reuse objects and lists, locally and globally, with cleanup utilites.
+   - Smart list polling allows for getting lists of at least a required size.
+ - [CuttingEars Triangulation](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/CuttingEar.cs)
+   - Triangulates polygons using the cutting ears algorithm
+   - Optimized variants for convex and concave polygons
 
 **Collections** [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki/Collections)] 
  - [Octree implementation for 3D points](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Spatial3DTree.cs)
@@ -54,6 +62,10 @@ Currently in C# Tools for Unity available:
  - [Pipeline framework](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Pipeline) [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Simple3DCollection.cs)]
    - Create a custom pipeline with predefined or custom nodes.
    - Execute pipeline in a customizable manner
+ - [Mesh data](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Modeling/MeshData.cs) [WIP]
+   - Experimental mesh builder
+   - Stores mesh data (Vertices, Edges, Polygons) in an optimized manner that allows for quick update and data operations.
+   - *Work in progress, probably contains bugs, prone to changes.*
  
 ----
 
