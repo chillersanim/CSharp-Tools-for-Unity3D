@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PoolBase.cs
 // 
-// Created:          16.08.2019  14:17
-// Last modified:    16.08.2019  16:56
+// Created:          19.08.2019  12:34
+// Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,7 +20,6 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections.Generic;

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         LinearPolyline.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          19.08.2019  12:34
+// Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,13 +20,12 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity_Tools.Core;
+using UnityEngine;
 
 namespace Unity_Tools.Polyline
 {
@@ -71,7 +70,7 @@ namespace Unity_Tools.Polyline
             var count = points.Count;
             if (count > 1)
             {
-                var length = Length + (point - points[count - 2]).magnitude;
+                var length = Length + VectorMath.PreciseDistance(point, points[count - 2]);
                 distances.Add(length);
             }
         }

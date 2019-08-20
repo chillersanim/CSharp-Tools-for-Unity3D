@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
-// Project:          UnityTools_Tests
-// Filename:         Simple3DCollectionTest.cs
+// Project:          UnityTools
+// Filename:         GlobalListPool.cs
 // 
-// Created:          12.08.2019  19:04
+// Created:          19.08.2019  22:42
 // Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
@@ -21,21 +21,40 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Collections;
-using Unity_Tools.Core;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
-namespace Unity_Tools.Tests
+namespace Unity_Tools.Core.Pooling
 {
-    public class Simple3DCollectionTest : I3DCollectionTest<string>
+    public static class GlobalListPool<T>
     {
-        protected override I3DCollection<string> CreateInstance()
+        private static readonly ListPool<T> Pool = new ListPool<T>();
+
+        public static int MaxSize
         {
-            return new Simple3DCollection<string>();
+            get => Pool.MaxSize;
+            set => Pool.MaxSize = value;
         }
 
-        protected override string GetItem(int i)
+        public static int MaxListCapacity
         {
-            return i.ToString();
+            get => Pool.MaxListCapacity;
+            set => Pool.MaxListCapacity = value;
+        }
+
+        public static List<T> Get()
+        {
+            return Pool.Get();
+        }
+
+        public static List<T> Get(int minCapacity)
+        {
+            return Pool.Get(minCapacity);
+        }
+
+        public static void Put([NotNull] List<T> item)
+        {
+            Pool.Put(item);
         }
     }
 }

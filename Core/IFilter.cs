@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         IFilter.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          12.08.2019  19:04
+// Last modified:    20.08.2019  21:49
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,7 +20,6 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using JetBrains.Annotations;
 

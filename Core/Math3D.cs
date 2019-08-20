@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Math3D.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          12.08.2019  19:04
+// Last modified:    20.08.2019  21:49
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,7 +20,6 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections.Generic;
@@ -185,9 +184,14 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     Returns the average normal
         /// </returns>
-        public static Vector3 ExactAveragedPolygonNormale(params Vector3[] v)
+        public static Vector3 ExactAveragedPolygonNormal(params Vector3[] v)
         {
-            var n = v.Length;
+            return ExactAveragedPolygonNormal((IList<Vector3>) v);
+        }
+
+        public static Vector3 ExactAveragedPolygonNormal(IList<Vector3> v)
+        {
+            var n = v.Count;
 
             if (n < 3)
             {
@@ -316,6 +320,119 @@ namespace Unity_Tools.Core
 
             // Check if point is in triangle
             return bary.x >= 0 && bary.y >= 0 && bary.y + bary.y < 1;
+        }
+
+        /// <summary>
+        /// Determines whether a polygon is convex.
+        /// </summary>
+        /// <param name="polygon">The polygon. (Needs at least 3 vertices.)</param>
+        /// <returns>Returns <c>true</c> if the polygon is convex, <c>false</c> otherwise.</returns>
+        public static bool IsPolygonConvex(IList<Vector3> polygon)
+        {
+            if (polygon.Count < 3)
+            {
+                throw new ArgumentException("A polygon cannot have less than 3 vertices.");
+            }
+
+            var changeX = 0;
+            var changeY = 0;
+            var changeZ = 0;
+
+            var currentPoint = polygon[1];
+            var v0 = currentPoint - polygon[0];
+            var prevSignX = Math.Sign(v0.x);
+            var prevSignY = Math.Sign(v0.y);
+            var prevSignZ = Math.Sign(v0.z);
+
+            for (var i = 1; i < polygon.Count; i++)
+            {
+                var nextIndex = i < polygon.Count - 1 ? i + 1 : 0;
+                var nextPoint = polygon[nextIndex];
+                var v = nextPoint - currentPoint;
+                currentPoint = nextPoint;
+
+                var signX = Math.Sign(v.x);
+                var signY = Math.Sign(v.y);
+                var signZ = Math.Sign(v.z);
+
+                if (prevSignX != signX)
+                {
+                    changeX++;
+                }
+
+                if (prevSignY != signY)
+                {
+                    changeY++;
+                }
+
+                if(prevSignZ != signZ)
+                {
+                    changeZ++;
+                }
+
+                prevSignX = signX;
+                prevSignY = signY;
+                prevSignZ = signZ;
+            }
+
+            return changeX <= 2 && changeY <= 2 && changeZ <= 2;
+        }
+
+        /// <summary>
+        /// Determines whether a polygon is convex.
+        /// </summary>
+        /// <param name="vertices">The vertices of the polygon.</param>
+        /// <param name="indices">The indices that make up the polygon.</param>
+        /// <returns>Returns <c>true</c> if the polygon is convex, <c>false</c> otherwise.</returns>
+        public static bool IsPolygonConvex(IList<Vector3> vertices, IList<int> indices)
+        {
+            if (indices.Count < 3)
+            {
+                throw new ArgumentException("A polygon cannot have less than 3 vertices.");
+            }
+
+            var changeX = 0;
+            var changeY = 0;
+            var changeZ = 0;
+
+            var currentPoint = vertices[indices[1]];
+            var v0 = currentPoint - vertices[indices[0]];
+            var prevSignX = Math.Sign(v0.x);
+            var prevSignY = Math.Sign(v0.y);
+            var prevSignZ = Math.Sign(v0.z);
+
+            for (var i = 1; i < indices.Count; i++)
+            {
+                var nextIndex = i < indices.Count - 1 ? i + 1 : 0;
+                var nextPoint = vertices[indices[nextIndex]];
+                var v = nextPoint - currentPoint;
+                currentPoint = nextPoint;
+
+                var signX = Math.Sign(v.x);
+                var signY = Math.Sign(v.y);
+                var signZ = Math.Sign(v.z);
+
+                if (prevSignX != signX)
+                {
+                    changeX++;
+                }
+
+                if (prevSignY != signY)
+                {
+                    changeY++;
+                }
+
+                if (prevSignZ != signZ)
+                {
+                    changeZ++;
+                }
+
+                prevSignX = signX;
+                prevSignY = signY;
+                prevSignZ = signZ;
+            }
+
+            return changeX <= 2 && changeY <= 2 && changeZ <= 2;
         }
 
         /// <summary>

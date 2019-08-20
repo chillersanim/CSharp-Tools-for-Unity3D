@@ -2,8 +2,8 @@
 // Project:          UnityTools_Tests
 // Filename:         LinearPolylineTest.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          13.08.2019  00:52
+// Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,16 +20,15 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
-using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
 using Unity_Tools.Polyline;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Tests
@@ -45,7 +44,15 @@ namespace Unity_Tools.Tests
             Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
 
             polyline = new LinearPolyline(points);
-            Assert.AreEqual(polyline.Length, length, float.Epsilon);
+
+            if (pointAmount < 2)
+            {
+                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
+            }
+            else
+            {
+                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
+            }
         }
 
         [Test]
@@ -60,7 +67,14 @@ namespace Unity_Tools.Tests
                 polyline.Add(p);
             }
 
-            Assert.AreEqual(polyline.Length, length, float.Epsilon);
+            if (pointAmount < 2)
+            {
+                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
+            }
+            else
+            {
+                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
+            }
         }
 
         [Test]
@@ -93,19 +107,21 @@ namespace Unity_Tools.Tests
                 length += VectorMath.PreciseDistance(insertedPoints[i], insertedPoints[i - 1]);
             }
 
-            if (pointAmount < 2 && Math.Abs(polyline.Length) < 1e-6f)
+            if (pointAmount < 2)
             {
-                Assert.Pass();
+                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
             }
-
-            Assert.AreEqual(polyline.Length, length, 1e-5, length.ToString(CultureInfo.InvariantCulture)); 
+            else
+            {
+                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
+            }
         }
 
         [Test]
         public void ReplacementTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000)] int pointAmount)
         {
             CreateTestData(pointAmount, out var points, out _);
-            CreateTestData(pointAmount, out var replacementPoints, out var replacementLength);
+            CreateTestData(pointAmount, out var replacementPoints, out var length);
 
             var polyline = new LinearPolyline(points);
 
@@ -118,12 +134,14 @@ namespace Unity_Tools.Tests
                 polyline[index] = replacementPoints[index];
             }
 
-            if (pointAmount < 2 && Math.Abs(polyline.Length) < 1e-6f)
+            if (pointAmount < 2)
             {
-                Assert.Pass();
+                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
             }
-
-            Assert.AreEqual(polyline.Length / replacementLength, 1, 1e-5f, replacementLength.ToString(CultureInfo.InvariantCulture));
+            else
+            {
+                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
+            }
         }
 
         [Test]
@@ -152,13 +170,12 @@ namespace Unity_Tools.Tests
                         length += (currentPoints[j] - currentPoints[j - 1]).magnitude;
                     }
 
-                    Assert.AreEqual(polyline.Length / length, 1, 1e-5f, length.ToString(CultureInfo.InvariantCulture));
+                    Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
 
-
-        private void CreateTestData(int pointAmount, out Vector3[] points, out float length)
+        private void CreateTestData(int pointAmount, out Vector3[] points, out double length)
         {
             if (pointAmount == 0)
             {
@@ -177,10 +194,10 @@ namespace Unity_Tools.Tests
             {
                 var nextPoint = prev + Random.onUnitSphere * Random.Range(0, 10f);
                 points[i] = nextPoint;
-                preciseLength += (points[i] - points[i - 1]).magnitude;
+                preciseLength += VectorMath.PreciseDistance(points[i], points[i - 1]);
             }
 
-            length = (float) preciseLength;
+            length = preciseLength;
         }
     }
 }

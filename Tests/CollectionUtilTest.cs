@@ -2,8 +2,8 @@
 // Project:          UnityTools_Tests
 // Filename:         CollectionUtilTest.cs
 // 
-// Created:          15.08.2019  18:18
-// Last modified:    16.08.2019  16:56
+// Created:          13.08.2019  20:32
+// Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,12 +20,11 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using Unity_Tools.Collections;
+using UnityEngine;
 
 namespace Unity_Tools.Tests
 {

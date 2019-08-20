@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Spatial3DTreeHelper.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          12.08.2019  19:06
+// Last modified:    20.08.2019  21:49
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,13 +20,12 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using UnityEngine;
 using Unity_Tools.Collections.SpatialTree.Enumerators;
+using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree
 {

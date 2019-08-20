@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
-// Project:          UnityTools_Tests
-// Filename:         Simple3DCollectionTest.cs
+// Project:          UnityTools
+// Filename:         ShapeForm.cs
 // 
-// Created:          12.08.2019  19:04
+// Created:          20.08.2019  21:02
 // Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
@@ -21,21 +21,23 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Collections;
-using Unity_Tools.Core;
-
-namespace Unity_Tools.Tests
+namespace Unity_Tools.Core
 {
-    public class Simple3DCollectionTest : I3DCollectionTest<string>
+    public enum ShapeForm
     {
-        protected override I3DCollection<string> CreateInstance()
-        {
-            return new Simple3DCollection<string>();
-        }
+        /// <summary>
+        /// No information is available about the shape form.
+        /// </summary>
+        Unknown,
 
-        protected override string GetItem(int i)
-        {
-            return i.ToString();
-        }
+        /// <summary>
+        /// The shape is convex.
+        /// </summary>
+        Convex,
+
+        /// <summary>
+        /// The shape is concave.
+        /// </summary>
+        Concave
     }
 }

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         CollectionUtil.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          12.08.2019  19:04
+// Last modified:    20.08.2019  21:49
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,10 +20,10 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System;
 using System.Collections.Generic;
+using Unity_Tools.Core.Pooling;
 using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Collections
@@ -75,7 +75,24 @@ namespace Unity_Tools.Collections
             return result;
         }
 
-        public static T[] Create<T>(int length, T first, Func<T, T> next)
+        public static T[] Filter<T>(this IList<T> items, Func<T, bool> filter)
+        {
+            var filtered = GlobalListPool<T>.Get(items.Count);
+
+            foreach (var item in items)
+            {
+                if (filter(item))
+                {
+                    filtered.Add(item);
+                }
+            }
+
+            var result = filtered.ToArray();
+            GlobalListPool<T>.Put(filtered);
+            return result;
+        }
+
+        public static T[] CreateArray<T>(int length, T first, Func<T, T> next)
         {
             if (length < 0)
             {
@@ -98,6 +115,32 @@ namespace Unity_Tools.Collections
             return result;
         }
 
+        public static List<T> CreateList<T>(int length, T first, Func<T, T> next)
+        {
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
+            }
+
+            if (length == 0)
+            {
+                return new List<T>();
+            }
+
+            var result = GlobalListPool<T>.Get(length);
+            result.Add(first);
+            var prev = first;
+
+            for (var i = 1; i < length; i++)
+            {
+                var item = next(prev);
+                prev = item;
+                result.Add(item);
+            }
+
+            return result;
+        }
+
         public static void CopyTo<T>(this IEnumerator<T> enumerator, IList<T> output)
         {
             while (enumerator.MoveNext())
@@ -108,9 +151,11 @@ namespace Unity_Tools.Collections
 
         public static T[] ToArray<T>(this IEnumerator<T> enumerator)
         {
-            var result = new List<T>();
+            var result = GlobalListPool<T>.Get();
             enumerator.CopyTo(result);
-            return result.ToArray();
+            var output = result.ToArray();
+            GlobalListPool<T>.Put(result);
+            return output;
         }
 
         /// <summary>
@@ -136,6 +181,19 @@ namespace Unity_Tools.Collections
         /// <returns>Returns the zero based index.</returns>
         public static int BinarySearchLocation<T>(this IList<T> items, T value, IComparer<T> comparer)
         {
+            return BinarySearchLocation(items, value, comparer.Compare);
+        }
+
+        /// <summary>
+        /// Searches for the index after the last element that is still smaller than the value.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <param name="items">The list to search. Must be ordered in ascending order.</param>
+        /// <param name="value">The value to look for.</param>
+        /// <param name="comparer">The comparer to use for item comparison.</param>
+        /// <returns>Returns the zero based index.</returns>
+        public static int BinarySearchLocation<T>(this IList<T> items, T value, Comparison<T> comparer)
+        {
             var start = 0;
             var end = items.Count;
 
@@ -143,7 +201,7 @@ namespace Unity_Tools.Collections
             {
                 var current = start + (end - start) / 2;
                 var item = items[current];
-                var compared = comparer.Compare(item, value);
+                var compared = comparer(item, value);
 
                 if (compared < 0)
                 {

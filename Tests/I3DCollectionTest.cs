@@ -2,8 +2,8 @@
 // Project:          UnityTools_Tests
 // Filename:         I3DCollectionTest.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    16.08.2019  16:56
+// Created:          12.08.2019  19:04
+// Last modified:    20.08.2019  21:50
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,14 +20,13 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
 
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
+using UnityEngine;
 
 namespace Unity_Tools.Tests
 {
