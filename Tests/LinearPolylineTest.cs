@@ -125,7 +125,7 @@ namespace Unity_Tools.Tests
 
             var polyline = new LinearPolyline(points);
 
-            var replacementOrder = CollectionUtil.Create(points.Length, 0, i => i + 1);
+            var replacementOrder = CollectionUtil.CreateArray(points.Length, 0, i => i + 1);
             replacementOrder.Shuffle();
 
             for (var i = 0; i < pointAmount; i++)
