@@ -28,7 +28,7 @@ namespace Unity_Tools.Tests
 {
     public class Spatial3DTreeTest : I3DCollectionTest<string>
     {
-        protected override I3DCollection<string> CreateInstance()
+        protected override IPoint3DCollection<string> CreateInstance()
         {
             return new Spatial3DTree<string>();
         }

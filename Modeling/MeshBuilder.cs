@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         MeshData.cs
+// Filename:         MeshBuilder.cs
 // 
 // Created:          19.08.2019  18:57
 // Last modified:    20.08.2019  21:50
@@ -31,7 +31,7 @@ using UnityEngine;
 
 namespace Unity_Tools.Modeling
 {
-    public class MeshData
+    public class MeshBuilder
     {
         private static readonly Pool<VertexEntry> VertexPool = new Pool<VertexEntry>();
 
@@ -57,7 +57,7 @@ namespace Unity_Tools.Modeling
 
         private readonly List<VertexEntry> vertices;
 
-        public MeshData()
+        public MeshBuilder()
         {
             vertices = new List<VertexEntry>();
             faces = new List<FaceEntry>();
@@ -67,7 +67,7 @@ namespace Unity_Tools.Modeling
             sphereCastEnumerator = new SphereCastEnumerator<VertexEntry>(spatialTree, Vector3.zero, maxDistForVertEq);
         }
 
-        public MeshData(float maxDistanceForVertexEquality) : this()
+        public MeshBuilder(float maxDistanceForVertexEquality) : this()
         {
             this.maxDistForVertEq = Mathf.Abs(maxDistanceForVertexEquality);
             sphereCastEnumerator.Restart(Vector3.zero, maxDistanceForVertexEquality);

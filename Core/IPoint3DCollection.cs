@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         I3DCollection.cs
+// Filename:         IPoint3DCollection.cs
 // 
 // Created:          12.08.2019  19:04
 // Last modified:    20.08.2019  21:49
@@ -31,7 +31,7 @@ namespace Unity_Tools.Core
     /// Interface for generic 3D collections.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
-    public interface I3DCollection<T> : IEnumerable<T>
+    public interface IPoint3DCollection<T> : IEnumerable<T>
     {
         /// <summary>
         /// The amount of items in the collection.
@@ -85,11 +85,10 @@ namespace Unity_Tools.Core
         T[] FindInRadius(Vector3 center, float radius);
 
         /// <summary>
-        /// Finds all items in the collection that are within a axis aligned bounding box.
+        /// Finds all items in the collection that are within a bounds.
         /// </summary>
-        /// <param name="center">The center of the aabb.</param>
-        /// <param name="size">The size of the aabb.</param>
+        /// <param name="bounds">The bounds.</param>
         /// <returns>Returns the found items.</returns>
-        T[] FindInAabb(Vector3 center, Vector3 size);
+        T[] FindInBounds(Bounds bounds);
     }
 }

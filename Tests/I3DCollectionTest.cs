@@ -119,7 +119,7 @@ namespace Unity_Tools.Tests
                 var aabbOrigin = RandomInAabb(origin, size);
                 var aabbSize = RandomInUnitAabb() * 100f;
 
-                var castResult = instance.FindInAabb(aabbOrigin, aabbSize);
+                var castResult = instance.FindInBounds(new Bounds(aabbOrigin, aabbSize));
                 var reference = items.Where(item => item.Value.IsInAabb(aabbOrigin, aabbSize))
                     .ToDictionary(item => item.Key, item => item.Value);
 
@@ -145,7 +145,7 @@ namespace Unity_Tools.Tests
             return new Vector3(x, y, z).ScaleComponents(halfSize) + origin;
         }
 
-        protected void GenerateTestData(int pointAmount, out I3DCollection<T> instance,
+        protected void GenerateTestData(int pointAmount, out IPoint3DCollection<T> instance,
             out IList<KeyValuePair<T, Vector3>> items, out Vector3 origin, out Vector3 size)
         {
             var randomSeed = 0;
@@ -184,7 +184,7 @@ namespace Unity_Tools.Tests
             Assert.IsTrue(reference.Count == 0);
         }
 
-        protected abstract I3DCollection<T> CreateInstance();
+        protected abstract IPoint3DCollection<T> CreateInstance();
 
         protected abstract T GetItem(int i);
     }

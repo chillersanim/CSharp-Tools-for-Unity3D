@@ -28,7 +28,7 @@ namespace Unity_Tools.Tests
 {
     public class Simple3DCollectionTest : I3DCollectionTest<string>
     {
-        protected override I3DCollection<string> CreateInstance()
+        protected override IPoint3DCollection<string> CreateInstance()
         {
             return new Simple3DCollection<string>();
         }

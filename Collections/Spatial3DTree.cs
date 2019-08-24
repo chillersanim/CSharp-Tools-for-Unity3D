@@ -37,9 +37,9 @@ namespace Unity_Tools.Collections
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public class Spatial3DTree<T> : I3DCollection<T>
+    public class Spatial3DTree<T> : IPoint3DCollection<T>
     {
-        private readonly AabbCastEnumerator<T> aabbCaster;
+        private readonly BoundsCastEnumerator<T> boundsCaster;
 
         private readonly List<T> castCache;
 
@@ -79,7 +79,7 @@ namespace Unity_Tools.Collections
             castCache = new List<T>();
 
             this.sphereCaster = new SphereCastEnumerator<T>(this, this.center, 0f);
-            this.aabbCaster = new AabbCastEnumerator<T>(this, this.center, this.center);
+            this.boundsCaster = new BoundsCastEnumerator<T>(this, new Bounds());
         }
 
         public Vector3 Center{
@@ -247,11 +247,11 @@ namespace Unity_Tools.Collections
             return castCache.ToArray();
         }
 
-        public T[] FindInAabb(Vector3 center, Vector3 size)
+        public T[] FindInBounds(Bounds bounds)
         {
-            aabbCaster.Restart(center, size);
+            boundsCaster.Restart(bounds);
             castCache.Clear();
-            aabbCaster.CopyTo(castCache);
+            boundsCaster.CopyTo(castCache);
             return castCache.ToArray();
         }
 

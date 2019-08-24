@@ -28,7 +28,7 @@ using UnityEngine;
 namespace Unity_Tools.Collections.SpatialTree
 {
     /// <summary>
-    ///     The spatial 3 d cell.
+    ///     The spatial 3 d cell. 
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
@@ -47,7 +47,7 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <summary>
         ///     Gets the amount of columns to create per axis per subdivision.
         /// </summary>
-        public const int SubdivisionAmount = 3;
+        public const int SubdivisionAmount = 5;
 
         /// <summary>
         ///     The maximum amount of children a <see cref="Spatial3DCell{T}" /> can have before it is being subdivided.
@@ -63,7 +63,7 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <summary>
         ///     The minimum amount of children a <see cref="Spatial3DCell{T}" /> can have before it is being merged.
         /// </summary>
-        private const int MinimumChildren = 52;
+        private const int MinimumChildren = 54;
 
         /// <summary>
         ///     The cell pool.

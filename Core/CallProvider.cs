@@ -34,6 +34,8 @@ namespace Unity_Tools.Core
     [ExecuteInEditMode]
     public sealed class CallProvider : SingletonBehaviour<CallProvider>
     {
+        public static int MaxPeriodicCallsPerUpdate = 250;
+
         /// <summary>
         ///     The editor only update listeners.
         /// </summary>
@@ -100,14 +102,31 @@ namespace Unity_Tools.Core
         private readonly List<Action> UpdateListeners = new List<Action>();
 
         /// <summary>
+        /// The periodic update listener
+        /// </summary>
+        private readonly List<Action> PeriodicUpdateListener = new List<Action>();
+
+        /// <summary>
         ///     The u to add.
         /// </summary>
         private readonly List<Action> uToAdd = new List<Action>();
 
         /// <summary>
+        ///     The u to add.
+        /// </summary>
+        private readonly List<Action> puToAdd = new List<Action>();
+
+        /// <summary>
         ///     The u to remove.
         /// </summary>
         private readonly List<Action> uToRemove = new List<Action>();
+
+        /// <summary>
+        ///     The u to remove.
+        /// </summary>
+        private readonly List<Action> puToRemove = new List<Action>();
+
+        private int currentPeriodicOffset = 0;
 
         /// <summary>
         ///     Adds a listener to the on editor only update callback list.
@@ -183,6 +202,20 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
+        ///     Adds a listener that gets periodically called. The period depends on the amount of objects subscribed.
+        /// </summary>
+        /// <param name="listener">
+        ///     The listener.
+        /// </param>
+        public static void AddPeriodicUpdateListener(Action listener)
+        {
+            if (!Instance.puToAdd.Contains(listener))
+            {
+                Instance.puToAdd.Add(listener);
+            }
+        }
+
+        /// <summary>
         ///     Removes a listener from the on editor only update callback list.
         /// </summary>
         /// <param name="listener">
@@ -252,6 +285,20 @@ namespace Unity_Tools.Core
             if (!Instance.uToRemove.Contains(listener))
             {
                 Instance.uToRemove.Add(listener);
+            }
+        }
+
+        /// <summary>
+        ///     Removes a listener from the periodic update callback list.
+        /// </summary>
+        /// <param name="listener">
+        ///     The listener.
+        /// </param>
+        public static void RemovePeriodicUpdateListener(Action listener)
+        {
+            if (!Instance.puToRemove.Contains(listener))
+            {
+                Instance.puToRemove.Add(listener);
             }
         }
 
@@ -409,6 +456,11 @@ namespace Unity_Tools.Core
                 UpdateListeners.Remove(action);
             }
 
+            foreach (var action in puToRemove)
+            {
+                PeriodicUpdateListener.Remove(action);
+            }
+
             foreach (var action in uToAdd)
             {
                 if (!UpdateListeners.Contains(action))
@@ -417,13 +469,34 @@ namespace Unity_Tools.Core
                 }
             }
 
+            foreach (var action in puToAdd)
+            {
+                if (!PeriodicUpdateListener.Contains(action))
+                {
+                    PeriodicUpdateListener.Add(action);
+                }
+            }
+
             uToRemove.Clear();
+            puToRemove.Clear();
             uToAdd.Clear();
+            puToAdd.Clear();
 
             foreach (var action in UpdateListeners)
             {
                 action();
             }
+
+            var itemCount = PeriodicUpdateListener.Count;
+            var periodicUpdateCalls = Mathf.Min(MaxPeriodicCallsPerUpdate, itemCount);
+
+            for (var i = 0; i < periodicUpdateCalls; i++)
+            {
+                var index = (i + currentPeriodicOffset) % itemCount;
+                PeriodicUpdateListener[index].Invoke();
+            }
+
+            currentPeriodicOffset = (currentPeriodicOffset + periodicUpdateCalls) % itemCount;
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)

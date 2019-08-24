@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         InverseAabbCastEnumerator.cs
+// Filename:         InverseBoundsCastEnumerator.cs
 // 
 // Created:          12.08.2019  19:08
 // Last modified:    20.08.2019  21:49
@@ -25,22 +25,20 @@ using UnityEngine;
 
 namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {
-    public sealed class InverseAabbCastEnumerator<T> : Spatial3DTreeExclusionEnumeratorBase<T> where T : class
+    public sealed class InverseBoundsCastEnumerator<T> : Spatial3DTreeExclusionEnumeratorBase<T> where T : class
     {
         private Vector3 min, max;
 
-        public InverseAabbCastEnumerator(Spatial3DTree<T> tree, Vector3 center, Vector3 size) : base(tree)
+        public InverseBoundsCastEnumerator(Spatial3DTree<T> tree, Bounds bounds) : base(tree)
         {
-            var halfSize = size / 2f;
-            this.min = center - halfSize;
-            this.max = center + halfSize;
+            this.min = bounds.min;
+            this.max = bounds.max;
         }
 
-        public void Restart(Vector3 center, Vector3 size)
+        public void Restart(Bounds bounds)
         {
-            var halfSize = size / 2f;
-            this.min = center - halfSize;
-            this.max = center + halfSize;
+            this.min = bounds.min;
+            this.max = bounds.max;
             Reset();
         }
 
