@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity_Tools;
 using Unity_Tools.Collections.SpatialTree;
 using Unity_Tools.Collections.SpatialTree.Enumerators;
 using UnityEngine;
@@ -27,12 +29,12 @@ public class SphereCastVisualization : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.E))
         {
-            Radius = Mathf.Clamp(Radius + 10 * Time.deltaTime, 1, 20);
+            Radius = Mathf.Clamp(Radius + 10 * Time.deltaTime, 1, 80);
         }
 
         if (Input.GetKey(KeyCode.Q))
         {
-            Radius = Mathf.Clamp(Radius - 10 * Time.deltaTime, 1, 20);
+            Radius = Mathf.Clamp(Radius - 10 * Time.deltaTime, 1, 80);
         }
 
         currentPoints.Clear();
@@ -70,5 +72,7 @@ public class SphereCastVisualization : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(this.transform.position, Radius);
+
+        Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
     }
 }

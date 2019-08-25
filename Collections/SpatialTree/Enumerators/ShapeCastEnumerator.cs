@@ -68,7 +68,7 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
+        protected override bool IsBoundsIntersecting(Vector3 start, Vector3 end)
         {
             return shape.IntersectsAabb(start, end);
         }

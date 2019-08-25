@@ -39,7 +39,9 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <summary>
         ///     The path.
         /// </summary>
-        [NotNull] private readonly List<PathEntry> path;
+        [NotNull] private readonly PathEntry[] path;
+
+        private int pathDepth;
 
         /// <summary>
         ///     The tree.
@@ -56,11 +58,10 @@ namespace Unity_Tools.Collections.SpatialTree
         /// </exception>
         protected Spatial3DTreeInclusionEnumeratorBase([NotNull] Spatial3DTree<T> tree)
         {
-            if (tree == null) throw new ArgumentNullException("tree");
-
-            this.tree = tree;
-            path = new List<PathEntry>(4);
-            path.Add(new PathEntry(tree.Root, -1));
+            this.tree = tree ?? throw new ArgumentNullException(nameof(tree));
+            path = new PathEntry[64];  // It's near impossible that a path depth of 64 will ever be reached, as the max depth in the tree is 16, and more depth can only be added by growing the tree.
+            path[0] = new PathEntry(tree.Root, -1, IsBoundsFullyInside(tree.Root.Start, tree.Root.End));
+            pathDepth = 1;
         }
 
         /// <inheritdoc />
@@ -77,10 +78,12 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <inheritdoc />
         public bool MoveNext()
         {
-            if (path.Count == 0) return false;
+            if (pathDepth == 0) return false;
 
-            var ci = path[path.Count - 1].Index;
-            var cc = path[path.Count - 1].Cell;
+            var c = path[pathDepth - 1];
+            var ci = c.Index;
+            var cc = c.Cell;
+            var cf = c.FullyInside;
 
             while (true)
             {
@@ -90,10 +93,10 @@ namespace Unity_Tools.Collections.SpatialTree
                 {
                     if (cc.Items.Count > ci)
                     {
-                        if (IsPointInside(cc.Items[ci].Position))
+                        if (cf || IsPointInside(cc.Items[ci].Position))
                         {
                             Current = cc.Items[ci].Item;
-                            path[path.Count - 1] = new PathEntry(cc, ci);
+                            path[pathDepth - 1] = new PathEntry(cc, ci, cf);
                             return true;
                         }
 
@@ -105,12 +108,20 @@ namespace Unity_Tools.Collections.SpatialTree
                     if (cc.Children.Length > ci)
                     {
                         var child = cc.Children[ci];
-                        if (child != null && IsAabbIntersecting(child.Start, child.End))
+                        if (child != null && (cf || IsBoundsIntersecting(child.Start, child.End)))
                         {
-                            path[path.Count - 1] = new PathEntry(cc, ci);
-                            path.Add(new PathEntry(child, -1));
-                            ci = -1;
+                            var childCf = cf;
+                            if (!childCf)
+                            {
+                                childCf = IsBoundsFullyInside(child.Start, child.End);
+                            }
+
+                            path[pathDepth - 1] = new PathEntry(cc, ci, cf);
+                            path[pathDepth] = new PathEntry(child, -1, childCf);
+                            pathDepth++;
+                            ci = -1; 
                             cc = child;
+                            cf = childCf;
                         }
 
                         continue;
@@ -118,19 +129,21 @@ namespace Unity_Tools.Collections.SpatialTree
                 }
 
                 // Go one layer up
-                path.RemoveAt(path.Count - 1);
-                if (path.Count == 0) return false;
+                pathDepth--;
+                if (pathDepth == 0) return false;
 
-                ci = path[path.Count - 1].Index;
-                cc = path[path.Count - 1].Cell;
+                c = path[pathDepth - 1];
+                ci = c.Index;
+                cc = c.Cell;
+                cf = c.FullyInside;
             }
         }
 
         /// <inheritdoc />
         public void Reset()
         {
-            path.Clear();
-            path.Add(new PathEntry(tree.Root, -1));
+            path[0] = new PathEntry(tree.Root, -1, IsBoundsFullyInside(tree.Root.Start, tree.Root.End));
+            pathDepth = 1;
         }
 
         /// <summary>
@@ -145,7 +158,8 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <returns>
         ///     <c>true</c> if the aabb is inside; otherwise, <c>false</c>.
         /// </returns>
-        protected abstract bool IsAabbIntersecting(Vector3 start, Vector3 end);
+        [Pure]
+        protected abstract bool IsBoundsIntersecting(Vector3 start, Vector3 end);
 
         /// <summary>
         ///     Determines whether the point is inside the search area.
@@ -156,7 +170,23 @@ namespace Unity_Tools.Collections.SpatialTree
         /// <returns>
         ///     <c>true</c> if the point is inside; otherwise, <c>false</c>.
         /// </returns>
+        [Pure]
         protected abstract bool IsPointInside(Vector3 point);
+
+        [Pure]
+        private bool IsBoundsFullyInside(Vector3 start, Vector3 end)
+        {
+            var size = end - start;
+
+            return IsPointInside(start) &&
+                   IsPointInside(end) &&
+                   IsPointInside(new Vector3(start.x + size.x, start.y, start.z)) &&
+                   IsPointInside(new Vector3(start.x, start.y + size.y, start.z)) &&
+                   IsPointInside(new Vector3(start.x, start.y, start.z + size.z)) &&
+                   IsPointInside(new Vector3(end.x - size.x, end.y, end.z)) &&
+                   IsPointInside(new Vector3(end.x, end.y - size.y, end.z)) &&
+                   IsPointInside(new Vector3(end.x, end.y, end.z - size.z));
+        }
 
         /// <summary>
         ///     The path entry.
@@ -173,6 +203,8 @@ namespace Unity_Tools.Collections.SpatialTree
             /// </summary>
             public readonly int Index;
 
+            public readonly bool FullyInside;
+
             /// <summary>
             ///     Initializes a new instance of the <see cref="PathEntry" /> struct.
             /// </summary>
@@ -182,10 +214,11 @@ namespace Unity_Tools.Collections.SpatialTree
             /// <param name="index">
             ///     The index.
             /// </param>
-            public PathEntry(Spatial3DCell<T> cell, int index)
+            public PathEntry(Spatial3DCell<T> cell, int index, bool fullyInside)
             {
                 Cell = cell;
                 Index = index;
+                FullyInside = fullyInside;
             }
         }
     }

@@ -79,16 +79,22 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
+        protected override bool IsBoundsIntersecting(Vector3 start, Vector3 end)
         {
-            var vectorToNearest = center.ClampComponents(start, end) - center;
-            return vectorToNearest.sqrMagnitude <= sqrRadius;
+            var x = Mathf.Clamp(center.x, start.x, end.x) - center.x;
+            var y = Mathf.Clamp(center.y, start.y, end.y) - center.y;
+            var z = Mathf.Clamp(center.z, start.z, end.z) - center.z;
+            var sqrDist = x * x + y * y + z * z;
+            return sqrDist <= sqrRadius;
         }
 
         /// <inheritdoc />
         protected override bool IsPointInside(Vector3 point)
         {
-            var sqrDist = (point - center).sqrMagnitude;
+            var x = point.x - center.x;
+            var y = point.y - center.y;
+            var z = point.z - center.z;
+            var sqrDist = x * x + y * y + z * z;
             return sqrDist <= sqrRadius;
         }
     }

@@ -46,7 +46,7 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
         }
 
         /// <inheritdoc />
-        protected override bool IsAabbIntersecting(Vector3 start, Vector3 end)
+        protected override bool IsBoundsIntersecting(Vector3 start, Vector3 end)
         {
             return min.x <= end.x && min.y <= end.y && min.z <= end.z &&
                    max.x >= start.x && max.y >= start.y && max.z >= start.z;
