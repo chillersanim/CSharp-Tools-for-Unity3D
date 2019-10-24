@@ -4,7 +4,8 @@ C# tools for Unity is a collection of classes, that can be used as basis for you
 The goal of this script collection is to provide a basis to build upon and take away some of the difficulties in programming 3D code.  
 The goal is not to provide finished components, but means to create them.
 
-See the [wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki) for more information.
+See the [wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki) for more information.  
+Discuss ideas and concerns in [this forum](https://forum.unity.com/threads/open-source-c-library-for-unity-developers.731399/).
 
 This collection is a work in progress and prone to changes.
 
