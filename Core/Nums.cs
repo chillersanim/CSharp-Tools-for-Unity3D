@@ -3,7 +3,7 @@
 // Filename:         Nums.cs
 // 
 // Created:          19.08.2019  18:57
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -230,6 +230,18 @@ namespace Unity_Tools.Core
         {
             Revert(ref t0, ref t3);
             Revert(ref t1, ref t2);
+        }
+
+        /// <summary>
+        /// A modulo function that properly does modulo for negative numbers as well.
+        /// </summary>
+        /// <param name="x">The value.</param>
+        /// <param name="m">The modulo.</param>
+        /// <returns>The positive definite modulo result.</returns>
+        public static int Mod(int x, int m)
+        {
+            var r = x % m;
+            return r < 0 ? r + m : r;
         }
     }
 }

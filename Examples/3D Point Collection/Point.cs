@@ -1,59 +1,83 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         Point.cs
+// 
+// Created:          23.08.2019  13:10
+// Last modified:    25.08.2019  15:59
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
 using UnityEngine;
 
-[RequireComponent(typeof(Renderer))]
-public class Point : MonoBehaviour
+namespace Unity_Tools.Examples
 {
-    private const float MaxSquareOffsetBeforeUpdate = 0.001f * 0.001f;
-
-    public static readonly Spatial3DTree<Point> AllPoints = new Spatial3DTree<Point>();
-
-    public Material ActiveMaterial, InactiveMaterial;
-
-    public bool Active;
-
-    private Vector3 storedPosition;
-
-    private Renderer myRenderer;
-
-    public void SetActive(bool active)
+    [RequireComponent(typeof(Renderer))]
+    public class Point : MonoBehaviour
     {
-        if (!Active && active)
+        private const float MaxSquareOffsetBeforeUpdate = 0.001f * 0.001f;
+
+        public static readonly Spatial3DTree<Point> AllPoints = new Spatial3DTree<Point>();
+
+        public bool Active;
+
+        public Material ActiveMaterial, InactiveMaterial;
+
+        private Renderer myRenderer;
+
+        private Vector3 storedPosition;
+
+        public void SetActive(bool active)
         {
-            Active = true;
-            this.myRenderer.sharedMaterial = ActiveMaterial;
+            if (!Active && active)
+            {
+                Active = true;
+                this.myRenderer.sharedMaterial = ActiveMaterial;
+            }
+            else if (Active && !active)
+            {
+                Active = false;
+                this.myRenderer.sharedMaterial = InactiveMaterial;
+            }
         }
-        else if (Active && !active)
+
+        void Start()
         {
             Active = false;
-            this.myRenderer.sharedMaterial = InactiveMaterial;
+            myRenderer = this.GetComponent<Renderer>();
+            storedPosition = transform.position; 
+            AllPoints.Add(this, storedPosition);
+            CallProvider.AddPeriodicUpdateListener(this.PeriodicUpdate);
         }
-    }
 
-    void Start()
-    {
-        Active = false;
-        myRenderer = this.GetComponent<Renderer>();
-        storedPosition = transform.position; 
-        AllPoints.Add(this, storedPosition);
-        CallProvider.AddPeriodicUpdateListener(this.PeriodicUpdate);
-    }
-
-    void OnDestroy()
-    {
-        AllPoints.Remove(this, storedPosition);
-    }
-
-    void PeriodicUpdate()
-    {
-        // Update position in spatial 3d tree
-        if ((this.transform.position - storedPosition).sqrMagnitude > MaxSquareOffsetBeforeUpdate)
+        void OnDestroy()
         {
-            AllPoints.MoveItem(this, storedPosition, this.transform.position);
-            storedPosition = this.transform.position;
+            AllPoints.Remove(this, storedPosition);
+        }
+
+        void PeriodicUpdate()
+        {
+            // Update position in spatial 3d tree
+            if ((this.transform.position - storedPosition).sqrMagnitude > MaxSquareOffsetBeforeUpdate)
+            {
+                AllPoints.MoveItem(this, storedPosition, this.transform.position);
+                storedPosition = this.transform.position;
+            }
         }
     }
 }

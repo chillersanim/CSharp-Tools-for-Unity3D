@@ -3,7 +3,7 @@
 // Filename:         Math3D.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -210,23 +210,7 @@ namespace Unity_Tools.Core
 
             return result / n;
         }
-
-        /// <summary>
-        ///     Calculates the area size of p0 polygon with given v<br />
-        ///     SLOW: If the polygon is planar or nearly planar, consider using <see cref="PlanarPolygonArea" /> instead
-        /// </summary>
-        /// <param name="v">
-        ///     The v forming the polygon
-        /// </param>
-        /// <returns>
-        ///     The area size
-        /// </returns>
-        public static float ExactPolygonArea(Vector3[] v)
-        {
-            var normale = PlanarPolygonNormale(v);
-            return PlanarPolygonArea(v, normale);
-        }
-
+        
         /// <summary>
         ///     The furthest position in aabb.
         /// </summary>
@@ -287,13 +271,14 @@ namespace Unity_Tools.Core
         /// <param name="v2">
         ///     The v2.
         /// </param>
+        /// <param name="maxError">The maximum deviation from zero of the triangle area spanned by v0, v1, v2.</param>
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public static bool IsLinearExtension(Vector3 v0, Vector3 v1, Vector3 v2)
+        public static bool IsLinearExtension(Vector3 v0, Vector3 v1, Vector3 v2, float maxError = 1e-5f)
         {
             var cross = Vector3.Cross(v1 - v0, v2 - v0);
-            return cross.sqrMagnitude < 0.01f * 0.01f;
+            return cross.sqrMagnitude <= maxError * maxError;
         }
 
         /// <summary>
@@ -319,7 +304,7 @@ namespace Unity_Tools.Core
             var bary = PointToBarycentric(p0, p1, p2, point);
 
             // Check if point is in triangle
-            return bary.x >= 0 && bary.y >= 0 && bary.y + bary.y < 1;
+            return bary.x >= 0 && bary.y >= 0 && bary.x + bary.y < 1;
         }
 
         /// <summary>
@@ -484,92 +469,19 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The area size
         /// </returns>
-        public static float PlanarPolygonArea(Vector3[] v, Vector3 normale)
+        public static float PlanarPolygonArea(IList<Vector3> v)
         {
-            var n = v.Length;
-            var area = 0f;
-            int k; // loop indices
+            var vectorSum = Vector3.zero;
+            var v0 = v[0];
 
-            if (n < 3)
+            for (var i = 1; i < v.Count - 1; i++)
             {
-                return 0; // p0 degenerate polygon
+                var v1 = v[i] - v0;
+                var v2 = v[i + 1] - v0;
+                vectorSum += 0.5f * Vector3.Cross(v1, v2);
             }
 
-            // select largest abs coordinate to ignore for projection
-            var ax = normale.x > 0 ? normale.x : -normale.x;
-            var ay = normale.y > 0 ? normale.y : -normale.y;
-            var az = normale.z > 0 ? normale.z : -normale.z;
-
-            var coord = 3;
-            if (ax > ay)
-            {
-                if (ax > az)
-                {
-                    coord = 1; // ignore X-coord
-                }
-            }
-            else if (ay > az)
-            {
-                coord = 2; // ignore Y-coord
-            }
-
-            // compute area of the 2D projection
-            switch (coord)
-            {
-                case 1:
-                    for (k = 0; k < n - 1; k++)
-                    {
-                        area += v[k + 1].y * (v[(k + 2) % n].z - v[k].z);
-                    }
-
-                    break;
-                case 2:
-                    for (k = 0; k < n - 1; k++)
-                    {
-                        area += v[k + 1].z * (v[(k + 2) % n].x - v[k].x);
-                    }
-
-                    break;
-                case 3:
-                    for (k = 0; k < n - 1; k++)
-                    {
-                        area += v[k + 1].x * (v[(k + 2) % n].y - v[k].y);
-                    }
-
-                    break;
-            }
-
-            switch (coord)
-            {
-                // wrap-around term
-                case 1:
-                    area += v[0].y * (v[1].z - v[n - 1].z);
-                    break;
-                case 2:
-                    area += v[0].z * (v[1].x - v[n - 1].x);
-                    break;
-                case 3:
-                    area += v[0].x * (v[1].y - v[n - 1].y);
-                    break;
-            }
-
-            // scale to get area before projection
-            var an = Mathf.Sqrt(ax * ax + ay * ay + az * az);
-
-            switch (coord)
-            {
-                case 1:
-                    area *= an / (2 * normale.x);
-                    break;
-                case 2:
-                    area *= an / (2 * normale.y);
-                    break;
-                case 3:
-                    area *= an / (2 * normale.z);
-                    break;
-            }
-
-            return area;
+            return vectorSum.magnitude;
         }
 
         /// <summary>
@@ -581,14 +493,47 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The normalized normal
         /// </returns>
-        public static Vector3 PlanarPolygonNormale(params Vector3[] v)
+        public static Vector3 PlanarPolygonNormal(params Vector3[] v)
         {
-            if (v.Length < 3)
+            return PlanarPolygonNormal((IList<Vector3>) v);
+        }
+
+        /// <summary>
+        ///     Calculates the polygon normal of p0 planar polygon.
+        /// </summary>
+        /// <param name="v">
+        ///     The v forming the polygon
+        /// </param>
+        /// <returns>
+        ///     The normalized normal
+        /// </returns>
+        public static Vector3 PlanarPolygonNormal(IList<Vector3> v, bool isConvex = false)
+        {
+            if (v.Count < 3)
             {
                 return Vector3.zero;
             }
 
-            return Vector3.Cross(v[1] - v[0], v[1] - v[2]).normalized;
+            if (isConvex || v.Count == 3)
+            {
+                return TriangleNormal(v[0], v[1], v[2]);
+            }
+
+            var cross = Vector3.zero;
+            var prev = v[v.Count - 1];
+            var cur = v[0];
+            var next = v[1];
+
+            for (var i = 0; i < v.Count; i++)
+            {
+                cross += Vector3.Cross(cur - prev, next - cur).normalized;
+
+                prev = cur;
+                cur = next;
+                next = v[(i + 1) % v.Count];
+            }
+
+            return cross.normalized;
         }
 
         /// <summary>
@@ -754,6 +699,44 @@ namespace Unity_Tools.Core
             return 0.5f * Vector3.Cross(p2 - p0, p3 - p1).magnitude;
         }
 
+        public static bool RayTriangleIntersect(
+            Vector3 orig, Vector3 dir,
+            Vector3 v0, Vector3 v1, Vector3 v2, 
+            out Vector3 hit)
+        {
+            var normal = TriangleNormal(v0, v1, v2);
+
+            if (!RayPlaneIntersection(orig, dir, normal, v0, out hit))
+            {
+                return false;
+            }
+
+            if (!IsPointInTriangle(v0, v1, v2, hit))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool RayPlaneIntersection(Vector3 orig, Vector3 dir, Vector3 normal, Vector3 planeOrig, out Vector3 hit)
+        {
+            // Code adapted from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+            // Not verified
+
+            var denom = Vector3.Dot(normal, dir);
+            if (!Mathf.Approximately(denom, 0f))
+            {
+                var p0l0 = planeOrig - orig;
+                var t = Vector3.Dot(p0l0, normal) / denom;
+                hit = orig + t * dir;
+                return (t >= 0);
+            }
+
+            hit = Vector3.zero;
+            return false;
+        }
+
         /// <summary>
         ///     Calculates the relative position of the closest position of point <see cref="p" /> to the line <see cref="b" />-
         ///     <see cref="a" />
@@ -910,7 +893,7 @@ namespace Unity_Tools.Core
         /// </returns>
         public static float TriangleArea(Vector3 p0, Vector3 p1, Vector3 p2)
         {
-            return 0.5f * Vector3.Cross(p1 - p0, p2 - p1).magnitude;
+            return 0.5f * Vector3.Cross(p0 - p1, p2 - p1).magnitude;
         }
 
         public static Vector3 TriangleCenter(Vector3 p0, Vector3 p1, Vector3 p2)
@@ -935,7 +918,7 @@ namespace Unity_Tools.Core
         /// </returns>
         public static Vector3 TriangleNormal(Vector3 p0, Vector3 p1, Vector3 p2)
         {
-            return Vector3.Cross(p0 - p1, p1 - p2).normalized;
+            return Vector3.Cross(p1 - p0, p2 - p1).normalized;
         }
 
         /// <summary>
@@ -977,6 +960,11 @@ namespace Unity_Tools.Core
             }
 
             return Mathf.Abs(volume);
+        }
+
+        public static bool IsPointInSphere(Vector3 itemPosition, Vector3 center, float radius)
+        {
+            return (itemPosition - center).sqrMagnitude <= radius * radius;
         }
     }
 }

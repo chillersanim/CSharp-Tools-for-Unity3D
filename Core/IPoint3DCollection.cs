@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         IPoint3DCollection.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:49
+// Created:          24.08.2019  23:02
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,6 +24,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Core
 {
@@ -77,18 +78,47 @@ namespace Unity_Tools.Core
         bool Remove([CanBeNull] T item, Vector3 position);
 
         /// <summary>
-        /// Finds all items in the collection that are within a given sphere.
+        /// Iterates over all items that are within a given sphere.
         /// </summary>
         /// <param name="center">The center of the sphere.</param>
         /// <param name="radius">The radius of the sphere.</param>
         /// <returns>Returns the found items.</returns>
-        T[] FindInRadius(Vector3 center, float radius);
+        IEnumerable<T> SphereCast(Vector3 center, float radius);
 
         /// <summary>
-        /// Finds all items in the collection that are within a bounds.
+        /// Iterates over all items that are within a bounds.
         /// </summary>
         /// <param name="bounds">The bounds.</param>
         /// <returns>Returns the found items.</returns>
-        T[] FindInBounds(Bounds bounds);
+        IEnumerable<T> BoundsCast(Bounds bounds);
+
+        /// <summary>
+        /// Iterates over all items that are within a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>Returns the found items.</returns>
+        IEnumerable<T> ShapeCast(IShape shape);
+
+        /// <summary>
+        /// Iterates over all items that are within a given sphere.
+        /// </summary>
+        /// <param name="center">The center of the sphere.</param>
+        /// <param name="radius">The radius of the sphere.</param>
+        /// <returns>Returns the found items.</returns>
+        IEnumerable<T> InverseSphereCast(Vector3 center, float radius);
+
+        /// <summary>
+        /// Iterates over all items that are within a bounds.
+        /// </summary>
+        /// <param name="bounds">The bounds.</param>
+        /// <returns>Returns the found items.</returns>
+        IEnumerable<T> InverseBoundsCast(Bounds bounds);
+
+        /// <summary>
+        /// Iterates over all items that are within a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>Returns the found items.</returns>
+        IEnumerable<T> InverseShapeCast(IShape shape);
     }
 }

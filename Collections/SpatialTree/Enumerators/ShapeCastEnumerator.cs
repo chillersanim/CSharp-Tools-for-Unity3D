@@ -3,7 +3,7 @@
 // Filename:         ShapeCastEnumerator.cs
 // 
 // Created:          12.08.2019  19:07
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -33,7 +33,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     /// <typeparam name="T">
     /// </typeparam>
     public sealed class ShapeCastEnumerator<T> : Spatial3DTreeInclusionEnumeratorBase<T>
-        where T : class
     {
         /// <summary>
         ///     The shape.

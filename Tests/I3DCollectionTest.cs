@@ -3,7 +3,7 @@
 // Filename:         I3DCollectionTest.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:50
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -101,7 +101,7 @@ namespace Unity_Tools.Tests
                 var radius = Random.Range(0.1f, size.magnitude);
                 var sqrRadius = radius * radius;
 
-                var castResult = instance.FindInRadius(center, radius);
+                var castResult = instance.SphereCast(center, radius).ToArray();
                 var reference = items.Where(item => (item.Value - center).sqrMagnitude <= sqrRadius)
                     .ToDictionary(item => item.Key, item => item.Value);
 
@@ -119,7 +119,7 @@ namespace Unity_Tools.Tests
                 var aabbOrigin = RandomInAabb(origin, size);
                 var aabbSize = RandomInUnitAabb() * 100f;
 
-                var castResult = instance.FindInBounds(new Bounds(aabbOrigin, aabbSize));
+                var castResult = instance.BoundsCast(new Bounds(aabbOrigin, aabbSize)).ToArray();
                 var reference = items.Where(item => item.Value.IsInAabb(aabbOrigin, aabbSize))
                     .ToDictionary(item => item.Key, item => item.Value);
 

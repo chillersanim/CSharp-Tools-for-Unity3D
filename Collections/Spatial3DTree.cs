@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTree.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -39,8 +39,6 @@ namespace Unity_Tools.Collections
     /// </typeparam>
     public class Spatial3DTree<T> : IPoint3DCollection<T>
     {
-        private readonly BoundsCastEnumerator<T> boundsCaster;
-
         private readonly List<T> castCache;
 
         /// <summary>
@@ -52,8 +50,6 @@ namespace Unity_Tools.Collections
         ///     The initial size.
         /// </summary>
         private readonly Vector3 initialSize;
-
-        private readonly SphereCastEnumerator<T> sphereCaster;
 
         /// <summary>
         ///     The root.
@@ -77,9 +73,6 @@ namespace Unity_Tools.Collections
             this.center = center;
             root = Spatial3DCell<T>.GetCell(this.center - initialSize / 2f, initialSize, false);
             castCache = new List<T>();
-
-            this.sphereCaster = new SphereCastEnumerator<T>(this, this.center, 0f);
-            this.boundsCaster = new BoundsCastEnumerator<T>(this, new Bounds());
         }
 
         public Vector3 Center{
@@ -241,18 +234,42 @@ namespace Unity_Tools.Collections
 
         public T[] FindInRadius(Vector3 center, float radius)
         {
-            sphereCaster.Restart(center, radius);
-            castCache.Clear();
-            sphereCaster.CopyTo(castCache);
-            return castCache.ToArray();
+            throw new NotImplementedException();
         }
 
         public T[] FindInBounds(Bounds bounds)
         {
-            boundsCaster.Restart(bounds);
-            castCache.Clear();
-            boundsCaster.CopyTo(castCache);
-            return castCache.ToArray();
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<T> SphereCast(Vector3 center, float radius)
+        {
+            return new SphereCastEnumerator<T>(this, center, radius);
+        }
+
+        public IEnumerable<T> BoundsCast(Bounds bounds)
+        {
+            return new BoundsCastEnumerator<T>(this, bounds);
+        }
+
+        public IEnumerable<T> ShapeCast(IShape shape)
+        {
+            return new ShapeCastEnumerator<T>(this, shape);
+        }
+
+        public IEnumerable<T> InverseSphereCast(Vector3 center, float radius)
+        {
+            return new InverseSphereCastEnumerator<T>(this, center, radius);
+        }
+
+        public IEnumerable<T> InverseBoundsCast(Bounds bounds)
+        {
+            return new InverseBoundsCastEnumerator<T>(this, bounds);
+        }
+
+        public IEnumerable<T> InverseShapeCast(IShape shape)
+        {
+            return new InverseShapeCastEnumerator<T>(this, shape);
         }
 
         public void AddRange([NotNull] IList<T> items, IList<Vector3> positions)

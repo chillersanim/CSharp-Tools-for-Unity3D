@@ -3,7 +3,7 @@
 // Filename:         InverseShapeCastEnumerator.cs
 // 
 // Created:          12.08.2019  19:08
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -33,7 +33,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     /// <typeparam name="T">
     /// </typeparam>
     public sealed class InverseShapeCastEnumerator<T> : Spatial3DTreeExclusionEnumeratorBase<T>
-        where T : class
     {
         /// <summary>
         ///     The shape.

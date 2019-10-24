@@ -23,11 +23,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Unity_Tools.Core.Pooling;
 using Random = UnityEngine.Random;
 
-namespace Unity_Tools.Collections
+namespace Unity_Tools.Core
 {
     public static class CollectionUtil
     {
@@ -217,7 +218,13 @@ namespace Unity_Tools.Collections
             return start;
         }
 
-        public static void ForAll<T>([NotNull]this IEnumerable<T> items, Action<T> action)
+        /// <summary>
+        /// Executes an action for all items in an enumerable.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The enumerable.</param>
+        /// <param name="action">The action to perform for every item.</param>
+        public static void ForAll<T>([NotNull] this IEnumerable<T> items, [NotNull]Action<T> action)
         {
             foreach (var item in items)
             {
@@ -225,11 +232,31 @@ namespace Unity_Tools.Collections
             }
         }
 
-        public static void Modify<T>([NotNull]this IList<T> items, Func<T, T> modifier)
+        /// <summary>
+        /// Modifies a collection in place using a modifier function.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The items list.</param>
+        /// <param name="modifier">The modifier to apply to every item, getting the item and returning the new item.</param>
+        public static void ForAll<T>([NotNull] this IList<T> items, Func<T, T> modifier)
         {
             for (var i = 0; i < items.Count; i++)
             {
                 items[i] = modifier(items[i]);
+            }
+        }
+
+        /// <summary>
+        /// Modifies a collection in place using a modifier function.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The items list.</param>
+        /// <param name="modifier">The modifier to apply to every item, getting the item and it's index and returning the new item.</param>
+        public static void ForAll<T>([NotNull] this IList<T> items, Func<T, int, T> modifier)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                items[i] = modifier(items[i], i);
             }
         }
     }

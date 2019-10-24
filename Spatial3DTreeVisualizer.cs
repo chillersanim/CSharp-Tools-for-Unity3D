@@ -1,4 +1,27 @@
-﻿using Unity_Tools.Collections;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         Spatial3DTreeVisualizer.cs
+// 
+// Created:          25.08.2019  13:42
+// Last modified:    25.08.2019  15:59
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+using Unity_Tools.Collections;
 using Unity_Tools.Collections.SpatialTree;
 using UnityEngine;
 
@@ -6,7 +29,7 @@ namespace Unity_Tools
 {
     public static class Spatial3DTreeVisualizer
     {
-        private static Color[] LevelColors;
+        private static readonly Color[] LevelColors;
 
         static Spatial3DTreeVisualizer()
         {
@@ -52,19 +75,19 @@ namespace Unity_Tools
 
         private static void DrawTreeCellGizmos<T>(Spatial3DCell<T> cell, int currentDepth)
         {
+            Gizmos.color = LevelColors[Mathf.Clamp(currentDepth, 0, 15)];
+            Gizmos.DrawWireCube(cell.Center, cell.Size);
+
             if (cell.Children != null)
             {
                 foreach (var child in cell.Children)
                 {
                     if (child != null)
                     {
-                        DrawTreeCellGizmos<T>(child, currentDepth + 1);
+                        DrawTreeCellGizmos(child, currentDepth + 1);
                     }
                 }
             }
-
-            Gizmos.color = LevelColors[Mathf.Clamp(currentDepth, 0, 15)];
-            Gizmos.DrawWireCube(cell.Center, cell.Size);
         }
     }
 }

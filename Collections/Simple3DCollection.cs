@@ -3,7 +3,7 @@
 // Filename:         Simple3DCollection.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity_Tools.Core;
 using UnityEngine;
+using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Collections
 {
@@ -117,36 +118,70 @@ namespace Unity_Tools.Collections
             return false;
         }
 
-        public T[] FindInRadius(Vector3 center, float radius)
+        public IEnumerable<T> SphereCast(Vector3 center, float radius)
         {
-            var sqRad = radius * radius;
-            searchCache.Clear();
-
-            foreach (var entry in items)
+            foreach (var item in items)
             {
-                var sqrDist = (entry.Position - center).sqrMagnitude;
-                if (sqrDist <= sqRad)
+                if (Math3D.IsPointInSphere(item.Position, center, radius))
                 {
-                    searchCache.Add(entry.Item);
+                    yield return item.Item;
                 }
             }
-
-            return searchCache.ToArray();
         }
 
-        public T[] FindInBounds(Bounds bounds)
+        public IEnumerable<T> BoundsCast(Bounds bounds)
         {
-            searchCache.Clear();
-
-            foreach (var entry in items)
+            foreach (var item in items)
             {
-                if (bounds.Contains(entry.Position))
+                if (bounds.Contains(item.Position))
                 {
-                    searchCache.Add(entry.Item);
+                    yield return item.Item;
                 }
             }
+        }
 
-            return searchCache.ToArray();
+        public IEnumerable<T> ShapeCast(IShape shape)
+        {
+            foreach (var item in items)
+            {
+                if (shape.ContainsPoint(item.Position))
+                {
+                    yield return item.Item;
+                }
+            }
+        }
+
+        public IEnumerable<T> InverseSphereCast(Vector3 center, float radius)
+        {
+            foreach (var item in items)
+            {
+                if (!Math3D.IsPointInSphere(item.Position, center, radius))
+                {
+                    yield return item.Item;
+                }
+            }
+        }
+
+        public IEnumerable<T> InverseBoundsCast(Bounds bounds)
+        {
+            foreach (var item in items)
+            {
+                if (!bounds.Contains(item.Position))
+                {
+                    yield return item.Item;
+                }
+            }
+        }
+
+        public IEnumerable<T> InverseShapeCast(IShape shape)
+        {
+            foreach (var item in items)
+            {
+                if (!shape.ContainsPoint(item.Position))
+                {
+                    yield return item.Item;
+                }
+            }
         }
 
         private struct ItemEntry

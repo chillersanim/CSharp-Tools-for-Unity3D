@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTreeInclusionEnumeratorBase.cs
 // 
 // Created:          12.08.2019  19:08
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -27,26 +27,26 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Collections.SpatialTree
+namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {
     /// <summary>
     ///     The spatial 3 d tree inclusion enumerator base.
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public abstract class Spatial3DTreeInclusionEnumeratorBase<T> : IEnumerator<T>
+    public abstract class Spatial3DTreeInclusionEnumeratorBase<T> : IEnumerator<T>, IEnumerable<T>
     {
         /// <summary>
         ///     The path.
         /// </summary>
         [NotNull] private readonly PathEntry[] path;
 
-        private int pathDepth;
-
         /// <summary>
         ///     The tree.
         /// </summary>
         [NotNull] private readonly Spatial3DTree<T> tree;
+
+        private int pathDepth;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Spatial3DTreeInclusionEnumeratorBase{T}" /> class.
@@ -220,6 +220,19 @@ namespace Unity_Tools.Collections.SpatialTree
                 Index = index;
                 FullyInside = fullyInside;
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (MoveNext())
+            {
+                yield return Current;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

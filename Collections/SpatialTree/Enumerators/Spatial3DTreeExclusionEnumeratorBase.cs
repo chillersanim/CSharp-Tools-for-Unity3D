@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTreeExclusionEnumeratorBase.cs
 // 
 // Created:          12.08.2019  19:08
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -27,9 +27,9 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Collections.SpatialTree
+namespace Unity_Tools.Collections.SpatialTree.Enumerators
 {
-    public abstract class Spatial3DTreeExclusionEnumeratorBase<T> : IEnumerator<T> where T : class
+    public abstract class Spatial3DTreeExclusionEnumeratorBase<T> : IEnumerator<T>, IEnumerable<T>
     {
         [NotNull] private readonly List<PathEntry> path;
 
@@ -37,9 +37,7 @@ namespace Unity_Tools.Collections.SpatialTree
 
         protected Spatial3DTreeExclusionEnumeratorBase([NotNull] Spatial3DTree<T> tree)
         {
-            if (tree == null) throw new ArgumentNullException("tree");
-
-            this.tree = tree;
+            this.tree = tree ?? throw new ArgumentNullException(nameof(tree));
             path = new List<PathEntry>(4);
             path.Add(new PathEntry(tree.Root, -1));
         }
@@ -140,6 +138,19 @@ namespace Unity_Tools.Collections.SpatialTree
                 Cell = cell;
                 Index = index;
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (MoveNext())
+            {
+                yield return Current;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

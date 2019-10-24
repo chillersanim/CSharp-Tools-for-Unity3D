@@ -3,7 +3,7 @@
 // Filename:         CallProvider.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -97,19 +97,9 @@ namespace Unity_Tools.Core
         private readonly List<Action> OnGuiListeners = new List<Action>();
 
         /// <summary>
-        ///     The update listeners.
-        /// </summary>
-        private readonly List<Action> UpdateListeners = new List<Action>();
-
-        /// <summary>
         /// The periodic update listener
         /// </summary>
         private readonly List<Action> PeriodicUpdateListener = new List<Action>();
-
-        /// <summary>
-        ///     The u to add.
-        /// </summary>
-        private readonly List<Action> uToAdd = new List<Action>();
 
         /// <summary>
         ///     The u to add.
@@ -119,12 +109,22 @@ namespace Unity_Tools.Core
         /// <summary>
         ///     The u to remove.
         /// </summary>
-        private readonly List<Action> uToRemove = new List<Action>();
+        private readonly List<Action> puToRemove = new List<Action>();
+
+        /// <summary>
+        ///     The update listeners.
+        /// </summary>
+        private readonly List<Action> UpdateListeners = new List<Action>();
+
+        /// <summary>
+        ///     The u to add.
+        /// </summary>
+        private readonly List<Action> uToAdd = new List<Action>();
 
         /// <summary>
         ///     The u to remove.
         /// </summary>
-        private readonly List<Action> puToRemove = new List<Action>();
+        private readonly List<Action> uToRemove = new List<Action>();
 
         private int currentPeriodicOffset = 0;
 

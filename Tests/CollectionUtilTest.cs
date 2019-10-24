@@ -3,7 +3,7 @@
 // Filename:         CollectionUtilTest.cs
 // 
 // Created:          13.08.2019  20:32
-// Last modified:    20.08.2019  21:50
+// Last modified:    25.08.2019  15:59
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Unity_Tools.Collections;
 using UnityEngine;
+using Unity_Tools.Core;
 
 namespace Unity_Tools.Tests
 {

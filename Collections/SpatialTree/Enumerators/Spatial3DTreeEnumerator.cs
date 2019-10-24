@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTreeEnumerator.cs
 // 
 // Created:          12.08.2019  19:08
-// Last modified:    20.08.2019  21:49
+// Last modified:    25.08.2019  15:58
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -33,7 +33,7 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
     /// </summary>
     /// <typeparam name="T">
     /// </typeparam>
-    public sealed class Spatial3DTreeEnumerator<T> : IEnumerator<T>
+    public sealed class Spatial3DTreeEnumerator<T> : IEnumerator<T>, IEnumerable<T>
     {
         /// <summary>
         ///     The path.
@@ -155,6 +155,19 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
                 Cell = cell;
                 Index = index;
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (MoveNext())
+            {
+                yield return Current;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
