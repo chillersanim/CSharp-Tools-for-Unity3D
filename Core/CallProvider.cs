@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         CallProvider.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -188,20 +188,6 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
-        ///     Adds a listener to the on update callback list.
-        /// </summary>
-        /// <param name="listener">
-        ///     The listener.
-        /// </param>
-        public static void AddUpdateListener(Action listener)
-        {
-            if (!Instance.uToAdd.Contains(listener))
-            {
-                Instance.uToAdd.Add(listener);
-            }
-        }
-
-        /// <summary>
         ///     Adds a listener that gets periodically called. The period depends on the amount of objects subscribed.
         /// </summary>
         /// <param name="listener">
@@ -212,6 +198,20 @@ namespace Unity_Tools.Core
             if (!Instance.puToAdd.Contains(listener))
             {
                 Instance.puToAdd.Add(listener);
+            }
+        }
+
+        /// <summary>
+        ///     Adds a listener to the on update callback list.
+        /// </summary>
+        /// <param name="listener">
+        ///     The listener.
+        /// </param>
+        public static void AddUpdateListener(Action listener)
+        {
+            if (!Instance.uToAdd.Contains(listener))
+            {
+                Instance.uToAdd.Add(listener);
             }
         }
 
@@ -275,20 +275,6 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
-        ///     Removes a listener from the on update callback list.
-        /// </summary>
-        /// <param name="listener">
-        ///     The listener.
-        /// </param>
-        public static void RemoveUpdateListener(Action listener)
-        {
-            if (!Instance.uToRemove.Contains(listener))
-            {
-                Instance.uToRemove.Add(listener);
-            }
-        }
-
-        /// <summary>
         ///     Removes a listener from the periodic update callback list.
         /// </summary>
         /// <param name="listener">
@@ -299,6 +285,20 @@ namespace Unity_Tools.Core
             if (!Instance.puToRemove.Contains(listener))
             {
                 Instance.puToRemove.Add(listener);
+            }
+        }
+
+        /// <summary>
+        ///     Removes a listener from the on update callback list.
+        /// </summary>
+        /// <param name="listener">
+        ///     The listener.
+        /// </param>
+        public static void RemoveUpdateListener(Action listener)
+        {
+            if (!Instance.uToRemove.Contains(listener))
+            {
+                Instance.uToRemove.Add(listener);
             }
         }
 

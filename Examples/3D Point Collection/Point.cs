@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Point.cs
 // 
-// Created:          23.08.2019  13:10
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  14:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,9 +21,9 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using UnityEngine;
 using Unity_Tools.Collections;
 using Unity_Tools.Core;
-using UnityEngine;
 
 namespace Unity_Tools.Examples
 {
@@ -56,15 +56,6 @@ namespace Unity_Tools.Examples
             }
         }
 
-        void Start()
-        {
-            Active = false;
-            myRenderer = this.GetComponent<Renderer>();
-            storedPosition = transform.position; 
-            AllPoints.Add(this, storedPosition);
-            CallProvider.AddPeriodicUpdateListener(this.PeriodicUpdate);
-        }
-
         void OnDestroy()
         {
             AllPoints.Remove(this, storedPosition);
@@ -78,6 +69,15 @@ namespace Unity_Tools.Examples
                 AllPoints.MoveItem(this, storedPosition, this.transform.position);
                 storedPosition = this.transform.position;
             }
+        }
+
+        void Start()
+        {
+            Active = false;
+            myRenderer = this.GetComponent<Renderer>();
+            storedPosition = transform.position; 
+            AllPoints.Add(this, storedPosition);
+            CallProvider.AddPeriodicUpdateListener(this.PeriodicUpdate);
         }
     }
 }

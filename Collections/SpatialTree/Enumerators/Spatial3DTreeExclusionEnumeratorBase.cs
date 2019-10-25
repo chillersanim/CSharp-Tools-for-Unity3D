@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Spatial3DTreeExclusionEnumeratorBase.cs
 // 
-// Created:          12.08.2019  19:08
-// Last modified:    25.08.2019  15:58
+// Created:          24.10.2019  18:16
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -40,6 +40,19 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
             this.tree = tree ?? throw new ArgumentNullException(nameof(tree));
             path = new List<PathEntry>(4);
             path.Add(new PathEntry(tree.Root, -1));
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (MoveNext())
+            {
+                yield return Current;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -138,19 +151,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
                 Cell = cell;
                 Index = index;
             }
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            while (MoveNext())
-            {
-                yield return Current;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PipelineStart.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,7 +20,6 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
 namespace Unity_Tools.Pipeline
 {
     /// <summary>

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Simple3DSphereCollection.cs
 // 
-// Created:          24.08.2019  23:15
-// Last modified:    25.08.2019  15:58
+// Created:          24.08.2019  22:06
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,8 +24,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
 using UnityEngine;
+using Unity_Tools.Core;
 
 namespace Unity_Tools.Collections
 {

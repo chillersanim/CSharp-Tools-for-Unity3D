@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         CameraBehaviour.cs
 // 
-// Created:          23.08.2019  12:18
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  14:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,7 +20,6 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
 #region usings
 
 using System;
@@ -153,11 +152,6 @@ namespace Unity_Tools.Examples
         public float MinYRotation;
 
         /// <summary>
-        ///     The previous avatar position.
-        /// </summary>
-        private Vector3 previousAvatarPosition;
-
-        /// <summary>
         ///     The previous tab selection.
         /// </summary>
         public int previousTabSelection;
@@ -238,6 +232,11 @@ namespace Unity_Tools.Examples
         ///     The zoom trigger key code.
         /// </summary>
         public KeyCode ZoomTriggerKeyCode;
+
+        /// <summary>
+        ///     The previous avatar position.
+        /// </summary>
+        private Vector3 previousAvatarPosition;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CameraBehaviour" /> class.
@@ -334,20 +333,6 @@ namespace Unity_Tools.Examples
             }
 
             return result;
-        }
-
-        /// <summary>
-        ///     The rotate Y.
-        /// </summary>
-        /// <param name="v">
-        ///     The v.
-        /// </param>
-        /// <param name="angle">
-        ///     The angle.
-        /// </param>
-        private static void RotateY(ref Vector3 v, float angle)
-        {
-            v = Quaternion.Euler(0.0f, angle, 0.0f) * v;
         }
 
         /// <summary>
@@ -461,6 +446,20 @@ namespace Unity_Tools.Examples
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///     The rotate Y.
+        /// </summary>
+        /// <param name="v">
+        ///     The v.
+        /// </param>
+        /// <param name="angle">
+        ///     The angle.
+        /// </param>
+        private static void RotateY(ref Vector3 v, float angle)
+        {
+            v = Quaternion.Euler(0.0f, angle, 0.0f) * v;
         }
 
         /// <summary>

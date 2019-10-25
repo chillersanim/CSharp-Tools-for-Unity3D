@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         PointPlacement.cs
 // 
-// Created:          23.08.2019  13:36
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  14:36
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,8 +21,8 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Core;
 using UnityEngine;
+using Unity_Tools.Core;
 
 namespace Unity_Tools.Examples
 {
@@ -34,6 +34,12 @@ namespace Unity_Tools.Examples
         public Vector3 min = Vector3.one * -10;
 
         public GameObject Prefab;
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(min + (max - min) / 2f, max - min);
+        }
 
         // Start is called before the first frame update
         void OnEnable()
@@ -50,12 +56,6 @@ namespace Unity_Tools.Examples
 
                 Instantiate(Prefab, position, Random.rotation, this.transform);
             }
-        }
-
-        void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireCube(min + (max - min) / 2f, max - min);
         }
     }
 }

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         CameraMovement.cs
 // 
-// Created:          23.08.2019  12:18
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  13:20
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -20,11 +20,10 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
 #region usings
 
-using Unity_Tools.Core;
 using UnityEngine;
+using Unity_Tools.Core;
 
 #endregion
 
@@ -39,11 +38,6 @@ namespace Unity_Tools.Examples
         ///     The grab layer mask.
         /// </summary>
         public LayerMask GrabLayerMask;
-
-        /// <summary>
-        ///     The grab distance.
-        /// </summary>
-        private Plane grabPlane;
 
         /// <summary>
         ///     The grab trigger key.
@@ -80,8 +74,6 @@ namespace Unity_Tools.Examples
         /// </summary>
         [Range(0.1f, 100f)] public float MovementSpeed = 5;
 
-        private Vector3 prevMousePos;
-
         /// <summary>
         ///     The show boundary.
         /// </summary>
@@ -96,6 +88,13 @@ namespace Unity_Tools.Examples
         ///     The zoom movement impact.
         /// </summary>
         [Range(0f, 1f)] public float ZoomMovementImpact = 0.5f;
+
+        /// <summary>
+        ///     The grab distance.
+        /// </summary>
+        private Plane grabPlane;
+
+        private Vector3 prevMousePos;
 
         /// <summary>
         ///     The get axis.

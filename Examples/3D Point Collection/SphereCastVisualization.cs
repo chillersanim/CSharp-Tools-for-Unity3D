@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         SphereCastVisualization.cs
 // 
-// Created:          23.08.2019  13:05
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  14:36
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,19 +23,27 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity_Tools.Collections.SpatialTree;
 using UnityEngine;
+using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Examples
 {
     public class SphereCastVisualization : MonoBehaviour
     {
+        public float Radius = 10;
         private List<Point> currentPoints;
 
         private HashSet<Point> previousPoints;
-        public float Radius = 10;
 
         private Stopwatch stopwatch = new Stopwatch();
+
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(this.transform.position, Radius);
+
+            Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
+        }
 
         void Start()
         {
@@ -85,14 +93,6 @@ namespace Unity_Tools.Examples
                     }
                 }
             }
-        }
-
-        void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(this.transform.position, Radius);
-
-            Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
         }
     }
 }

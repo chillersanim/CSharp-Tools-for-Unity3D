@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Math3D.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -210,7 +210,7 @@ namespace Unity_Tools.Core
 
             return result / n;
         }
-        
+
         /// <summary>
         ///     The furthest position in aabb.
         /// </summary>
@@ -233,6 +233,30 @@ namespace Unity_Tools.Core
             var z = Mathf.Abs(min.z - p.z) > Mathf.Abs(max.z - p.z) ? min.z : max.z;
 
             return new Vector3(x, y, z);
+        }
+
+        /// <summary>
+        /// Calculates the inner angle for the vertex <see cref="current"/>, assuming counter clockwise order.
+        /// </summary>
+        /// <param name="prev">The vertex that comes before the current one in order.</param>
+        /// <param name="current">The current vertex.</param>
+        /// <param name="next">The vertex that comes after the current one in order.</param>
+        /// <param name="normal">The normal of the counter clockwise shape.</param>
+        /// <returns>Returns an value [0, 360], that represents the inner angle.</returns>
+        public static float InnerAngle(Vector3 prev, Vector3 current, Vector3 next, Vector3 normal)
+        {
+            var a = next - current;
+            var b = prev - current;
+            var triN = TriangleNormal(prev, current, next);
+            var isClockwise = Vector3.Angle(triN, normal) < 90f;
+            var angle = Vector3.Angle(a, b);
+
+            if (!isClockwise)
+            {
+                angle = 360 - angle;
+            }
+
+            return angle;
         }
 
         /// <summary>
@@ -279,6 +303,11 @@ namespace Unity_Tools.Core
         {
             var cross = Vector3.Cross(v1 - v0, v2 - v0);
             return cross.sqrMagnitude <= maxError * maxError;
+        }
+
+        public static bool IsPointInSphere(Vector3 itemPosition, Vector3 center, float radius)
+        {
+            return (itemPosition - center).sqrMagnitude <= radius * radius;
         }
 
         /// <summary>
@@ -699,6 +728,24 @@ namespace Unity_Tools.Core
             return 0.5f * Vector3.Cross(p2 - p0, p3 - p1).magnitude;
         }
 
+        public static bool RayPlaneIntersection(Vector3 orig, Vector3 dir, Vector3 normal, Vector3 planeOrig, out Vector3 hit)
+        {
+            // Code adapted from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+            // Not verified
+
+            var denom = Vector3.Dot(normal, dir);
+            if (!Mathf.Approximately(denom, 0f))
+            {
+                var p0l0 = planeOrig - orig;
+                var t = Vector3.Dot(p0l0, normal) / denom;
+                hit = orig + t * dir;
+                return (t >= 0);
+            }
+
+            hit = Vector3.zero;
+            return false;
+        }
+
         public static bool RayTriangleIntersect(
             Vector3 orig, Vector3 dir,
             Vector3 v0, Vector3 v1, Vector3 v2, 
@@ -717,24 +764,6 @@ namespace Unity_Tools.Core
             }
 
             return true;
-        }
-
-        public static bool RayPlaneIntersection(Vector3 orig, Vector3 dir, Vector3 normal, Vector3 planeOrig, out Vector3 hit)
-        {
-            // Code adapted from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
-            // Not verified
-
-            var denom = Vector3.Dot(normal, dir);
-            if (!Mathf.Approximately(denom, 0f))
-            {
-                var p0l0 = planeOrig - orig;
-                var t = Vector3.Dot(p0l0, normal) / denom;
-                hit = orig + t * dir;
-                return (t >= 0);
-            }
-
-            hit = Vector3.zero;
-            return false;
         }
 
         /// <summary>
@@ -960,11 +989,6 @@ namespace Unity_Tools.Core
             }
 
             return Mathf.Abs(volume);
-        }
-
-        public static bool IsPointInSphere(Vector3 itemPosition, Vector3 center, float radius)
-        {
-            return (itemPosition - center).sqrMagnitude <= radius * radius;
         }
     }
 }

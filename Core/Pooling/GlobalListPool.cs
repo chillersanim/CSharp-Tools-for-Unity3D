@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         GlobalListPool.cs
 // 
-// Created:          19.08.2019  22:42
-// Last modified:    25.08.2019  15:59
+// Created:          20.08.2019  12:39
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -30,16 +30,16 @@ namespace Unity_Tools.Core.Pooling
     {
         private static readonly ListPool<T> Pool = new ListPool<T>();
 
-        public static int MaxSize
-        {
-            get => Pool.MaxSize;
-            set => Pool.MaxSize = value;
-        }
-
         public static int MaxListCapacity
         {
             get => Pool.MaxListCapacity;
             set => Pool.MaxListCapacity = value;
+        }
+
+        public static int MaxSize
+        {
+            get => Pool.MaxSize;
+            set => Pool.MaxSize = value;
         }
 
         public static List<T> Get()

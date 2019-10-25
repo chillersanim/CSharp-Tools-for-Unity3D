@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         CollectionUtil.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:58
+// Created:          24.10.2019  17:45
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Unity_Tools.Core.Pooling;
 using Random = UnityEngine.Random;
@@ -32,134 +31,6 @@ namespace Unity_Tools.Core
 {
     public static class CollectionUtil
     {
-        /// <summary>
-        /// Randomizes the order of the items.
-        /// </summary>
-        /// <typeparam name="T">The type of the item.</typeparam>
-        /// <param name="items">The items to be randomized</param>
-        public static void Shuffle<T>(this IList<T> items)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-
-            var cnt = items.Count;
-            for (var i = 0; i < cnt; i++)
-            {
-                var newIndex = Random.Range(0, cnt);
-                var tmp = items[newIndex];
-                items[newIndex] = items[i];
-                items[i] = tmp;
-            }
-        }
-
-        public static TOut[] Map<TIn, TOut>(this IList<TIn> items, Func<TIn, TOut> mapper)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-
-            if (mapper == null)
-            {
-                throw new ArgumentNullException(nameof(mapper));
-            }
-
-            var cnt = items.Count;
-            var result = new TOut[cnt];
-
-            for (var i = 0; i < cnt; i++)
-            {
-                result[i] = mapper(items[i]);
-            }
-
-            return result;
-        }
-
-        public static T[] Filter<T>(this IList<T> items, Func<T, bool> filter)
-        {
-            var filtered = GlobalListPool<T>.Get(items.Count);
-
-            foreach (var item in items)
-            {
-                if (filter(item))
-                {
-                    filtered.Add(item);
-                }
-            }
-
-            var result = filtered.ToArray();
-            GlobalListPool<T>.Put(filtered);
-            return result;
-        }
-
-        public static T[] CreateArray<T>(int length, T first, Func<T, T> next)
-        {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
-            }
-
-            if (length == 0)
-            {
-                return Array.Empty<T>();
-            }
-
-            var result = new T[length];
-            result[0] = first;
-
-            for (var i = 1; i < length; i++)
-            {
-                result[i] = next(result[i - 1]);
-            }
-
-            return result;
-        }
-
-        public static List<T> CreateList<T>(int length, T first, Func<T, T> next)
-        {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
-            }
-
-            if (length == 0)
-            {
-                return new List<T>();
-            }
-
-            var result = GlobalListPool<T>.Get(length);
-            result.Add(first);
-            var prev = first;
-
-            for (var i = 1; i < length; i++)
-            {
-                var item = next(prev);
-                prev = item;
-                result.Add(item);
-            }
-
-            return result;
-        }
-
-        public static void CopyTo<T>(this IEnumerator<T> enumerator, IList<T> output)
-        {
-            while (enumerator.MoveNext())
-            {
-                output.Add(enumerator.Current);
-            }
-        }
-
-        public static T[] ToArray<T>(this IEnumerator<T> enumerator)
-        {
-            var result = GlobalListPool<T>.Get();
-            enumerator.CopyTo(result);
-            var output = result.ToArray();
-            GlobalListPool<T>.Put(result);
-            return output;
-        }
-
         /// <summary>
         /// Searches for the index after the last element that is still smaller than the value.
         /// </summary>
@@ -219,6 +90,109 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
+        /// Copies any data set to the output.
+        /// </summary>
+        /// <typeparam name="T">The type of the data.</typeparam>
+        /// <param name="enumerator">The data source.</param>
+        /// <param name="output">The data target.</param>
+        public static void CopyTo<T>(this IEnumerator<T> enumerator, IList<T> output)
+        {
+            while (enumerator.MoveNext())
+            {
+                output.Add(enumerator.Current);
+            }
+        }
+
+        /// <summary>
+        /// Builds an array using the initial element and a builder function.
+        /// </summary>
+        /// <typeparam name="T">The type of the array items.</typeparam>
+        /// <param name="length">The target length of the array.</param>
+        /// <param name="first">The first element.</param>
+        /// <param name="next">A function generating a followup element.</param>
+        /// <returns>Returns the generated array.</returns>
+        public static T[] CreateArray<T>(int length, T first, Func<T, T> next)
+        {
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
+            }
+
+            if (length == 0)
+            {
+                return Array.Empty<T>();
+            }
+
+            var result = new T[length];
+            result[0] = first;
+
+            for (var i = 1; i < length; i++)
+            {
+                result[i] = next(result[i - 1]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Builds a list using the initial element and a builder function.
+        /// </summary>
+        /// <typeparam name="T">The type of the list items.</typeparam>
+        /// <param name="length">The target length of the list.</param>
+        /// <param name="first">The first element.</param>
+        /// <param name="next">A function generating a followup element.</param>
+        /// <returns>Returns the generated list.</returns>
+        public static List<T> CreateList<T>(int length, T first, Func<T, T> next)
+        {
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative.");
+            }
+
+            if (length == 0)
+            {
+                return new List<T>();
+            }
+
+            var result = GlobalListPool<T>.Get(length);
+            result.Add(first);
+            var prev = first;
+
+            for (var i = 1; i < length; i++)
+            {
+                var item = next(prev);
+                prev = item;
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Applies a filter on a list and returns the matches.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The list to search.</param>
+        /// <param name="filter">The filter function.</param>
+        /// <returns></returns>
+        public static T[] Filter<T>(this IList<T> items, Func<T, bool> filter)
+        {
+            var filtered = GlobalListPool<T>.Get(items.Count);
+
+            foreach (var item in items)
+            {
+                if (filter(item))
+                {
+                    filtered.Add(item);
+                }
+            }
+
+            var result = filtered.ToArray();
+            GlobalListPool<T>.Put(filtered);
+            return result;
+        }
+
+        /// <summary>
         /// Executes an action for all items in an enumerable.
         /// </summary>
         /// <typeparam name="T">The item type.</typeparam>
@@ -258,6 +232,66 @@ namespace Unity_Tools.Core
             {
                 items[i] = modifier(items[i], i);
             }
+        }
+
+        public static TOut[] Map<TIn, TOut>(this IList<TIn> items, Func<TIn, TOut> mapper)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (mapper == null)
+            {
+                throw new ArgumentNullException(nameof(mapper));
+            }
+
+            var cnt = items.Count;
+            var result = new TOut[cnt];
+
+            for (var i = 0; i < cnt; i++)
+            {
+                result[i] = mapper(items[i]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Randomizes the order of the items.
+        /// </summary>
+        /// <typeparam name="T">The type of the item.</typeparam>
+        /// <param name="items">The items to be randomized</param>
+        public static void Shuffle<T>(this IList<T> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            var cnt = items.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                var newIndex = Random.Range(0, cnt);
+                var tmp = items[newIndex];
+                items[newIndex] = items[i];
+                items[i] = tmp;
+            }
+        }
+
+        /// <summary>
+        /// Converts any enumerator to an array.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="enumerator">The enumerator to convert.</param>
+        /// <returns>Returns the resulting array.</returns>
+        public static T[] ToArray<T>(this IEnumerator<T> enumerator)
+        {
+            var result = GlobalListPool<T>.Get();
+            enumerator.CopyTo(result);
+            var output = result.ToArray();
+            GlobalListPool<T>.Put(result);
+            return output;
         }
     }
 }

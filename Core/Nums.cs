@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Nums.cs
 // 
-// Created:          19.08.2019  18:57
-// Last modified:    25.08.2019  15:59
+// Created:          20.08.2019  12:39
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -158,6 +158,31 @@ namespace Unity_Tools.Core
             }
         }
 
+        /// <summary>
+        /// A modulo function that properly does modulo for negative numbers as well.
+        /// </summary>
+        /// <param name="x">The value.</param>
+        /// <param name="m">The modulo.</param>
+        /// <returns>The positive definite modulo result.</returns>
+        public static int Mod(int x, int m)
+        {
+            var r = x % m;
+            return r < 0 ? r + m : r;
+        }
+
+        public static void Revert<T>(ref T t0, ref T t1)
+        {
+            var tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+
+        public static void Revert<T>(ref T t0, ref T t1, ref T t2, ref T t3)
+        {
+            Revert(ref t0, ref t3);
+            Revert(ref t1, ref t2);
+        }
+
         public static void Sort<T>(ref T t0, ref T t1) where T : IComparable<T>
         {
             if (t0.CompareTo(t1) > 0)
@@ -217,31 +242,6 @@ namespace Unity_Tools.Core
         public static void SortDescending<T>(ref T t0, ref T t1, ref T t2, ref T t3, ref T t4) where T : IComparable<T>
         {
             Sort(ref t4, ref t3, ref t2, ref t1, ref t0);
-        }
-
-        public static void Revert<T>(ref T t0, ref T t1)
-        {
-            var tmp = t0;
-            t0 = t1;
-            t1 = tmp;
-        }
-
-        public static void Revert<T>(ref T t0, ref T t1, ref T t2, ref T t3)
-        {
-            Revert(ref t0, ref t3);
-            Revert(ref t1, ref t2);
-        }
-
-        /// <summary>
-        /// A modulo function that properly does modulo for negative numbers as well.
-        /// </summary>
-        /// <param name="x">The value.</param>
-        /// <param name="m">The modulo.</param>
-        /// <returns>The positive definite modulo result.</returns>
-        public static int Mod(int x, int m)
-        {
-            var r = x % m;
-            return r < 0 ? r + m : r;
         }
     }
 }

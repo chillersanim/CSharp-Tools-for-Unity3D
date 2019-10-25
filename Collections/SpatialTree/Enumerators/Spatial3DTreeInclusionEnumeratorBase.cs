@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Spatial3DTreeInclusionEnumeratorBase.cs
 // 
-// Created:          12.08.2019  19:08
-// Last modified:    25.08.2019  15:59
+// Created:          24.10.2019  18:16
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -62,6 +62,19 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
             path = new PathEntry[64];  // It's near impossible that a path depth of 64 will ever be reached, as the max depth in the tree is 16, and more depth can only be added by growing the tree.
             path[0] = new PathEntry(tree.Root, -1, IsBoundsFullyInside(tree.Root.Start, tree.Root.End));
             pathDepth = 1;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (MoveNext())
+            {
+                yield return Current;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -220,19 +233,6 @@ namespace Unity_Tools.Collections.SpatialTree.Enumerators
                 Index = index;
                 FullyInside = fullyInside;
             }
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            while (MoveNext())
-            {
-                yield return Current;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

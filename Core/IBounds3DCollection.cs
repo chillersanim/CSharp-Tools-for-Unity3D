@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         IBounds3DCollection.cs
 // 
-// Created:          24.08.2019  23:02
-// Last modified:    25.08.2019  15:59
+// Created:          24.08.2019  15:18
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -55,6 +55,21 @@ namespace Unity_Tools.Core
         bool Contains([CanBeNull] T item, Bounds bounds);
 
         /// <summary>
+        /// Finds all items in the collection whose bounds intersect with the given bounds.
+        /// </summary>
+        /// <param name="bounds">The bounds.</param>
+        /// <returns>Returns the found items.</returns>
+        T[] FindInBounds(Bounds bounds);
+
+        /// <summary>
+        /// Finds all items in the collection whose bounds intersect with the given sphere.
+        /// </summary>
+        /// <param name="center">The center of the sphere.</param>
+        /// <param name="radius">The radius of the sphere.</param>
+        /// <returns>Returns the found items.</returns>
+        T[] FindInRadius(Vector3 center, float radius);
+
+        /// <summary>
         /// Changes the bounds of an item within the collection. 
         /// </summary>
         /// <param name="item">The item.</param>
@@ -71,20 +86,5 @@ namespace Unity_Tools.Core
         /// <param name="bounds">The bounds.</param>
         /// <returns>Returns <c>true</c> if the item was successfully removed, <c>false</c> otherwise.</returns>
         bool Remove([CanBeNull] T item, Bounds bounds);
-
-        /// <summary>
-        /// Finds all items in the collection whose bounds intersect with the given sphere.
-        /// </summary>
-        /// <param name="center">The center of the sphere.</param>
-        /// <param name="radius">The radius of the sphere.</param>
-        /// <returns>Returns the found items.</returns>
-        T[] FindInRadius(Vector3 center, float radius);
-
-        /// <summary>
-        /// Finds all items in the collection whose bounds intersect with the given bounds.
-        /// </summary>
-        /// <param name="bounds">The bounds.</param>
-        /// <returns>Returns the found items.</returns>
-        T[] FindInBounds(Bounds bounds);
     }
 }

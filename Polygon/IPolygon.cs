@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         AxisSettings.cs
+// Filename:         IPolygon.cs
 // 
-// Created:          24.08.2019  13:18
+// Created:          25.10.2019  10:29
 // Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
@@ -20,28 +20,20 @@
 // 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-#region usings
 
-using System;
+using System.Collections.Generic;
 
-#endregion
-
-namespace Unity_Tools.Examples
+namespace Unity_Tools.Polygon
 {
-    /// <summary>
-    ///     The axis settings.
-    /// </summary>
-    [Serializable]
-    public class AxisSettings
+    public interface IPolygon<T>
     {
-        /// <summary>
-        ///     The axis name.
-        /// </summary>
-        public string AxisName;
+        T this[int index] 
+        {
+            get;
+        }
 
-        /// <summary>
-        ///     The invert.
-        /// </summary>
-        public bool Invert;
+        int VertexCount { get; }
+
+        void Triangulate(List<int> triangles);
     }
 }

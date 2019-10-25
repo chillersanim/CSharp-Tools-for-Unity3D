@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         LineSegment.cs
 // 
-// Created:          19.08.2019  12:34
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,8 +22,8 @@
 // copies or substantial portions of the Software.
 
 using System;
-using Unity_Tools.Core;
 using UnityEngine;
+using Unity_Tools.Core;
 
 namespace Unity_Tools.Polyline
 {
@@ -53,22 +53,22 @@ namespace Unity_Tools.Polyline
             this.length = Vector3.Distance(start, end);
         }
 
-        public Vector3 Start
-        {
-            get => start;
-            set
-            {
-                start = value;
-                length = Vector3.Distance(start, end);
-            }
-        }
-
         public Vector3 End
         {
             get => end;
             set
             {
                 end = value;
+                length = Vector3.Distance(start, end);
+            }
+        }
+
+        public Vector3 Start
+        {
+            get => start;
+            set
+            {
+                start = value;
                 length = Vector3.Distance(start, end);
             }
         }

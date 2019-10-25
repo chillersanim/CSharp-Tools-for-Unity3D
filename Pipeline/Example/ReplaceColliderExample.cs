@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         ReplaceColliderExample.cs
 // 
-// Created:          12.08.2019  19:06
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,25 +21,14 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Pipeline.Specialized;
 using UnityEngine;
+using Unity_Tools.Pipeline.Specialized;
 
 namespace Unity_Tools.Pipeline.Example
 {
     public class ReplaceColliderExample : MonoBehaviour
     {
         public PipelineGraph pipelineGraph;
-
-        void OnEnable()
-        {
-            pipelineGraph = BuildPipeline();
-            pipelineGraph.Initialize();
-        }
-
-        void Update()
-        {
-            pipelineGraph.DoWork(2.0f);
-        }
 
         public PipelineGraph BuildPipeline()
         {
@@ -65,6 +54,17 @@ namespace Unity_Tools.Pipeline.Example
             // removeOldCollider doesn't need a followup step, as it is the last node
 
             return graph;
+        }
+
+        void OnEnable()
+        {
+            pipelineGraph = BuildPipeline();
+            pipelineGraph.Initialize();
+        }
+
+        void Update()
+        {
+            pipelineGraph.DoWork(2.0f);
         }
     }
 }

@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         VectorMath.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -222,23 +222,6 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
-        /// Determines whether a vector is inside or on a sphere.
-        /// </summary>
-        /// <param name="vector">The vector.</param>
-        /// <param name="center">The center of the sphere.</param>
-        /// <param name="radius">The radius of the sphere.</param>
-        /// <returns><c>true</c> if the vector is inside or on the sphere; otherwise, <c>false</c>.</returns>
-        [PublicAPI]
-        public static bool IsInSphere(this Vector3 vector, Vector3 center, float radius)
-        {
-            var x = vector.x - center.x;
-            var y = vector.y - center.y;
-            var z = vector.z - center.z;
-
-            return x * x + y * y + z * z <= radius * radius;
-        }
-
-        /// <summary>
         /// Determines whether a vector is inside or on the boundary of an axis aligned bounding box (aabb).
         /// </summary>
         /// <param name="vector">The vector.</param>
@@ -254,6 +237,23 @@ namespace Unity_Tools.Core
 
             return vector.x >= min.x && vector.y >= min.y && vector.z >= min.z &&
                    vector.x <= max.x && vector.y <= max.y && vector.z <= max.z;
+        }
+
+        /// <summary>
+        /// Determines whether a vector is inside or on a sphere.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <param name="center">The center of the sphere.</param>
+        /// <param name="radius">The radius of the sphere.</param>
+        /// <returns><c>true</c> if the vector is inside or on the sphere; otherwise, <c>false</c>.</returns>
+        [PublicAPI]
+        public static bool IsInSphere(this Vector3 vector, Vector3 center, float radius)
+        {
+            var x = vector.x - center.x;
+            var y = vector.y - center.y;
+            var z = vector.z - center.z;
+
+            return x * x + y * y + z * z <= radius * radius;
         }
 
         /// <summary>

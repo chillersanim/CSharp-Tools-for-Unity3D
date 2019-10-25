@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Spatial3DTree.cs
 // 
-// Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:58
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,10 +25,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEngine;
 using Unity_Tools.Collections.SpatialTree;
 using Unity_Tools.Collections.SpatialTree.Enumerators;
 using Unity_Tools.Core;
-using UnityEngine;
 
 namespace Unity_Tools.Collections
 {
@@ -39,8 +39,6 @@ namespace Unity_Tools.Collections
     /// </typeparam>
     public class Spatial3DTree<T> : IPoint3DCollection<T>
     {
-        private readonly List<T> castCache;
-
         /// <summary>
         ///     The initial offset.
         /// </summary>
@@ -72,12 +70,16 @@ namespace Unity_Tools.Collections
             initialSize = size;
             this.center = center;
             root = Spatial3DCell<T>.GetCell(this.center - initialSize / 2f, initialSize, false);
-            castCache = new List<T>();
         }
 
         public Vector3 Center{
             get { return center; }
         }
+
+        /// <summary>
+        ///     The depth.
+        /// </summary>
+        public int Depth => root.GetDepth();
 
         public Vector3 InitialSize
         {
@@ -85,11 +87,6 @@ namespace Unity_Tools.Collections
         }
 
         [NotNull] public Spatial3DCell<T> Root => root;
-
-        /// <summary>
-        ///     The depth.
-        /// </summary>
-        public int Depth => root.GetDepth();
 
         /// <summary>
         ///     The total cell count.
@@ -232,16 +229,6 @@ namespace Unity_Tools.Collections
             return result;
         }
 
-        public T[] FindInRadius(Vector3 center, float radius)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T[] FindInBounds(Bounds bounds)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<T> SphereCast(Vector3 center, float radius)
         {
             return new SphereCastEnumerator<T>(this, center, radius);
@@ -306,6 +293,16 @@ namespace Unity_Tools.Collections
             {
                 root.AddItem(items[i], positions[i], 1);
             }
+        }
+
+        public T[] FindInBounds(Bounds bounds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T[] FindInRadius(Vector3 center, float radius)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

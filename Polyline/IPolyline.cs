@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         IPolyline.cs
 // 
-// Created:          19.08.2019  12:34
-// Last modified:    25.08.2019  15:59
+// Created:          16.08.2019  16:33
+// Last modified:    25.10.2019  11:38
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -34,22 +34,6 @@ namespace Unity_Tools.Polyline
         float Length { get; }
 
         /// <summary>
-        /// Gets the point on the polyline at the given position.
-        /// </summary>
-        /// <param name="position">The position measured as distance from the start.<br/>Must not be less than zero or more than <see cref="Length"/>.</param>
-        /// <returns>Returns the point.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The given position must be between zero and <see cref="Length"/>.</exception>
-        Vector3 GetPointAtPosition(float position);
-
-        /// <summary>
-        /// Gets the forward direction of the polyline at the given relative position.
-        /// </summary>
-        /// <param name="position">The position measured as distance from the start.<br/>Must not be less than zero or more than <see cref="Length"/>.</param>
-        /// <returns>Returns the forward position.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The given position must be between zero and <see cref="Length"/>.</exception>
-        Vector3 GetDirectionAtPosition(float position);
-
-        /// <summary>
         /// Finds the point on the polyline that is nearest to the given point.
         /// </summary>
         /// <param name="point">The point relative to the polyline.</param>
@@ -62,5 +46,21 @@ namespace Unity_Tools.Polyline
         /// <param name="point">The point relative to the polyline.</param>
         /// <returns>Returns the nearest position measured as distance from the start.</returns>
         float ClosestPosition(Vector3 point);
+
+        /// <summary>
+        /// Gets the forward direction of the polyline at the given relative position.
+        /// </summary>
+        /// <param name="position">The position measured as distance from the start.<br/>Must not be less than zero or more than <see cref="Length"/>.</param>
+        /// <returns>Returns the forward position.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The given position must be between zero and <see cref="Length"/>.</exception>
+        Vector3 GetDirectionAtPosition(float position);
+
+        /// <summary>
+        /// Gets the point on the polyline at the given position.
+        /// </summary>
+        /// <param name="position">The position measured as distance from the start.<br/>Must not be less than zero or more than <see cref="Length"/>.</param>
+        /// <returns>Returns the point.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The given position must be between zero and <see cref="Length"/>.</exception>
+        Vector3 GetPointAtPosition(float position);
     }
 }
