@@ -47,6 +47,9 @@ Currently in C# Tools for Unity available:
  - [Simple 3D collection](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Simple3DCollection.cs)
    - Similar to the 3D octree implementation, but optimized for small datasets.
    - Simple implementation, little garbage
+ - [Graph](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Graph.cs)
+   - Graph implementation that allows for graph queries on uni- and bidirectional graphs.
+   - FindShortestPath, FindShortestPath (restricted), FindShortestPathToNearest, FindConnectedMatches
  - [AVL Tree for generic key value pairs](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/AvlTree.cs)
    - Allows common tree operations
    - Add, Remove, Contains, TryGet, etc.
