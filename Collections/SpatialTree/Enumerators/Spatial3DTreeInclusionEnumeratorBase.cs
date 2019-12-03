@@ -3,7 +3,7 @@
 // Filename:         Spatial3DTreeInclusionEnumeratorBase.cs
 // 
 // Created:          24.10.2019  18:16
-// Last modified:    25.10.2019  11:38
+// Last modified:    03.12.2019  08:37
 // 
 // --------------------------------------------------------------------------------------
 // 

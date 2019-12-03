@@ -1,4 +1,27 @@
-﻿using System;
+﻿// Solution:         Unity Tools
+// Project:          UnityTools
+// Filename:         Graph.cs
+// 
+// Created:          02.12.2019  11:17
+// Last modified:    03.12.2019  08:37
+// 
+// --------------------------------------------------------------------------------------
+// 
+// MIT License
+// 
+// Copyright (c) 2019 chillersanim
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,11 +46,6 @@ namespace Unity_Tools.Collections
 
         private readonly Queue<GraphNode> searchCache;
 
-        /// <summary>
-        /// Defines how the connections are treated in this graph.
-        /// </summary>
-        public GraphConnectionType ConnectionType { get; }
-
         /// <inheritdoc/>
         /// <summary>
         /// Creates a graph instances that uses undirected connections.
@@ -50,11 +68,28 @@ namespace Unity_Tools.Collections
         }
 
         /// <summary>
+        /// Defines how the connections are treated in this graph.
+        /// </summary>
+        public GraphConnectionType ConnectionType { get; }
+
+        /// <summary>
         /// Gets the node that represents the key in this graph.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>Returns the representing node.</returns>
         public IGraphNode<T> this[T key] => itemToGraphNodes[key];
+
+        /// <inheritdoc/>
+        public IEnumerator<IGraphNode<T>> GetEnumerator()
+        {
+            return itemToGraphNodes.Values.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         /// <summary>
         /// Adds the key as new node to the graph.
@@ -67,42 +102,6 @@ namespace Unity_Tools.Collections
             {
                 throw new InvalidOperationException("The key already exists in the graph.");
             }
-        }
-
-        /// <summary>
-        /// Tries to add an key as new node to the graph and returns whether the operation succeeded.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>Returns <c>true</c> when the key was successfully added to the graph, <c>false</c> otherwise.</returns>
-        public bool TryAdd(T key)
-        {
-            if (this.itemToGraphNodes.ContainsKey(key))
-            {
-                return false;
-            }
-
-            var node = GraphNodePool.Get();
-            node.key = key;
-            itemToGraphNodes.Add(key, node);
-            return true;
-        }
-
-        /// <summary>
-        /// Tries to get the node that represents the key in this graph..
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="node">The representing node.</param>
-        /// <returns>Return <c>true</c> if the key was part of the graph, <c>false</c> otherwise.</returns>
-        public bool TryGetNode(T key, out IGraphNode<T> node)
-        {
-            if (itemToGraphNodes.TryGetValue(key, out var n))
-            {
-                node = n;
-                return true;
-            }
-
-            node = null;
-            return false;
         }
 
         /// <summary>
@@ -129,156 +128,57 @@ namespace Unity_Tools.Collections
         }
 
         /// <summary>
-        /// Tries to remove the <see cref="key"/> from the graph.
+        /// Find all matching nodes that are connected to the from node via allowed nodes.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>Returns <c>true</c> if the node was successfully removed, <c>false</c> otherwise.</returns>
-        public bool Remove(T key)
+        /// <param name="from">The start node.</param>
+        /// <param name="canUseNode">Evaluates whether the node can be used as a path node.</param>
+        /// <param name="match">Evaluates whether the node is a match.</param>
+        /// <param name="output">The collection in which matching nodes get stored. This doesn't get cleared before use.</param>
+        public void FindConnectedMatches(T from, Func<T, bool> canUseNode, Func<T, bool> match, ICollection<T> output)
         {
-            if (!itemToGraphNodes.TryGetValue(key, out var node))
+            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
             {
-                return false;
+                throw new InvalidOperationException("The from key is not part of the graph.");
             }
 
-            if (ConnectionType == GraphConnectionType.Undirected)
+            if (output == null)
             {
-                foreach (var neighbor in node.Edges)
+                throw new ArgumentNullException(nameof(output), "The output collection must not be null.");
+            }
+
+            PrepareForSearch();
+            searchCache.Enqueue(fromNode);
+
+            fromNode.Previous = fromNode;
+            if (match(from))
+            {
+                output.Add(from);
+            }
+
+            while (searchCache.Count > 0)
+            {
+                var current = searchCache.Dequeue();
+
+                foreach (var neighbor in current.Edges)
                 {
-                    neighbor.Edges.Remove(node);
+                    if (neighbor.Previous != null)
+                    {
+                        continue;
+                    }
+
+                    neighbor.Previous = current;
+
+                    if (match(neighbor.Key))
+                    {
+                        output.Add(neighbor.Key);
+                    }
+
+                    if (canUseNode(neighbor.Key))
+                    {
+                        searchCache.Enqueue(neighbor);
+                    }
                 }
             }
-            else
-            {
-                foreach (var n in itemToGraphNodes.Values)
-                {
-                    n.Edges.Remove(node);
-                }
-            }
-            
-            itemToGraphNodes.Remove(key);
-            PoolNode(node);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Evaluates whether there exists and edge going from <see cref="from"/> to <see cref="to"/>.
-        /// </summary>
-        /// <param name="from">The from key.</param>
-        /// <param name="to">The to key.</param>
-        /// <returns>Returns <c>true</c> if the edge exists, <c>false</c> otherwise.</returns>
-        public bool HasEdge(T from, T to)
-        {
-            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
-            {
-                return false;
-            }
-
-            foreach (var neighbor in fromNode.Edges)
-            {
-                if (Equals(neighbor.Key, to))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Creates an edge starting at the <see cref="from"/> key going to the <see cref="to"/> key.<br/>
-        /// If any of those two key aren't part of the graph, a new node is created for them.
-        /// </summary>
-        /// <param name="from">The from key.</param>
-        /// <param name="to">The to key.</param>
-        public void MakeEdgeAndNodes(T from, T to)
-        {
-            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
-            {
-                fromNode = GraphNodePool.Get();
-                fromNode.key = from;
-                itemToGraphNodes.Add(from, fromNode);
-            }
-
-            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
-            {
-                toNode = GraphNodePool.Get();
-                toNode.key = to;
-                itemToGraphNodes.Add(to, toNode);
-            }
-
-            if (fromNode.Edges.Contains(toNode))
-            {
-                return;
-            }
-
-            fromNode.Edges.Add(toNode);
-
-            if (ConnectionType == GraphConnectionType.Undirected)
-            {
-                toNode.Edges.Add(fromNode);
-            }
-        }
-
-        /// <summary>
-        /// Tries to create an edge starting at the <see cref="from"/> key going to the <see cref="to"/> key.<br/>
-        /// If any of the two key aren't part of the graph, the operation fails and does nothing.
-        /// </summary>
-        /// <param name="from">The start of the new edge.</param>
-        /// <param name="to">The target of the new edge.</param>
-        /// <returns>Returns <c>true</c> if the new edge could be created, or <c>false</c> when any of the nodes are missing or the edge already exists.</returns>
-        public bool TryMakeEdge(T from, T to)
-        {
-            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
-            {
-                return false;
-            }
-
-            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
-            {
-                return false;
-            }
-
-            if (fromNode.Edges.Contains(toNode))
-            {
-                return false;
-            }
-
-            fromNode.Edges.Add(toNode);
-
-            if (ConnectionType == GraphConnectionType.Undirected)
-            {
-                toNode.Edges.Add(fromNode);
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Tries to remove the edge starting at <see cref="from"/> and going to <see cref="to"/>.
-        /// </summary>
-        /// <param name="from">The start of the edge.</param>
-        /// <param name="to">The target of the edge.</param>
-        /// <returns>Returns <c>true</c> if the edge was successfully removed, <c>false</c> otherwise.</returns>
-        public bool RemoveEdge(T from, T to)
-        {
-            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
-            {
-                return false;
-            }
-
-            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
-            {
-                return false;
-            }
-
-            var success = fromNode.Edges.Remove(toNode);
-            if (success && ConnectionType == GraphConnectionType.Undirected)
-            {
-                toNode.Edges.Remove(fromNode);
-            }
-
-            return success;
         }
 
         /// <summary>
@@ -431,70 +331,192 @@ namespace Unity_Tools.Collections
         }
 
         /// <summary>
-        /// Find all matching nodes that are connected to the from node via allowed nodes.
+        /// Evaluates whether there exists and edge going from <see cref="from"/> to <see cref="to"/>.
         /// </summary>
-        /// <param name="from">The start node.</param>
-        /// <param name="canUseNode">Evaluates whether the node can be used as a path node.</param>
-        /// <param name="match">Evaluates whether the node is a match.</param>
-        /// <param name="output">The collection in which matching nodes get stored. This doesn't get cleared before use.</param>
-        public void FindConnectedMatches(T from, Func<T, bool> canUseNode, Func<T, bool> match, ICollection<T> output)
+        /// <param name="from">The from key.</param>
+        /// <param name="to">The to key.</param>
+        /// <returns>Returns <c>true</c> if the edge exists, <c>false</c> otherwise.</returns>
+        public bool HasEdge(T from, T to)
         {
             if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
             {
-                throw new InvalidOperationException("The from key is not part of the graph.");
+                return false;
             }
 
-            if (output == null)
+            foreach (var neighbor in fromNode.Edges)
             {
-                throw new ArgumentNullException(nameof(output), "The output collection must not be null.");
-            }
-
-            PrepareForSearch();
-            searchCache.Enqueue(fromNode);
-
-            fromNode.Previous = fromNode;
-            if (match(from))
-            {
-                output.Add(from);
-            }
-
-            while (searchCache.Count > 0)
-            {
-                var current = searchCache.Dequeue();
-
-                foreach (var neighbor in current.Edges)
+                if (Equals(neighbor.Key, to))
                 {
-                    if (neighbor.Previous != null)
-                    {
-                        continue;
-                    }
-
-                    neighbor.Previous = current;
-
-                    if (match(neighbor.Key))
-                    {
-                        output.Add(neighbor.Key);
-                    }
-
-                    if (canUseNode(neighbor.Key))
-                    {
-                        searchCache.Enqueue(neighbor);
-                    }
+                    return true;
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Creates an edge starting at the <see cref="from"/> key going to the <see cref="to"/> key.<br/>
+        /// If any of those two key aren't part of the graph, a new node is created for them.
+        /// </summary>
+        /// <param name="from">The from key.</param>
+        /// <param name="to">The to key.</param>
+        public void MakeEdgeAndNodes(T from, T to)
+        {
+            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
+            {
+                fromNode = GraphNodePool.Get();
+                fromNode.key = from;
+                itemToGraphNodes.Add(from, fromNode);
+            }
+
+            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
+            {
+                toNode = GraphNodePool.Get();
+                toNode.key = to;
+                itemToGraphNodes.Add(to, toNode);
+            }
+
+            if (fromNode.Edges.Contains(toNode))
+            {
+                return;
+            }
+
+            fromNode.Edges.Add(toNode);
+
+            if (ConnectionType == GraphConnectionType.Undirected)
+            {
+                toNode.Edges.Add(fromNode);
             }
         }
 
         /// <summary>
-        /// Prepares the graph for a search operation.
+        /// Tries to remove the <see cref="key"/> from the graph.
         /// </summary>
-        private void PrepareForSearch()
+        /// <param name="key">The key.</param>
+        /// <returns>Returns <c>true</c> if the node was successfully removed, <c>false</c> otherwise.</returns>
+        public bool Remove(T key)
         {
-            searchCache.Clear();
-
-            foreach(var node in itemToGraphNodes.Values)
+            if (!itemToGraphNodes.TryGetValue(key, out var node))
             {
-                node.Previous = null;
+                return false;
             }
+
+            if (ConnectionType == GraphConnectionType.Undirected)
+            {
+                foreach (var neighbor in node.Edges)
+                {
+                    neighbor.Edges.Remove(node);
+                }
+            }
+            else
+            {
+                foreach (var n in itemToGraphNodes.Values)
+                {
+                    n.Edges.Remove(node);
+                }
+            }
+            
+            itemToGraphNodes.Remove(key);
+            PoolNode(node);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to remove the edge starting at <see cref="from"/> and going to <see cref="to"/>.
+        /// </summary>
+        /// <param name="from">The start of the edge.</param>
+        /// <param name="to">The target of the edge.</param>
+        /// <returns>Returns <c>true</c> if the edge was successfully removed, <c>false</c> otherwise.</returns>
+        public bool RemoveEdge(T from, T to)
+        {
+            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
+            {
+                return false;
+            }
+
+            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
+            {
+                return false;
+            }
+
+            var success = fromNode.Edges.Remove(toNode);
+            if (success && ConnectionType == GraphConnectionType.Undirected)
+            {
+                toNode.Edges.Remove(fromNode);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Tries to add an key as new node to the graph and returns whether the operation succeeded.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Returns <c>true</c> when the key was successfully added to the graph, <c>false</c> otherwise.</returns>
+        public bool TryAdd(T key)
+        {
+            if (this.itemToGraphNodes.ContainsKey(key))
+            {
+                return false;
+            }
+
+            var node = GraphNodePool.Get();
+            node.key = key;
+            itemToGraphNodes.Add(key, node);
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the node that represents the key in this graph..
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="node">The representing node.</param>
+        /// <returns>Return <c>true</c> if the key was part of the graph, <c>false</c> otherwise.</returns>
+        public bool TryGetNode(T key, out IGraphNode<T> node)
+        {
+            if (itemToGraphNodes.TryGetValue(key, out var n))
+            {
+                node = n;
+                return true;
+            }
+
+            node = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to create an edge starting at the <see cref="from"/> key going to the <see cref="to"/> key.<br/>
+        /// If any of the two key aren't part of the graph, the operation fails and does nothing.
+        /// </summary>
+        /// <param name="from">The start of the new edge.</param>
+        /// <param name="to">The target of the new edge.</param>
+        /// <returns>Returns <c>true</c> if the new edge could be created, or <c>false</c> when any of the nodes are missing or the edge already exists.</returns>
+        public bool TryMakeEdge(T from, T to)
+        {
+            if (!itemToGraphNodes.TryGetValue(from, out var fromNode))
+            {
+                return false;
+            }
+
+            if (!itemToGraphNodes.TryGetValue(to, out var toNode))
+            {
+                return false;
+            }
+
+            if (fromNode.Edges.Contains(toNode))
+            {
+                return false;
+            }
+
+            fromNode.Edges.Add(toNode);
+
+            if (ConnectionType == GraphConnectionType.Undirected)
+            {
+                toNode.Edges.Add(fromNode);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -510,6 +532,20 @@ namespace Unity_Tools.Collections
         }
 
         /// <summary>
+        /// Prepares the graph for a search operation.
+        /// </summary>
+        private void PrepareForSearch()
+        {
+            searchCache.Clear();
+
+            foreach(var node in itemToGraphNodes.Values)
+            {
+                node.Previous = null;
+            }
+        }
+
+        /// <inheritdoc />
+        /// <summary>
         /// Internal representation of the graph node.
         /// </summary>
         private sealed class GraphNode : IGraphNode<T>
@@ -517,8 +553,6 @@ namespace Unity_Tools.Collections
             public readonly Collection<GraphNode> Edges;
 
             public T key;
-
-            public T Key => key;
 
             public GraphNode Previous;
 
@@ -532,6 +566,8 @@ namespace Unity_Tools.Collections
             {
                 this.key = key;
             }
+
+            public T Key => key;
 
             public IEnumerator<IGraphNode<T>> GetEnumerator()
             {
@@ -554,18 +590,6 @@ namespace Unity_Tools.Collections
             }
 
             public int Count => Edges.Count;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerator<IGraphNode<T>> GetEnumerator()
-        {
-            return itemToGraphNodes.Values.GetEnumerator();
-        }
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 
