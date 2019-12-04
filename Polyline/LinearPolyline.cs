@@ -48,6 +48,14 @@ namespace Unity_Tools.Polyline
             distances.Add(0);
         }
 
+        public LinearPolyline(IList<Vector3> points)
+        {
+            this.points = new List<Vector3>(points);
+            this.distances = new List<double>(points.Count);
+            
+            RecalculateLength();
+        }
+
         public LinearPolyline(params Vector3[] points)
         {
             this.points = new List<Vector3>(points);
@@ -196,6 +204,11 @@ namespace Unity_Tools.Polyline
             set
             {
                 var old = points[index];
+                if ((old - value).sqrMagnitude < 1e-6f)
+                {
+                    return;
+                }
+
                 points[index] = value;
 
                 if (points.Count >= 2)
@@ -255,17 +268,17 @@ namespace Unity_Tools.Polyline
                 return points[0];
             }
 
-            var index = distances.BinarySearch(position);
-            if (index == points.Count - 1)
+            var index = distances.BinarySearchLocation(position);
+            if (index >= points.Count - 1)
             {
-                index--;
+                index = points.Count - 2;
             }
 
             var from = points[index];
             var to = points[index + 1];
-            var localPosition = (position - distances[index]) / Length;
+            var localPosition = (position - distances[index]) / (distances[index + 1] - distances[index]);
 
-            return (to - from) * (float) localPosition;
+            return (to - from) * (float) localPosition + from;
         }
 
         public Vector3 GetDirectionAtPosition(float position)

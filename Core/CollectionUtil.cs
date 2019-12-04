@@ -32,7 +32,7 @@ namespace Unity_Tools.Core
     public static class CollectionUtil
     {
         /// <summary>
-        /// Searches for the index after the last element that is still smaller than the value.
+        /// Searches for the index of the last element that is still smaller than the value.
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="items">The list to search. Must be ordered in ascending order.</param>
@@ -45,7 +45,7 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
-        /// Searches for the index after the last element that is still smaller than the value.
+        /// Searches for the index of the last element that is still smaller than the value.
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="items">The list to search. Must be ordered in ascending order.</param>
@@ -58,7 +58,7 @@ namespace Unity_Tools.Core
         }
 
         /// <summary>
-        /// Searches for the index after the last element that is still smaller than the value.
+        /// Searches for the index of the last element that is still smaller than the value.
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="items">The list to search. Must be ordered in ascending order.</param>
@@ -68,7 +68,7 @@ namespace Unity_Tools.Core
         public static int BinarySearchLocation<T>(this IList<T> items, T value, Comparison<T> comparer)
         {
             var start = 0;
-            var end = items.Count;
+            var end = items.Count - 1;
 
             while (end > start)
             {
@@ -76,7 +76,7 @@ namespace Unity_Tools.Core
                 var item = items[current];
                 var compared = comparer(item, value);
 
-                if (compared < 0)
+                if (compared <= 0)
                 {
                     start = current + 1;
                 }
@@ -86,7 +86,7 @@ namespace Unity_Tools.Core
                 }
             }
 
-            return start;
+            return start - 1;
         }
 
         /// <summary>
