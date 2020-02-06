@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         AvlTree.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    03.12.2019  08:37
+// Created:          19.08.2019  12:34
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,7 +22,7 @@
 // copies or substantial portions of the Software.
 
 using System;
-using Unity_Tools.Collections.AvlTree;
+using Unity_Tools.Collections.Internals;
 
 namespace Unity_Tools.Collections
 {

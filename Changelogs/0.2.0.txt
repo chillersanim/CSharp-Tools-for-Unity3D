@@ -1,0 +1,79 @@
+﻿
+Changelog of Unity_Tools version 0.2.0
+
+Release date: 06.02.2020
+
+
+------------------------
+ Notes
+------------------------
+
+This update affected a many components and might cause problems when updating the project.
+It is advised to do a backup of your code before update as you might need to change your code to reflect the changes.
+If you run into problems with this update, please open an issue or ask for support in the forum.
+
+This is the first change log.
+Previous changes and additions are only documented in the commit history of the github project.
+
+
+------------------------
+ New features
+------------------------
+
+ - New class: Collections/PointOctree.cs							High-performance 3d point collection for bounded point lookup.
+ - New class: Components/MainThreadDispatch.cs						A component that allows dispatching calls to the main thread, supporting Invoke, InvoceAsync, Await.
+ - New class: Core/Helpers/CallController.cs						A generic and non-generic version of an event like mechanism, offers slightly more control and is quite fast.
+ - New class: Core/Helpers/Interval.cs								A generic representation of an interval.
+ - New interface: Core/Interfaces/IVector.cs						Interface for vector implementations (Not used by Unity vectors).
+ - New interface: Core/Interfaces/IVectorD.cs IVectorF.cs			Interface for vector implementations using single and double precision (Not used by Unity vectors)
+ - New class: Core/Interpolation/CubicHermiteInterpolation.cs		A scalar interpolant that interpolates knots using cubic hermite interpolation.
+ - New class: Core/Interpolation/LinearInterpolation.cs				A scalar interpolant that interpolates knots using linear interpolation.
+ - New class: Core/Interpolation/PolynomialInterpolation.cs			A scalar interpolant that interpolates knots using polynomial interpolation.
+ - New class: Core/Interpolation/PolynomialInterpolation2.cs		An alternative implementation of the PolynomialInterpolation.cs, which uses more time to generate the interpolant, but is faster on the evaluation.
+ - New class: Core/Matrix/MatrixD.cs MatrixF.cs						Base class for matrix implementations using single and double precision.
+ - New class: Core/Matrix/Matrix3x3d.cs Matrix3x3f.cs				Matrix implementation for 3x3 matrix using single and double precision.
+ - New class: Core/Matrix/Matrix4x4d.cs Matrix4x4f.cs				Matrix implementation for 4x4 matrix using single and double precision.
+ - New class: Core/Matrix/MatrixMxNd.cs MatrixMxNf.cs				Matrix implementation for MxN matrix using single and double precision.
+ - New class: Core/Matrix/MatrixFactory.cs							A matrix factory that simplifies creating new matrices.
+ - New class: Core/Matrix/Vector2d.cs Vector3d.cs Vector4d.cs		Vector implementation for 2, 3 and 4 dimensional vectors, using double precision.
+ - New class: Core/Matrix/VectorNd.cs VectorNf.cs					Vector implementation for N-dimensional vectors, using single and double precision.
+ - New class: Core/Matrix/VectorFactory.cs							A vector factory that simplifies creating new vectors.
+ - New struct: Core/Primitives/Aabb.cs								A volume representation of an axis aligned bounding box (Aabb).
+ - New struct: Core/Primitives/Line.cs								A volume representation of a line in 3d space.
+ - new struct: Core/Primitives/Sphere.cs							A volume representation of a sphere.
+ - New struct: Core/Primitives/VolumeDifference.cs					A volume modifier that represents the volumetric difference of two volumes.
+ - New struct: Core/Primitives/VolumeEmpty.cs						A volume representation of an empty volume.
+ - New struct: Core/Primitives/VolumeIntersection.cs				A volume modifier that represents the volumetric intersection of two volumes.
+ - New struct: Core/Primitives/VolumeInverse.cs						A volume modifier that represents the volumetric inverse of two volumes.
+ - New struct: Core/Primitives/VolumePlane.cs						A volume representation of the volume on the front side of a plane.
+ - New struct: Core/Primitives/VolumeUnion.cs						A volume modifier that represents the volumetric union of two volumes.
+ - New class: Core/Utils/NumericsUtil.cs							Utility class that provides numerics tools like numerical differentiation.
+ - New class: Text/StreamReplacement.cs								A string replacement utility that allows replacing specific strings with other strings in a character stream.
+
+
+------------------------
+ Improvements
+------------------------
+
+ - General: Improved project layout and namespaces structure.
+ - General: Cleaned code and improved readability in various classes.
+ - General: Merged many namespaces into Core namespace.
+ - Collections: In IPoint3DCollection interface, replaced various casting methods with a single generic ShapeCast<T> method, that accepts any instance of IVolume.
+ - Collections: For Spatial3DTree class, replaced various enumerators with a single generic enumerator, according to change in IPoint3DCollection interface.
+ - Components: Improved CallProvider to offer more callbacks
+ - Core: Split Nums.cs into multiple files to better group the functionality of the code.
+ - Experimental: Moved MeshBuilder to Experimental namespace, as the functinality has not been verified and a rewrite is planned.
+
+
+------------------------
+ Fixed bugs
+------------------------
+
+ - Many...
+
+
+------------------------
+ Breakign changes
+------------------------
+
+ - Many...

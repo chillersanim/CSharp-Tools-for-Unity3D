@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         SphereCastVisualization.cs
 // 
-// Created:          24.08.2019  14:36
-// Last modified:    03.12.2019  08:37
+// Created:          23.08.2019  13:05
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -23,8 +23,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity_Tools.Core;
 using UnityEngine;
-using Unity_Tools.Collections.SpatialTree;
 
 namespace Unity_Tools.Examples
 {
@@ -39,10 +39,10 @@ namespace Unity_Tools.Examples
 
         void OnDrawGizmos()
         {
+            Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
+
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(this.transform.position, Radius);
-
-            Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
         }
 
         void Start()
@@ -65,7 +65,7 @@ namespace Unity_Tools.Examples
             }
 
             currentPoints.Clear();
-            Point.AllPoints.SphereCast(this.transform.position, Radius, currentPoints);
+            currentPoints.AddRange(Point.AllPoints.ShapeCast(new Sphere(this.transform.position, Radius)));
         
             previousPoints.ExceptWith(currentPoints);
 

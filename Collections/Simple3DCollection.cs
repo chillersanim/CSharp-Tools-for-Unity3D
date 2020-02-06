@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Simple3DCollection.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    03.12.2019  08:37
+// Created:          12.08.2019  19:04
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -24,30 +24,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using UnityEngine;
-using Unity_Tools.Collections.SpatialTree;
 using Unity_Tools.Core;
+using UnityEngine;
 
 namespace Unity_Tools.Collections
 {
     public class Simple3DCollection<T> : IPoint3DCollection<T>
     {
         [NotNull]
-        private readonly List<ItemEntry> items;
+        private readonly List<(T item, Vector3 position)> items;
 
-        private readonly List<T> searchCache;
+        private readonly HashSet<(T, Vector3)> lookup;
 
-        public Simple3DCollection()
+        public Simple3DCollection(bool allowDuplicates = false)
         {
-            this.items = new List<ItemEntry>();
-            searchCache = new List<T>();
+            this.items = new List<(T, Vector3)>();
+            this.AllowsDuplicates = allowDuplicates;
+
+            if (!allowDuplicates)
+            {
+                this.lookup = new HashSet<(T, Vector3)>();
+            }
         }
+
+        public Simple3DCollection(int capacity, bool allowDuplicates = false)
+        {
+            this.items = new List<(T, Vector3)>(capacity);
+            this.AllowsDuplicates = allowDuplicates;
+
+            if (!allowDuplicates)
+            {
+                this.lookup = new HashSet<(T, Vector3)>();
+            }
+        }
+
+        public bool AllowsDuplicates { get; }
 
         public IEnumerator<T> GetEnumerator()
         {
             foreach (var item in items)
             {
-                yield return item.Item;
+                yield return item.item;
             }
         }
 
@@ -60,12 +77,17 @@ namespace Unity_Tools.Collections
 
         public void Add(T item, Vector3 position)
         {
-            if (this.Contains(item, position))
+            if (!AllowsDuplicates && this.Contains(item, position))
             {
                 return;
             }
 
-            items.Add(new ItemEntry(item, position));
+            items.Add((item, position));
+
+            if (!AllowsDuplicates)
+            {
+                lookup.Add((item, position));
+            }
         }
 
         public void Clear()
@@ -75,15 +97,26 @@ namespace Unity_Tools.Collections
 
         public bool Contains(T item, Vector3 position)
         {
-            foreach (var entry in items)
+            if (!AllowsDuplicates)
             {
-                if (entry.Equals(item, position))
+                return lookup.Contains((item, position));
+            }
+            else
+            {
+                // Can't use the lookup, as HashSet doesn't support duplicate entries
+                return items.Contains((item, position));
+            }
+        }
+
+        public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IVolume
+        {
+            foreach (var item in items)
+            {
+                if (shape.ContainsPoint(item.position))
                 {
-                    return true;
+                    yield return item.item;
                 }
             }
-
-            return false;
         }
 
         public bool MoveItem(T item, Vector3 @from, Vector3 to)
@@ -91,9 +124,26 @@ namespace Unity_Tools.Collections
             for (var i = 0; i < items.Count; i++)
             {
                 var entry = items[i];
-                if (entry.Equals(item, from))
+                if (entry.Equals((item, from)))
                 {
-                    items[i] = new ItemEntry(item, to);
+                    if (!AllowsDuplicates)
+                    {
+                        lookup.Remove((item, from));
+
+                        if (Contains(item, to))
+                        {
+                            items.RemoveAt(i);
+                            return true;
+                        }
+
+                        items[i] = (item, to);
+                        lookup.Add((item, to));
+                    }
+                    else
+                    {
+                        items[i] = (item, to);
+                    }
+                    
                     return true;
                 }
             }
@@ -106,100 +156,21 @@ namespace Unity_Tools.Collections
             for (var i = 0; i < items.Count; i++)
             {
                 var entry = items[i];
-                if (entry.Equals(item, position))
+                if (entry.Equals((item, position)))
                 {
                     items[i] = items[items.Count - 1];
                     items.RemoveAt(items.Count - 1);
+
+                    if (!AllowsDuplicates)
+                    {
+                        lookup.Remove((item, position));
+                    }
 
                     return true;
                 }
             }
 
             return false;
-        }
-
-        public IEnumerable<T> SphereCast(Vector3 center, float radius)
-        {
-            foreach (var item in items)
-            {
-                if (Math3D.IsPointInSphere(item.Position, center, radius))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        public IEnumerable<T> BoundsCast(Bounds bounds)
-        {
-            foreach (var item in items)
-            {
-                if (bounds.Contains(item.Position))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        public IEnumerable<T> ShapeCast(IShape shape)
-        {
-            foreach (var item in items)
-            {
-                if (shape.ContainsPoint(item.Position))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        public IEnumerable<T> InverseSphereCast(Vector3 center, float radius)
-        {
-            foreach (var item in items)
-            {
-                if (!Math3D.IsPointInSphere(item.Position, center, radius))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        public IEnumerable<T> InverseBoundsCast(Bounds bounds)
-        {
-            foreach (var item in items)
-            {
-                if (!bounds.Contains(item.Position))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        public IEnumerable<T> InverseShapeCast(IShape shape)
-        {
-            foreach (var item in items)
-            {
-                if (!shape.ContainsPoint(item.Position))
-                {
-                    yield return item.Item;
-                }
-            }
-        }
-
-        private struct ItemEntry
-        {
-            public readonly T Item;
-
-            public readonly Vector3 Position;
-
-            public bool Equals(T other, Vector3 otherPosition)
-            {
-                return this.Position == otherPosition && Equals(this.Item, other);
-            }
-
-            public ItemEntry(T item, Vector3 position)
-            {
-                this.Item = item;
-                this.Position = position;
-            }
         }
     }
 }

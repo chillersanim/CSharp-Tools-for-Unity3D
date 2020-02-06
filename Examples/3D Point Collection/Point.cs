@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Point.cs
 // 
-// Created:          24.08.2019  14:33
-// Last modified:    03.12.2019  08:37
+// Created:          23.08.2019  13:10
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -21,9 +21,9 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using UnityEngine;
 using Unity_Tools.Collections;
-using Unity_Tools.Core;
+using Unity_Tools.Components;
+using UnityEngine;
 
 namespace Unity_Tools.Examples
 {
@@ -32,7 +32,7 @@ namespace Unity_Tools.Examples
     {
         private const float MaxSquareOffsetBeforeUpdate = 0.001f * 0.001f;
 
-        public static readonly Spatial3DTree<Point> AllPoints = new Spatial3DTree<Point>();
+        public static readonly Spatial3DTree<Point> AllPoints = new Spatial3DTree<Point>(true);
 
         public bool Active;
 
@@ -59,6 +59,11 @@ namespace Unity_Tools.Examples
         void OnDestroy()
         {
             AllPoints.Remove(this, storedPosition);
+
+            if (CallProvider.CanAccessInstance)
+            {
+                CallProvider.RemovePeriodicUpdateListener(this.PeriodicUpdate);
+            }
         }
 
         void PeriodicUpdate()
