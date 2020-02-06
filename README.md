@@ -60,9 +60,9 @@ Currently in C# Tools for Unity available:
 
 **Others**  
  - [Polylines](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Core/Polyline)
-   - Polyline with fast linear interpolation 
-   - Simple line
+   - Polylines for interpolation between data points.
    - Interface and extension method for generic polylines
+   - Line segment, Linear polyline, Catmull-Rom polyline (cubic spline)
  - [Pipeline framework](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Pipeline) [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Simple3DCollection.cs)]
    - Create a custom pipeline with predefined or custom nodes.
    - Execute pipeline in a customizable manner
