@@ -1,80 +1,162 @@
 # C# tools for Unity3D
 
-C# tools for Unity is a collection of classes, that can be used as basis for your own code.  
-The goal of this script collection is to provide a basis to build upon and take away some of the difficulties in programming 3D code.  
-The goal is not to provide finished components, but means to create them.
+C# tools for Unity is a class library that provides tools that solves common coding problems in Unity.  
+It provides hand-optimized data structures, algorithms, components and utilities that often come in handy.  
+While it offers a few mono behaviors, its main focus is on providing coding tools.  
 
-See the [wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki) for more information.  
-Discuss ideas and concerns in [this forum](https://forum.unity.com/threads/open-source-c-library-for-unity-developers.731399/).
+## Links  
+Check the [wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki) for detailed information.  
+Discuss ideas and ask questions in [this forum](https://forum.unity.com/threads/open-source-c-library-for-unity-developers.731399/).
 
-This collection is a work in progress and prone to changes.
+## Important  
+This collection is a work in progress and prone to changes.  
+New versions might contain breaking changes and require you to adapt your code.
 
-----
+## Table of content  
 
-Currently in C# Tools for Unity available:  
+**Collections**  
+*Various collections and collection modifiers.* </summary>
+ - AvlTree
+ - Various collection mappers
+ - Collection filter
+ - Graph
+ - Point collections
+ - Simplified point, bounds and sphere collections
 
-**Core** [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki/Core)] 
- - [Math3D](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/Math3D.cs)
-   - Many useful methods for common 3D math operations
-   - Nearest point, intersection, etc.
- - [Nums](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/Nums.cs)
-   - General purpose operations (Generic GetHashCode, Sort, Revert)
- - [VectorMath](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/VectorMath.cs)
-   - Many useful methods for vector operations (for Vector2, Vector2Int, Vector3, Vector3Int)
-   - Component modifications (clamp, min, max, etc. for individual components)
- - [SingletonBehavior](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/SingletonBehaviour.cs)
-   - Base class for all singleton monobehaviors
- - [Call provider](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/CallProvider.cs)
-   - Provides centralized callback functionality that allows subscription based callbacks
-   - Update, FixedUpdate, OnDrawGizmos, EditorOnlyUpdate
- - [MeshUtil](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/MeshUtil.cs)
-   - Provides some mesh operations
-   - IsConvex, IsCuboid
- - [UnityObjectUtil](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/UnityObjectUtil.cs)
-   - Some usefull methods for unity object modifications
-   - GetOrAddComponent, GetOrCreateChild, GetOrCreateHierarchy, MakeObjectNameUnique, etc.
- - [Object pooling](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Core/Pooling)  
-   - Reuse objects and lists, locally and globally, with cleanup utilites.
-   - Smart list polling allows for getting lists of at least a required size.
- - [CuttingEars Triangulation](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Core/CuttingEar.cs)
-   - Triangulates polygons using the cutting ears algorithm
-   - Optimized variants for convex and concave polygons
+**Components**  
+*Some mono behaviors that provide commonly required functionality.* 
+ - CallProvider
+ - MainThreadDispatch
+ - SingletonBehavior
 
-**Collections** [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki/Collections)] 
- - [Octree implementation for 3D points](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Spatial3DTree.cs)
-   - Search for items in Sphere, AABB, Custom shape
-   - Auto resize to fit items, no matter the size
- - [Simple 3D collection](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Simple3DCollection.cs)
-   - Similar to the 3D octree implementation, but optimized for small datasets.
-   - Simple implementation, little garbage
- - [Graph](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Graph.cs)
-   - Graph implementation that allows for graph queries on uni- and bidirectional graphs.
-   - FindShortestPath, FindShortestPath (restricted), FindShortestPathToNearest, FindConnectedMatches
- - [AVL Tree for generic key value pairs](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/AvlTree.cs)
-   - Allows common tree operations
-   - Add, Remove, Contains, TryGet, etc.
- - [Observable collection mappers](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/ObservableCollectionMapper.cs)
-   - Map items of a source collection and get a mapped collection that reflects changes in the source
- - [Observable filtered collection](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/ObservableFilteredCollection.cs)
-   - Filter a source collection and get a filtered collection that reflects changes in the source   
+**Core**  
+*The core of the library, provides a wide range of commonly used tools.  
+The classes below are categorized in different sub-folders, however they all share the same namespace: "Unity_Tools.Core"*
 
-**Others**  
- - [Polylines](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Core/Polyline)
-   - Polylines for interpolation between data points.
-   - Interface and extension method for generic polylines
-   - Line segment, Linear polyline, Catmull-Rom polyline (cubic spline)
- - [Pipeline framework](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/tree/master/Pipeline) [[Wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Collections/Simple3DCollection.cs)]
-   - Create a custom pipeline with predefined or custom nodes.
-   - Execute pipeline in a customizable manner
- - [Mesh data](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/blob/master/Modeling/MeshData.cs) [WIP]
-   - Experimental mesh builder
-   - Stores mesh data (Vertices, Edges, Polygons) in an optimized manner that allows for quick update and data operations.
-   - *Work in progress, probably contains bugs, prone to changes.*
+  - Common/  
+  *Contains classes that don't belong anywhere else.*  
+    - CallController
+    - Interval
+  
+  - Interfaces/  
+  *Contains all interfaces of the core namespace.*
+    - IBounds3DCollection
+    - IFilter
+    - IInterpolation
+    - IPoint3DCollection
+    - IPolygon
+    - IPolyline
+    - IReusable
+    - ISphere3DCollection
+    - IVector
+    - IVectorD
+    - IVectorF
+    - IVolume
+  
+  - Interpolation/  
+  *Provides interpolation data structures that allows you to interpolate scalar data in various ways.*  
+    - CubicHermiteInterpolation
+    - LinearInterpolation
+    - PolynomialInterpolation
+    - PolynomialInterpolation2
+  
+  - Matrix/  
+  *Some matrix and vector implementations for custom-dimensional matrices and vectors as well as double precision vectors.*  
+    - Matrix3x3d
+    - Matrix3x3f
+    - Matrix4x4d
+    - Matrix4x4f
+    - MatrixD
+    - MatrixF
+    - MatrixFactory
+    - MatrixMxNd
+    - MatrixMxNf
+    - Vector2d
+    - Vector3d
+    - Vector4d
+    - VectorFactory
+    - VectorNd
+    - VectorNf
+  
+  - Primitives/  
+  *3D primitives such as poly lines, polygons, shapes, volumes and surfaces.*
+    - Aabb
+    - CatmullRomSpline
+    - Line
+    - LinearPolyline
+    - LineSegment
+    - Polygon
+    - Sphere
+    - VolumeAll
+    - VolumeDifference
+    - VolumeEmpty
+    - VolumeIntersection
+    - VolumeInverse
+    - VolumePlane
+    - VolumeUnion
+  
+  - Utilities/  
+  *Static utility classes providing various functionalities and extension methods.*  
+    - CameraUtil
+    - CollectionUtil
+    - CommonUtil
+    - Math3D
+    - MeshUtil
+    - NumericsUtil
+    - PolygonUtil
+    - PolylineUtil
+    - UnityObjectUtil
+    - VectorUtil
+
+**Pipeline**  
+*Provides a flexible pipeline that allows you to efficiently pipeline work.*  
+ - IItemReciver
+ - IPipelineNode
+ - PipelineBase
+ - PipelineEnd
+ - PipelineFilter
+ - PipelineGraph
+ - PipelineItemFactory
+ - PipelineItemWorker
+ - PipelineStart
+ - PipelineWorker  
+ _
+ - Specialized/  
+ *Contains specialized pipeline nodes, these should be considered first before implementing custom nodes.*
+   - AddCollider
+   - AddComponent
+   - FilterByAnyComponents
+   - FilterByComponent
+   - GameObjectCollector
+   - GenerateLightmapUvs
+   - RemoveComponents
+   - RemovePrefabLink
+   - SetLayer
+   - SetMaterial
+   - SetStaticFlag
+
+**Pooling**  
+*Provides local and global object pools for various types.*  
+ - GlobalListPool
+ - GlobalPool
+ - IPool
+ - ListPool
+ - Pool
+ - PoolBase
+ - SpecializedPool
+
+**Text**  
+*Tools and classes for working with strings and text.*
+ - CsvHelper
+ - StreamReplacement
  
-----
-
+## Installation  
+To use this library in your Unity project, you simply need to download this project and place it in your project's asset folder.  
+Make sure that you don't place it in an Editor folder, otherwise the code won't be available when building your game.
+ 
+## Note  
 The files are provided AS IS.  
 Some components have been tested using Unity Tests.  
-I do not guaratee that the code is bug free, so use with care and test your stuff.  
+I do not guarantee that the code is bug free, so use with care and test your stuff.  
 If you find a bug, please let me know by opening an issue.  
 Thank you!
