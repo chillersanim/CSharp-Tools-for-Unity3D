@@ -13,9 +13,10 @@ This collection is a work in progress and prone to changes.
 New versions might contain breaking changes and require you to adapt your code.
 
 ## Table of content  
+This isn't the full table of content, but rather an overview.
+For the full table of content, check the [wiki](https://github.com/chillersanim/CSharp-Tools-for-Unity3D/wiki).
 
 **Collections**  
-*Various collections and collection modifiers.* </summary>
  - AvlTree
  - Various collection mappers
  - Collection filter
@@ -23,130 +24,32 @@ New versions might contain breaking changes and require you to adapt your code.
  - Point collections
  - Simplified point, bounds and sphere collections
 
-**Components**  
-*Some mono behaviors that provide commonly required functionality.* 
+**Components**    
  - CallProvider
  - MainThreadDispatch
  - SingletonBehavior
 
-**Core**  
-*The core of the library, provides a wide range of commonly used tools.  
-The classes below are categorized in different sub-folders, however they all share the same namespace: "Unity_Tools.Core"*
+**Core**     
+ - Interpolations
+ - Matrices (3x3, 4x4, MxN) single and double precision
+ - Vectors (2, 3, 4, N) double precision
+ - Polylines, Polygons, Shapes, Volumes and Surfaces
+ - Utilities
 
-  - Common/  
-  *Contains classes that don't belong anywhere else.*  
-    - CallController
-    - Interval
-  
-  - Interfaces/  
-  *Contains all interfaces of the core namespace.*
-    - IBounds3DCollection
-    - IFilter
-    - IInterpolation
-    - IPoint3DCollection
-    - IPolygon
-    - IPolyline
-    - IReusable
-    - ISphere3DCollection
-    - IVector
-    - IVectorD
-    - IVectorF
-    - IVolume
-  
-  - Interpolation/  
-  *Provides interpolation data structures that allows you to interpolate scalar data in various ways.*  
-    - CubicHermiteInterpolation
-    - LinearInterpolation
-    - PolynomialInterpolation
-    - PolynomialInterpolation2
-  
-  - Matrix/  
-  *Some matrix and vector implementations for custom-dimensional matrices and vectors as well as double precision vectors.*  
-    - Matrix3x3d
-    - Matrix3x3f
-    - Matrix4x4d
-    - Matrix4x4f
-    - MatrixD
-    - MatrixF
-    - MatrixFactory
-    - MatrixMxNd
-    - MatrixMxNf
-    - Vector2d
-    - Vector3d
-    - Vector4d
-    - VectorFactory
-    - VectorNd
-    - VectorNf
-  
-  - Primitives/  
-  *3D primitives such as poly lines, polygons, shapes, volumes and surfaces.*
-    - Aabb
-    - CatmullRomSpline
-    - Line
-    - LinearPolyline
-    - LineSegment
-    - Polygon
-    - Sphere
-    - VolumeAll
-    - VolumeDifference
-    - VolumeEmpty
-    - VolumeIntersection
-    - VolumeInverse
-    - VolumePlane
-    - VolumeUnion
-  
-  - Utilities/  
-  *Static utility classes providing various functionalities and extension methods.*  
-    - CameraUtil
-    - CollectionUtil
-    - CommonUtil
-    - Math3D
-    - MeshUtil
-    - NumericsUtil
-    - PolygonUtil
-    - PolylineUtil
-    - UnityObjectUtil
-    - VectorUtil
-
-**Pipeline**  
-*Provides a flexible pipeline that allows you to efficiently pipeline work.*  
- - IItemReciver
- - IPipelineNode
- - PipelineBase
- - PipelineEnd
- - PipelineFilter
+**Pipeline**    
  - PipelineGraph
- - PipelineItemFactory
- - PipelineItemWorker
- - PipelineStart
- - PipelineWorker  
- _
- - Specialized/  
- *Contains specialized pipeline nodes, these should be considered first before implementing custom nodes.*
-   - AddCollider
-   - AddComponent
-   - FilterByAnyComponents
-   - FilterByComponent
-   - GameObjectCollector
-   - GenerateLightmapUvs
-   - RemoveComponents
-   - RemovePrefabLink
-   - SetLayer
-   - SetMaterial
-   - SetStaticFlag
+ - Pipeline nodes
+ - Filters
+ - Specialized nodes for common tasks
 
 **Pooling**  
-*Provides local and global object pools for various types.*  
  - GlobalListPool
  - GlobalPool
- - IPool
  - ListPool
  - Pool
- - PoolBase
  - SpecializedPool
 
 **Text**  
-*Tools and classes for working with strings and text.*
  - CsvHelper
  - StreamReplacement
  
