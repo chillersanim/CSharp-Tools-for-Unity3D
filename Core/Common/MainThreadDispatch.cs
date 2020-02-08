@@ -28,10 +28,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Jobs;
+using Unity_Tools.Components;
 using UnityEngine.Profiling;
 using Debug = UnityEngine.Debug;
 
-namespace Unity_Tools.Components
+namespace Unity_Tools.Core
 {
     public static class MainThreadDispatch
     {

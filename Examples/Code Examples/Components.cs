@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity_Tools.Components;
+using Unity_Tools.Core;
 using UnityEngine;
 
 namespace Unity_Tools.Examples.Code_Examples
