@@ -26,10 +26,10 @@ For the full table of content, check the [wiki](https://github.com/chillersanim/
 
 **Components**    
  - CallProvider
- - MainThreadDispatch
  - SingletonBehavior
 
 **Core**     
+ - MainThreadDispatch
  - Interpolations
  - Matrices (3x3, 4x4, MxN) single and double precision
  - Vectors (2, 3, 4, N) double precision
