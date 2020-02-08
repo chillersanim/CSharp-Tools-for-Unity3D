@@ -29,6 +29,7 @@ using Unity_Tools.Core;
 using Unity_Tools.Pooling;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace Unity_Tools.Collections
 {
@@ -163,11 +164,10 @@ namespace Unity_Tools.Collections
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)
-        /// </summary>
+        /// <inheritdoc/>
         public bool AllowsDuplicates => allowDuplicates;
 
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
             var startVersion = version;
@@ -192,8 +192,10 @@ namespace Unity_Tools.Collections
             return GetEnumerator();
         }
 
+        /// <inheritdoc/>
         public int Count => nodes[1];
 
+        /// <inheritdoc/>
         public void Add(T item, Vector3 position)
         {
             if (position.x < min.x || position.y < min.y || position.z < min.z ||
@@ -207,6 +209,7 @@ namespace Unity_Tools.Collections
             AddToNode(item, position, 0, 0, min, size / 2f, !allowDuplicates);
         }
 
+        /// <inheritdoc/>
         public void Clear()
         {
             this.version++;
@@ -225,6 +228,7 @@ namespace Unity_Tools.Collections
             }
         }
 
+        /// <inheritdoc/>
         public bool Contains(T item, Vector3 position)
         {
             if (position.x < min.x || position.y < min.y || position.z < min.z ||
@@ -292,6 +296,7 @@ namespace Unity_Tools.Collections
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IVolume
         {
             if (!CastPathCache.TryExtractLast(out var path))
@@ -402,6 +407,7 @@ namespace Unity_Tools.Collections
             CastPathCache.Add(path);
         }
 
+        /// <inheritdoc/>
         public bool MoveItem(T item, Vector3 @from, Vector3 to)
         {
             if (@from.x < min.x || @from.y < min.y || @from.z < min.z ||
@@ -521,6 +527,7 @@ namespace Unity_Tools.Collections
             }
         }
 
+        /// <inheritdoc/>
         public bool Remove(T item, Vector3 position)
         {
             if (position.x < min.x || position.y < min.y || position.z < min.z ||
@@ -623,6 +630,9 @@ namespace Unity_Tools.Collections
             }
         }
 
+        /// <summary>
+        /// Editor only functionality to verify implementation.
+        /// </summary>
         [Conditional("UNITY_EDITOR")]
         public void TestIntegrity()
         {
@@ -841,20 +851,23 @@ namespace Unity_Tools.Collections
                 var leaf = leafs[leafIndex];
 
                 // Make sure the item isn't already part of the octree
-                for (var i = 0; testForDuplicate && i < leaf.Count; i++)
+                if (testForDuplicate)
                 {
-                    // If the item is already part of the tree, don't add again
-                    if (leaf.Content[i].Position == position && Equals(leaf.Content[i].item, item))
+                    for (var i = 0; i < leaf.Count; i++)
                     {
-                        // Revert the item count because the item wasn't actually added
-                        nodes[index + 1]--;
-                        while (index != 0)
+                        // If the item is already part of the tree, don't add again
+                        if (leaf.Content[i].Position == position && Equals(leaf.Content[i].item, item))
                         {
-                            index = nodes[index];
+                            // Revert the item count because the item wasn't actually added
                             nodes[index + 1]--;
-                        }
+                            while (index != 0)
+                            {
+                                index = nodes[index];
+                                nodes[index + 1]--;
+                            }
 
-                        return;
+                            return;
+                        }
                     }
                 }
 

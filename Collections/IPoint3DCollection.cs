@@ -35,7 +35,7 @@ namespace Unity_Tools.Collections
     public interface IPoint3DCollection<T> : IEnumerable<T>
     {
         /// <summary>
-        /// Gets a value indicating whether duplicate entries are valid.
+        /// Gets a value indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)
         /// </summary>
         bool AllowsDuplicates { get; }
 
@@ -65,7 +65,7 @@ namespace Unity_Tools.Collections
         bool Contains([CanBeNull] T item, Vector3 position);
 
         /// <summary>
-        /// Moves the item within the collection. 
+        /// Moves the item from the old position to the new position. 
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="from">The old position.</param>
@@ -83,7 +83,7 @@ namespace Unity_Tools.Collections
         bool Remove([CanBeNull] T item, Vector3 position);
 
         /// <summary>
-        /// Enumerates over all items that lie within the shape.
+        /// Returns an enumerator that iterates through all items that are inside the given shape.
         /// </summary>
         /// <typeparam name="TShape">The type of the shape to cast for.</typeparam>
         /// <param name="shape">The shape to use.</param>

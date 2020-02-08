@@ -138,7 +138,7 @@ namespace Unity_Tools.Components
         }
 
         /// <summary>
-        /// Call this from a main thread script at least once before using it in a thread...
+        /// Call this from the main thread at least once before calling any other method.
         /// </summary>
         public static void Initialize()
         {
@@ -205,7 +205,7 @@ namespace Unity_Tools.Components
         }
 
         /// <summary>
-        /// Executes the specified action synchronously on the main thread.
+        /// Executes the specified Action synchronously on the main thread or cancels when exceeding the given timeout.
         /// </summary>
         /// <param name="action">The work to perform.</param>
         /// <param name="timeout">The maximum time to wait for the action to finish.</param>
@@ -272,7 +272,7 @@ namespace Unity_Tools.Components
         /// Executes the specified function synchronously on the main thread and returns the result.
         /// </summary>
         /// <param name="function">The function to evaluate.</param>
-        public static T Invoke<T>(Func<T> function)
+        public static async Task<T> Invoke<T>(Func<T> function)
         {
             SynchronousFunction syncFunction;
 
@@ -304,7 +304,7 @@ namespace Unity_Tools.Components
                 RwLock.ExitReadLock();
             }
 
-            syncFunction.WaitHandle.Wait();
+            await syncFunction.WaitHandle.WaitAsync();
 
             if (syncFunction.Exception != null)
             {
@@ -320,7 +320,7 @@ namespace Unity_Tools.Components
         }
 
         /// <summary>
-        /// Executes the specified function synchronously on the main thread and returns the result.
+        /// Executes the specified function synchronously on the main thread and returns the result or cancels when exceeding the given timeout.
         /// </summary>
         /// <param name="function">The function to evaluate.</param>
         /// <param name="timeout">The maximum time to wait for the evaluation to finish.</param>
@@ -437,7 +437,7 @@ namespace Unity_Tools.Components
         }
 
         /// <summary>
-        /// Executes the specified delegate synchronously on the main thread and returns the result.
+        /// Executes the specified delegate synchronously on the main thread and returns the result or cancels when exceeding the given timeout.
         /// </summary>
         /// <param name="delegate">The delegate to evaluate.</param>
         /// <param name="timeout">The maximum time to wait for the evaluation to finish.</param>
