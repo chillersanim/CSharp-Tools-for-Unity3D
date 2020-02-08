@@ -23,9 +23,10 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Unity_Tools.Core;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace Unity_Tools.Collections
 {
     /// <summary>
     /// Interface for generic 3D collections.

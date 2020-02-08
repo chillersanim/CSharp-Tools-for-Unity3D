@@ -30,25 +30,42 @@ namespace Unity_Tools.Examples
 {
     public class SphereCastVisualization : MonoBehaviour
     {
-        public float Radius = 10;
-        private List<Point> currentPoints;
+        public float Radius = 10f;
 
-        private HashSet<Point> previousPoints;
+        public double CastTime = 0.0;
+
+        public bool DrawTree = true;
+
+        public bool DrawShape = true;
+
+        public Color ShapeColor = Color.red;
+
+        private readonly List<Point> currentPoints = new List<Point>();
+
+        private readonly HashSet<Point> previousPoints = new HashSet<Point>();
 
         private Stopwatch stopwatch = new Stopwatch();
 
         void OnDrawGizmos()
         {
-            Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
+            if (DrawTree)
+            {
+                Spatial3DTreeVisualizer.DrawTreeGizmos(Point.AllPoints);
+            }
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(this.transform.position, Radius);
-        }
+            if (DrawShape)
+            {
+                var center0 = this.transform.position - Vector3.right * Radius;
+                var center1 = this.transform.position + Vector3.right * Radius;
+                 
+                Gizmos.color = ShapeColor;
+                //Gizmos.DrawWireSphere(center0, Radius);
+                //Gizmos.DrawWireCube(center1, Vector3.one * Radius * 2f);
 
-        void Start()
-        {
-            previousPoints = new HashSet<Point>();
-            currentPoints = new List<Point>();
+                Gizmos.DrawLine(this.transform.position, this.transform.position + (this.transform.right - this.transform.up*2) * 100);
+                Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.right - this.transform.up*2) * 100);
+                Gizmos.DrawLine(this.transform.position, this.transform.position + Vector3.Cross(this.transform.right - this.transform.up * 2, this.transform.forward));
+            }
         }
 
         // Update is called once per frame
@@ -65,8 +82,17 @@ namespace Unity_Tools.Examples
             }
 
             currentPoints.Clear();
-            currentPoints.AddRange(Point.AllPoints.ShapeCast(new Sphere(this.transform.position, Radius)));
-        
+
+            var center0 = this.transform.position - Vector3.right * Radius;
+            var center1 = this.transform.position + Vector3.right * Radius;
+            var shape = new VolumePlane(Vector3.Cross(this.transform.right - this.transform.up * 2, this.transform.forward), this.transform.position);
+
+            stopwatch.Restart();
+            currentPoints.AddRange(Point.AllPoints.ShapeCast(shape));
+            stopwatch.Stop();
+
+            CastTime = stopwatch.Elapsed.TotalMilliseconds / 1000.0;
+
             previousPoints.ExceptWith(currentPoints);
 
             foreach (var pp in previousPoints)
@@ -79,7 +105,7 @@ namespace Unity_Tools.Examples
             foreach (var cp in currentPoints)
             {
                 cp.SetActive(true);
-                previousPoints.Add(cp);
+                previousPoints.Add(cp); 
             }
 
             if (Input.GetKeyDown(KeyCode.F))
