@@ -24,10 +24,10 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Pooling;
+using UnityTools.Pooling;
 using Random = UnityEngine.Random;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public static class CollectionUtil
     {

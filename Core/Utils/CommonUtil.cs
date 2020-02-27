@@ -27,7 +27,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Contains tools for basic operations and numeric operations

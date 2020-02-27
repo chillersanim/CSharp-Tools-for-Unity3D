@@ -29,7 +29,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     #region Usings
 

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     ///     The math 3 d.
@@ -57,13 +57,15 @@ namespace Unity_Tools.Core
             out float elevation,
             out float radius)
         {
-            if (Math.Abs(v.x) < float.Epsilon)
+            if (Mathf.Abs(v.x) < Mathf.Epsilon)
                 v.x = Mathf.Epsilon;
-            radius = Mathf.Sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-            azimuth = Mathf.Atan(v.z / v.x);
-            if (v.x < 0)
-                azimuth += Mathf.PI;
-            elevation = Mathf.Asin(v.y / radius);
+
+            radius = v.magnitude;
+            azimuth = Mathf.Atan2(v.x, v.z);
+            elevation = Mathf.Atan2(v.y, Mathf.Sqrt(v.x * v.x + v.z * v.z));
+
+            if (azimuth < 0)
+                azimuth += 2f * Mathf.PI;
 
             azimuth *= Mathf.Rad2Deg;
             elevation *= Mathf.Rad2Deg;
@@ -1048,16 +1050,16 @@ namespace Unity_Tools.Core
         /// <returns>
         ///     The cartesian vector
         /// </returns>
-        public static Vector3 SphericalToCartesian(float azimuth, float elevation)
+        public static Vector3 SphericalToCartesian(float azimuth, float elevation, float radius = 1f)
         {
             azimuth *= Mathf.Deg2Rad;
             elevation *= Mathf.Deg2Rad;
 
             var a = Mathf.Cos(elevation);
 
-            var x = a * Mathf.Cos(azimuth);
-            var y = Mathf.Sin(elevation);
-            var z = a * Mathf.Sin(azimuth);
+            var x = a * Mathf.Sin(azimuth) * radius;
+            var y = Mathf.Sin(elevation) * radius;
+            var z = a * Mathf.Cos(azimuth) * radius;
 
             return new Vector3(x, y, z);
         }
