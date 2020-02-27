@@ -25,11 +25,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
-using Unity_Tools.Collections;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Collections;
+using UnityTools.Core;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public abstract class I3DCollectionTest<T>
     {

@@ -21,7 +21,7 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-namespace Unity_Tools.Pipeline
+namespace UnityTools.Pipeline
 {
     /// <summary>
     ///     Base class for all pipeline nodes that create and forward an item based on an input.

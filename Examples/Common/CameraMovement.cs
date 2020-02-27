@@ -23,12 +23,12 @@
 
 #region usings
 
-using Unity_Tools.Core;
+using UnityTools.Core;
 using UnityEngine;
 
 #endregion
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     /// <summary>
     ///     The camera movement.

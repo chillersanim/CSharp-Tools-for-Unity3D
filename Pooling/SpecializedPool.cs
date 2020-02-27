@@ -24,7 +24,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public class SpecializedPool<T> : PoolBase<T> where T : class
     {

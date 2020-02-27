@@ -22,12 +22,13 @@
 // copies or substantial portions of the Software.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
-    public sealed class CatmullRomSpline : IPolyline
+    public sealed class CatmullRomSpline : IPolyline, IList<Vector3>
     {
         private static readonly int Segmentation = 20;
 
@@ -45,22 +46,27 @@ namespace Unity_Tools.Core
 
         private float tension;
 
-        public CatmullRomSpline(IList<Vector3> points) : this(points, 0.5f, 1)
-        {
-        }
-
-        public CatmullRomSpline(IList<Vector3> points, float alpha, float tension)
+        /// <summary>
+        /// Initializes a new instance of the CatmullRomSpline type using the provided points as initial data set and a given alpha and tension.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        /// <param name="alpha">The alpha.</param>
+        /// <param name="tension">The tension</param>
+        public CatmullRomSpline(IEnumerable<Vector3> points, float alpha = 0.5f, float tension = 0f)
         {
             this.points = new List<Vector3>(points);
-            this.tangents = new List<Vector3>(points.Count);
-            this.segments = new List<Segment>(points.Count - 1);
-            this.segmentLengths = new List<float>(points.Count - 1);
+            this.tangents = new List<Vector3>(this.points.Count);
+            this.segments = new List<Segment>(this.points.Count - 1);
+            this.segmentLengths = new List<float>(this.points.Count - 1);
             this.alpha = alpha;
             this.tension = tension;
 
             length = null;
         }
 
+        /// <summary>
+        /// The alpha 
+        /// </summary>
         public float Alpha
         {
             get => alpha;
@@ -79,6 +85,8 @@ namespace Unity_Tools.Core
 
         public int Count => points.Count;
 
+        public bool IsReadOnly => false;
+
         public Vector3 this[int index]
         {
             get => points [index];
@@ -92,7 +100,7 @@ namespace Unity_Tools.Core
 
                 points[index] = value;
 
-                if (points.Count >= 2)
+                if (points.Count >= 2 && segments.Count > 0)
                 {
                     var start = Mathf.Max(0, index - 2);
                     var end = Mathf.Min(segments.Count - 1, index + 1);
@@ -134,6 +142,94 @@ namespace Unity_Tools.Core
                 }
 
                 return length.Value;
+            }
+        }
+
+        public void Add(Vector3 point)
+        {
+            this.Insert(this.points.Count, point);
+        }
+
+        public void Clear()
+        {
+            this.points.Clear();
+            this.segments.Clear();
+            this.segmentLengths.Clear();
+            this.tangents.Clear();
+            this.length = 0f;
+        }
+
+        public bool Contains(Vector3 point)
+        {
+            return points.Contains(point);
+        }
+
+        public void CopyTo(Vector3[] array, int arrayIndex)
+        {
+            points.CopyTo(array, arrayIndex);
+        }
+
+        public int IndexOf(Vector3 point)
+        {
+            return points.IndexOf(point);
+        }
+
+        public void Insert(int index, Vector3 point)
+        {
+            if (index < 0 || index > this.points.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            this.points.Insert(index, point);
+
+            if (points.Count >= 2 && segments.Count > 0)
+            {
+                var start = Mathf.Max(0, index - 2);
+                var end = Mathf.Min(segments.Count - 1, index + 1);
+
+                UpdateSegmentsLocally(start, end);
+                UpdateSegmentLengthsLocally(start, end);
+                length = null;
+            }
+        }
+
+        public bool Remove(Vector3 point)
+        {
+            for (var i = 0; i < points.Count; i++)
+            {
+                if (points[i] == point)
+                {
+                    RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= this.points.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            this.points.RemoveAt(index);
+
+            if (points.Count >= 2 && segments.Count > 0)
+            {
+                var start = Mathf.Max(0, index - 2);
+                var end = Mathf.Min(segments.Count - 1, index + 1);
+
+                UpdateSegmentsLocally(start, end);
+                UpdateSegmentLengthsLocally(start, end);
+                length = null;
+            }
+            else
+            {
+                segments.Clear();
+                segmentLengths.Clear();
             }
         }
 
@@ -541,6 +637,7 @@ namespace Unity_Tools.Core
             var p10 = p1 - p0;
             var p20 = p2 - p0;
             var p21 = p2 - p1;
+            var tau = 1f - tension;
 
             for (var i = start; i <= end; i++)
             {
@@ -551,11 +648,11 @@ namespace Unity_Tools.Core
 
                 if (i == 0)     // First segment
                 {
-                    m0 = p21 * tension;
+                    m0 = p21 * tau;
                 }
                 else
                 {
-                    m0 = tension * (p21 + t12 * (p10 / t01 - p20 / (t01 + t12)));
+                    m0 = tau * (p21 + t12 * (p10 / t01 - p20 / (t01 + t12)));
                 }
 
                 if (i == points.Count - 2)      // Last segment
@@ -564,7 +661,7 @@ namespace Unity_Tools.Core
                     p31 = Vector3.zero; // Won't need these values anymore, but need to be set
                     p32 = Vector3.zero;
                     t23 = t12;
-                    m1 = p21 * tension;
+                    m1 = p21 * tau;
                 }
                 else
                 {
@@ -572,7 +669,7 @@ namespace Unity_Tools.Core
                     p31 = p3 - p1;
                     p32 = p3 - p2;
                     t23 = Mathf.Pow(Vector3.Distance(p2, p3), alpha);
-                    m1 = tension * (p21 + t12 * (p32 / t23 - p31 / (t12 + t23)));
+                    m1 = tau * (p21 + t12 * (p32 / t23 - p31 / (t12 + t23)));
                 }
 
                 tangents[i] = m0;
@@ -614,6 +711,16 @@ namespace Unity_Tools.Core
                 this.c = c;
                 this.d = d;
             }
+        }
+
+        public IEnumerator<Vector3> GetEnumerator()
+        {
+            return this.points.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

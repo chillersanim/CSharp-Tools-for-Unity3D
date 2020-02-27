@@ -27,7 +27,7 @@
 
 using UnityEngine;
 
-namespace Unity_Tools.Pipeline.Specialized
+namespace UnityTools.Pipeline.Specialized
 {
     /// <summary>
     ///     The p p_ set static flag.

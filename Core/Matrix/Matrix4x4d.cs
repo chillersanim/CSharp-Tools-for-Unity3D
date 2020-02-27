@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     #region
 

@@ -23,10 +23,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Core;
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     public class SphereCastVisualization : MonoBehaviour
     {

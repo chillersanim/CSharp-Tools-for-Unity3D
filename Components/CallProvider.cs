@@ -26,14 +26,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity_Tools.Core;
 using UnityEditor;
 using UnityEngine;
+using UnityTools.Core;
 using Debug = UnityEngine.Debug;
 
 #endregion
 
-namespace Unity_Tools.Components
+namespace UnityTools.Components
 {
     /// <summary>
     ///     The call provider.
@@ -43,15 +43,15 @@ namespace Unity_Tools.Components
     {
 #if UNITY_EDITOR
 
-        private CallController editorOnlyUpdateController = new CallController();
+        private readonly CallController editorOnlyUpdateController = new CallController();
 
-        private CallController onGizmosController = new CallController();
+        private readonly CallController onGizmosController = new CallController();
 
-        private CallController fixedUpdateController = new CallController();
+        private readonly CallController fixedUpdateController = new CallController();
 
-        private CallController onGuiController = new CallController();
+        private readonly CallController onGuiController = new CallController();
 
-        private CallController updateController = new CallController();
+        private readonly CallController updateController = new CallController();
 
 #else
 
@@ -75,6 +75,9 @@ namespace Unity_Tools.Components
 
         private float maxPeriodicUpdateDuration;
 
+        /// <summary>
+        /// Gets or sets a value defining how much time is allocated per Update for PeriodicUpdate invocations, in seconds.
+        /// </summary>
         public static float MaxPeriodicUpdateDuration
         {
             get => Instance.maxPeriodicUpdateDuration;
@@ -85,12 +88,15 @@ namespace Unity_Tools.Components
                     throw new ArgumentException("The maximum periodic update duration cannot be NaN or infinite. For unbounded updates, use the update callback instead of the periodic update callback.");
                 }
 
-                Instance.maxPeriodicUpdateDuration = Mathf.Max(value, 0.0001f);
+                if (CanAccessInstance)
+                {
+                    Instance.maxPeriodicUpdateDuration = Mathf.Max(value, 0.0001f);
+                }
             }
         }
 
         /// <summary>
-        ///     Adds a listener to the on editor only update callback list.
+        ///     Adds a listener to the EditorOnlyUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
@@ -99,23 +105,29 @@ namespace Unity_Tools.Components
         public static void AddEditorOnlyUpdateListener(Action listener)
         {
 #if UNITY_EDITOR
-            Instance.editorOnlyUpdateController.AddListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.editorOnlyUpdateController.AddListener(listener);
+            }
 #endif
         }
 
         /// <summary>
-        ///     Adds a listener to the on fixed update callback list.
+        ///     Adds a listener to the FixedUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void AddFixedUpdateListener(Action listener)
         {
-            Instance.fixedUpdateController.AddListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.fixedUpdateController.AddListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Adds a listener to the on draw gizmos callback list.
+        ///     Adds a listener to the OnGizmos callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
@@ -124,34 +136,43 @@ namespace Unity_Tools.Components
         public static void AddOnGizmosListener(Action listener)
         {
 #if UNITY_EDITOR
-            Instance.onGizmosController.AddListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.onGizmosController.AddListener(listener);
+            }
 #endif
         }
 
         /// <summary>
-        ///     Adds a listener to the on draw gui callback list.
+        ///     Adds a listener to the OnGui callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void AddOnGuiListener(Action listener)
         {
-            Instance.onGuiController.AddListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.onGuiController.AddListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Adds a listener to the on update callback list.
+        ///     Adds a listener to the Update callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void AddUpdateListener(Action listener)
         {
-            Instance.updateController.AddListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.updateController.AddListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Removes a listener from the on editor only update callback list.
+        ///     Removes a listener from the EditorOnlyUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
@@ -160,23 +181,29 @@ namespace Unity_Tools.Components
         public static void RemoveEditorOnlyUpdateListener(Action listener)
         {
 #if UNITY_EDITOR
-            Instance.editorOnlyUpdateController.RemoveListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.editorOnlyUpdateController.RemoveListener(listener);
+            }
 #endif
         }
 
         /// <summary>
-        ///     Removes a listener from the on fixed update callback list.
+        ///     Removes a listener from the FixedUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void RemoveFixedUpdateListener(Action listener)
         {
-            Instance.fixedUpdateController.RemoveListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.fixedUpdateController.RemoveListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Removes a listener from the on draw gizmos callback list.
+        ///     Removes a listener from the OnGizmos callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
@@ -185,40 +212,54 @@ namespace Unity_Tools.Components
         public static void RemoveOnGizmosListener(Action listener)
         {
 #if UNITY_EDITOR
-            Instance.onGizmosController.RemoveListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.onGizmosController.RemoveListener(listener);
+            }
 #endif
         }
 
         /// <summary>
-        ///     Removes a listener from the on draw gui callback list.
+        ///     Removes a listener from the OnGui callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void RemoveOnGuiListener(Action listener)
         {
-            Instance.onGuiController.RemoveListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.onGuiController.RemoveListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Removes a listener from the on update callback list.
+        ///     Removes a listener from the Update callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void RemoveUpdateListener(Action listener)
         {
-            Instance.updateController.RemoveListener(listener);
+            if (CanAccessInstance)
+            {
+                Instance.updateController.RemoveListener(listener);
+            }
         }
 
         /// <summary>
-        ///     Adds a listener to the periodic update callback list.
+        ///     Adds a listener to the PeriodicUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void AddPeriodicUpdateListener(Action listener)
         {
+            if (!CanAccessInstance)
+            {
+                return;
+            }
+
             if (Instance.puToRemove.Contains(listener))
             {
                 Instance.puToRemove.Remove(listener);
@@ -231,13 +272,18 @@ namespace Unity_Tools.Components
         }
 
         /// <summary>
-        ///     Removes a listener from the periodic update callback list.
+        ///     Removes a listener from the PeriodicUpdate callback list.
         /// </summary>
         /// <param name="listener">
         ///     The listener.
         /// </param>
         public static void RemovePeriodicUpdateListener(Action listener)
         {
+            if (!CanAccessInstance)
+            {
+                return;
+            }
+
             if (Instance.puToAdd.Contains(listener))
             {
                 Instance.puToAdd.Remove(listener);
@@ -257,31 +303,6 @@ namespace Unity_Tools.Components
         protected override void OnEnable()
         {
             base.OnEnable();
-
-            if (editorOnlyUpdateController.Count > 0)
-            {
-                editorOnlyUpdateController = new CallController();
-            }
-
-            if (onGuiController.Count > 0)
-            {
-                onGuiController = new CallController();
-            }
-
-            if (onGizmosController.Count > 0)
-            {
-                onGizmosController = new CallController();
-            }
-
-            if (fixedUpdateController.Count > 0)
-            {
-                fixedUpdateController = new CallController();
-            }
-
-            if (updateController.Count > 0)
-            {
-                updateController = new CallController();
-            }
 
             if (!Application.isPlaying)
             {

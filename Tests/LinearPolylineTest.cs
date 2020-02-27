@@ -25,11 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Core;
 using Random = UnityEngine.Random;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public class LinearPolylineTest
     {

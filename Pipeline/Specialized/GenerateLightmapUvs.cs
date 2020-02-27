@@ -28,7 +28,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity_Tools.Pipeline.Specialized
+namespace UnityTools.Pipeline.Specialized
 {
     #region Usings
 

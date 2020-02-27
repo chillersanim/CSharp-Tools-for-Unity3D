@@ -27,7 +27,7 @@ using System;
 
 #endregion
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     /// <summary>
     ///     The axis settings.

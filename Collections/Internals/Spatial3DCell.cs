@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Collections.Internals
+namespace UnityTools.Collections.Internals
 {
     /// <summary>
     ///     The spatial 3 d cell. 
@@ -101,7 +101,7 @@ namespace Unity_Tools.Collections.Internals
         public int TotalItemAmount;
 
         /// <summary>
-        ///     Initializes static members of the <see cref="Spatial3DCell" /> class.
+        ///     Initializes static members of the <see cref="Spatial3DCell{T}" /> class.
         /// </summary>
         static Spatial3DCell()
         {
@@ -229,7 +229,7 @@ namespace Unity_Tools.Collections.Internals
         /// </param>
         /// <param name="addChildren">Should the child array be attached.</param>
         /// <returns>
-        ///     The <see cref="Spatial3DCell" />.
+        ///     The <see cref="Spatial3DCell{T}" />.
         /// </returns>
         [NotNull]
         public static Spatial3DCell<T> GetCell(Vector3 start, Vector3 size, bool addChildren = false)
@@ -441,7 +441,7 @@ namespace Unity_Tools.Collections.Internals
         ///     The index.
         /// </param>
         /// <returns>
-        ///     The <see cref="Spatial3DCell" />.
+        ///     The <see cref="Spatial3DCell{T}" />.
         /// </returns>
         [Pure]
         private Spatial3DCell<T> CreateContainer(int index)
@@ -458,7 +458,7 @@ namespace Unity_Tools.Collections.Internals
         ///     The get child array.
         /// </summary>
         /// <returns>
-        ///     The <see cref="Spatial3DCell" />.
+        ///     The <see cref="Spatial3DCell{T}" />.
         /// </returns>
         [NotNull]
         private static Spatial3DCell<T>[] GetChildArray()

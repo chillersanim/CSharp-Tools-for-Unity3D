@@ -24,7 +24,7 @@
 using System;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public struct Line
     {

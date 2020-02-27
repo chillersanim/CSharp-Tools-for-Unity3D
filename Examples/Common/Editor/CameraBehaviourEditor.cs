@@ -23,7 +23,7 @@
 
 #region usings
 
-using Unity_Tools.Examples;
+using UnityTools.Examples;
 using UnityEditor;
 using UnityEngine;
 

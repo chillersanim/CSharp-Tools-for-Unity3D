@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public interface IPolygon<T>
     {

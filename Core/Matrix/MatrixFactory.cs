@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     #region
 

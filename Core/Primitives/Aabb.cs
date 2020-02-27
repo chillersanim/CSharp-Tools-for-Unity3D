@@ -24,7 +24,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public struct Aabb : IVolume
     {

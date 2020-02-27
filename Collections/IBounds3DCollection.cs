@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     public interface IBounds3DCollection<T> : IEnumerable<T>
     {

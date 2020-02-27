@@ -23,10 +23,10 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Core;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     /// Interface for generic 3D collections.
@@ -89,5 +89,13 @@ namespace Unity_Tools.Collections
         /// <param name="shape">The shape to use.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}"/> that provides access to all resulting items.</returns>
         IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IVolume;
+
+        /// <summary>
+        /// Populates the output with all items that are inside the given shape.
+        /// </summary>
+        /// <typeparam name="TShape">The type of the shape to cast for.</typeparam>
+        /// <param name="shape">The shape to use.</param>
+        /// <param name="output">The output in which to store the shape cast result.</param>
+        void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IVolume;
     }
 }

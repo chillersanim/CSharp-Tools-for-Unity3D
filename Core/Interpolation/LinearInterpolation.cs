@@ -23,11 +23,11 @@
 
 using System;
 using System.Collections.Generic;
-using Unity_Tools.Pooling;
 using UnityEngine;
+using UnityTools.Pooling;
 using Debug = System.Diagnostics.Debug;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public class LinearInterpolation : IInterpolation<float>, IDisposable
     {

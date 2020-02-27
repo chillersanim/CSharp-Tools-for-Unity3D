@@ -25,11 +25,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Collections.Internals;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Collections.Internals;
+using UnityTools.Core;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     ///     The spatial 3 d tree.
@@ -261,6 +261,76 @@ namespace Unity_Tools.Collections
             }
 
             
+            CastPathCache.Add(path);
+        }
+
+        public void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IVolume
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            if (!CastPathCache.TryExtractLast(out var path))
+            {
+                // A search depth of 64 will probably never be reached, so this is on the safe side.
+                path = new PathEntry[64];
+            }
+
+            var pathDepth = 0;
+            var cell = root;
+            var childIndex = -1;
+            var fullyInside = shape.ContainsAabb(root.Start, root.End);
+
+            while (pathDepth >= 0)
+            {
+                childIndex++;
+
+                if (cell.Children == null)
+                {
+                    foreach (var item in cell.Items)
+                    {
+                        if (fullyInside || shape.ContainsPoint(item.Position))
+                        {
+                            output.Add(item.Item);
+                        }
+                    }
+                }
+                else
+                {
+                    if (childIndex < cell.Children.Length)
+                    {
+                        var child = cell.Children[childIndex];
+                        if (child != null && (fullyInside || shape.IntersectsAabb(child.Start, child.End)))
+                        {
+                            var childFullyInside = fullyInside;
+                            if (!childFullyInside)
+                            {
+                                childFullyInside = shape.ContainsAabb(child.Start, child.End);
+                            }
+
+                            path[pathDepth] = new PathEntry(cell, childIndex, fullyInside);
+                            pathDepth++;
+                            cell = child;
+                            childIndex = -1;
+                            fullyInside = childFullyInside;
+                        }
+
+                        continue;
+                    }
+                }
+
+                // Go one layer up
+                pathDepth--;
+                if (pathDepth < 0) break;
+
+                var c = path[pathDepth];
+                cell = c.Cell;
+                childIndex = c.ChildIndex;
+                fullyInside = c.Flag;
+            }
+
+
             CastPathCache.Add(path);
         }
 

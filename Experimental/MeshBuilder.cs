@@ -23,10 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using Unity_Tools.Collections;
-using Unity_Tools.Core;
-using Unity_Tools.Pooling;
 using UnityEngine;
+using UnityTools.Collections;
+using UnityTools.Core;
+using UnityTools.Pooling;
 
 namespace Unity_Tools.Experimental
 {

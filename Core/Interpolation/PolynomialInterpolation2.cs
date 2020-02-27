@@ -23,10 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using Unity_Tools.Pooling;
 using UnityEngine;
+using UnityTools.Pooling;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// An alternative polynomial interpolation, with explicit coefficients. Faster evaluation but much slower initialization.

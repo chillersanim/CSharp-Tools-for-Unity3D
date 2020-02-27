@@ -21,10 +21,10 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Core;
+using UnityTools.Core;
 using UnityEngine;
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     public class PointPlacement : MonoBehaviour
     {

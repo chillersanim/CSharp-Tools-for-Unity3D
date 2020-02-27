@@ -24,9 +24,9 @@
 using System;
 using JetBrains.Annotations;
 using NUnit.Framework;
-using Unity_Tools.Core;
+using UnityTools.Core;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     /// <summary>
     /// Test class for vector3d tests.

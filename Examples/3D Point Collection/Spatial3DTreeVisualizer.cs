@@ -21,11 +21,11 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Collections;
-using Unity_Tools.Collections.Internals;
 using UnityEngine;
+using UnityTools.Collections;
+using UnityTools.Collections.Internals;
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     public static class Spatial3DTreeVisualizer
     {

@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public class ListPool<T> : IPool<List<T>>
     {

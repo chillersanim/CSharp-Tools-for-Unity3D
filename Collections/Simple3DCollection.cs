@@ -21,13 +21,14 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Core;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     public class Simple3DCollection<T> : IPoint3DCollection<T>
     {
@@ -115,6 +116,22 @@ namespace Unity_Tools.Collections
                 if (shape.ContainsPoint(item.position))
                 {
                     yield return item.item;
+                }
+            }
+        }
+
+        public void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IVolume
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            foreach (var item in items)
+            {
+                if (shape.ContainsPoint(item.position))
+                {
+                    output.Add(item.item);
                 }
             }
         }

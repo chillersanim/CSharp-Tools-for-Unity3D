@@ -24,9 +24,9 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
+using UnityTools.Core;
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public abstract class PoolBase<T> : IPool<T> where T : class
     {

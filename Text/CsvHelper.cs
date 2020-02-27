@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Unity_Tools.Text
+namespace UnityTools.Text
 {
     public static class CsvHelper
     {

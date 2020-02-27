@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     [Serializable]
     public class Polygon : IPolygon<Vector3>, IEnumerable<Vector3>

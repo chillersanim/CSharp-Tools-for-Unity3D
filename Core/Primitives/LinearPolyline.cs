@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     [Serializable]
     public class LinearPolyline : IPolyline, IList<Vector3>, IReadOnlyList<Vector3>

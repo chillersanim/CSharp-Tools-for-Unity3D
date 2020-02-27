@@ -23,10 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using Unity_Tools.Pooling;
 using UnityEngine;
+using UnityTools.Pooling;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// A polynomial interpolation using uses a lagrange interpolation polynomial with barycentric interpolation formula for efficient point evaluation.

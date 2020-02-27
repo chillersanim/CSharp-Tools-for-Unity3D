@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity_Tools.Text
+namespace UnityTools.Text
 {
     /// <summary>
     /// Class that handles replacement of string occurrences that match a mask in a string stream. 

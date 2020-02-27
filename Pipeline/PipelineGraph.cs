@@ -24,7 +24,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Unity_Tools.Pipeline
+namespace UnityTools.Pipeline
 {
     /// <summary>
     ///     The pipeline pipelineGraph.

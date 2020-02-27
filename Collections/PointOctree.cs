@@ -25,13 +25,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity_Tools.Core;
-using Unity_Tools.Pooling;
 using UnityEngine;
+using UnityTools.Core;
+using UnityTools.Pooling;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     public class PointOctree<T> : IPoint3DCollection<T>
     {
@@ -331,6 +331,115 @@ namespace Unity_Tools.Collections
                             }
 
                             yield return leaf.Content[i].item;
+                        }
+                    }
+                }
+                else
+                {
+                    if (childIndex < NodeSize)
+                    {
+                        if (nodes[index + childIndex] == 0)
+                        {
+                            // Child is empty
+                            continue;
+                        }
+
+                        var isInside = fullyInside;
+                        var childFullyInside = fullyInside;
+                        var childMin = localMin;
+
+                        if (!fullyInside)
+                        {
+                            // Child aabb only matters if it is not fully inside, otherwise we won't need it for sub nodes
+                            var quadrantIndex = childIndex - ChildIndexOffset;
+
+                            if ((quadrantIndex & 4) == 4)
+                            {
+                                childMin.x += halfSize.x;
+                            }
+
+                            if ((quadrantIndex & 2) == 2)
+                            {
+                                childMin.y += halfSize.y;
+                            }
+
+                            if ((quadrantIndex & 1) == 1)
+                            {
+                                childMin.z += halfSize.z;
+                            }
+
+                            var childMax = childMin + halfSize;
+                            isInside = shape.IntersectsAabb(childMin, childMax);
+
+                            if (isInside)
+                            {
+                                childFullyInside = shape.ContainsAabb(childMin, childMax);
+                            }
+                        }
+
+                        if (isInside)
+                        {
+                            path[pathDepth] = new CastPathEntry(index, childIndex, fullyInside, localMin, halfSize);
+                            pathDepth++;
+                            index = nodes[index + childIndex];
+                            childIndex = ChildIndexOffset - 1;
+                            fullyInside = childFullyInside;
+                            localMin = childMin;
+                            halfSize /= 2f;
+                        }
+
+                        continue;
+                    }
+                }
+
+                // Go one layer up
+                pathDepth--;
+                if (pathDepth < 0) break;
+
+                var c = path[pathDepth];
+                index = c.Index;
+                childIndex = c.ChildIndex;
+                fullyInside = c.Flag;
+                localMin = c.LocalMin;
+                halfSize = c.HalfSize;
+            }
+
+            CastPathCache.Add(path);
+        }
+
+        public void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IVolume
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            if (!CastPathCache.TryExtractLast(out var path))
+            {
+                path = new CastPathEntry[MaxDepth + 1];
+            }
+
+            var pathDepth = 0;
+            var localMin = min;
+            var halfSize = size / 2f;
+
+            var index = 0;
+            var childIndex = ChildIndexOffset - 1;
+            var fullyInside = shape.ContainsAabb(min, min + size);
+
+            while (pathDepth >= 0)
+            {
+                childIndex++;
+
+                if (index < 0)
+                {
+                    var leaf = leafs[-(index + 1)];
+                    for (var i = 0; i < leaf.Count; i++)
+                    {
+                        if (fullyInside || shape.ContainsPoint(leaf.Content[i].Position))
+                        {
+
+                            output.Add(leaf.Content[i].item);
                         }
                     }
                 }

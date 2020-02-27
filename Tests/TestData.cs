@@ -24,7 +24,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public static class TestData
     {

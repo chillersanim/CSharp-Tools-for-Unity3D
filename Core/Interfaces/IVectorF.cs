@@ -23,7 +23,7 @@
 
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Interface for single-precision floating-point vectors.

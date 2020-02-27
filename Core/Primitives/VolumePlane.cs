@@ -24,7 +24,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Data structure that represents the volume on the backside (side pointing away from the normal) of a plane.

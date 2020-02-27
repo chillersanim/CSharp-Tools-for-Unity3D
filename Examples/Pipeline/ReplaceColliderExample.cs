@@ -21,11 +21,11 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Pipeline;
-using Unity_Tools.Pipeline.Specialized;
 using UnityEngine;
+using UnityTools.Pipeline;
+using UnityTools.Pipeline.Specialized;
 
-namespace Unity_Tools.Examples.Pipeline
+namespace UnityTools.Examples.Pipeline
 {
     public class ReplaceColliderExample : MonoBehaviour
     {

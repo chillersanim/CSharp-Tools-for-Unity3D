@@ -28,7 +28,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     ///     The observable collection mapper.

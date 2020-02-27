@@ -23,18 +23,23 @@
 
 using System;
 using JetBrains.Annotations;
-using UnityEditor;
 using UnityEngine;
 
-namespace Unity_Tools.Components
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace UnityTools.Components
 {
     /// <summary>
     /// Base class for all MonoBehaviours that need to follow the singleton pattern. 
     /// </summary>
     /// <typeparam name="T">The type of the implementing class. Needed to provide the instance.</typeparam>
-    [ExecuteInEditMode]
+#if UNITY_EDITOR
     [InitializeOnLoad]
-    public abstract class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+#endif
+    [ExecuteInEditMode]
+    public abstract class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T>
     {
         /// <summary>
         /// The instance reference.
@@ -44,7 +49,7 @@ namespace Unity_Tools.Components
         /// <summary>
         /// Gets a value indicating whether accessing the singleton instance is allowed or not (disallowed when the instance has been destroyed on application quit)
         /// </summary>
-        public static bool CanAccessInstance => instance == null && !SingletonHelper.IsQuitting;
+        public static bool CanAccessInstance => instance != null || !SingletonHelper.IsQuitting;
 
         /// <summary>
         /// Gets the single class instance, if no such instance exists, a new instance will be created.
@@ -75,13 +80,16 @@ namespace Unity_Tools.Components
             }
         }
 
+        /// <summary>
+        /// Called when Unity begins to shut down.
+        /// </summary>
         protected virtual void OnApplicationQuit()
         {
             SingletonHelper.OnApplicationExit();
         }
 
         /// <summary>
-        /// Called when the instance is being disabled.
+        /// Called when the instance is being destroyed.
         /// </summary>
         [UsedImplicitly]
         protected virtual void OnDestroy()
@@ -117,7 +125,9 @@ namespace Unity_Tools.Components
         }
     }
 
+#if UNITY_EDITOR
     [InitializeOnLoad]
+#endif
     internal static class SingletonHelper
     {
         /// <summary>
@@ -150,6 +160,7 @@ namespace Unity_Tools.Components
             IsQuitting = true;
         }
 
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
         private static void InitializeInEditor()
         {
@@ -172,5 +183,6 @@ namespace Unity_Tools.Components
                 }
             }
         }
+#endif
     }
 }

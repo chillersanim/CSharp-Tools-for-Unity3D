@@ -24,7 +24,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public static class GlobalListPool<T>
     {

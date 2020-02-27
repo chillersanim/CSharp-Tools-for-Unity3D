@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     /// A list mapper that changes the interface using a mapping function

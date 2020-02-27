@@ -24,7 +24,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Factory class for vector generation.

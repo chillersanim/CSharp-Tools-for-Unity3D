@@ -29,9 +29,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
+using UnityTools.Core;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     ///     The filtered collection.

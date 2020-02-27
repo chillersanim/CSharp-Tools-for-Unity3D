@@ -23,7 +23,7 @@
 
 using JetBrains.Annotations;
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public static class GlobalPool<T> where T : class, new()
     {

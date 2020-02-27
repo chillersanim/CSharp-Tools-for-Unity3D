@@ -21,11 +21,11 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using Unity_Tools.Collections;
-using Unity_Tools.Core;
+using UnityTools.Core;
 using UnityEngine;
+using UnityTools.Collections;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public class Spatial3DTreeTest : I3DCollectionTest<string>
     {

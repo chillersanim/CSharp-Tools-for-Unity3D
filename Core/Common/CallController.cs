@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// A helper class that works similar to events but gives more control and is optimized for many listeners
@@ -129,24 +129,15 @@ namespace Unity_Tools.Core
                 AddNew();
             }
 
+            itemsToRemove.Clear();
+            itemsToAdd.Clear();
+
             for (var i = 0; i < activeCount; i++)
             {
                 activeItems[i].Invoke();
             }
         }
-
-        public static CallController operator + (CallController controller, Action listener)
-        {
-            controller.AddListener(listener);
-            return controller;
-        }
-
-        public static CallController operator -(CallController controller, Action listener)
-        {
-            controller.RemoveListener(listener);
-            return controller;
-        }
-
+        
         public void RemoveListener(Action listener)
         {
             if (listener == null)
@@ -167,7 +158,7 @@ namespace Unity_Tools.Core
             itemsToRemove.Add(listener);
         }
 
-        private void AddNew()
+        private void AddNew() 
         {
             // No need to check for duplicates within the new items, as they are duplicate free
             var oldSize = activeCount;
@@ -353,9 +344,12 @@ namespace Unity_Tools.Core
             }
 
             if (itemsToAdd.Count > 0)
-            {
+            { 
                 AddNew();
             }
+
+            itemsToRemove.Clear();
+            itemsToAdd.Clear();
 
             for (var i = 0; i < activeCount; i++)
             {

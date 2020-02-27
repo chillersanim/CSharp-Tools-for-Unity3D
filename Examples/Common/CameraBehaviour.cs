@@ -29,7 +29,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Unity_Tools.Examples
+namespace UnityTools.Examples
 {
     /// <summary>
     ///     The camera behaviour.

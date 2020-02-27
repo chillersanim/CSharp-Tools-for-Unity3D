@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 
-namespace Unity_Tools.Pipeline
+namespace UnityTools.Pipeline
 {
     /// <summary>
     ///     The pipeline end.

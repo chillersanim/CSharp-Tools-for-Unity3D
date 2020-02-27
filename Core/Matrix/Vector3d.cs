@@ -27,7 +27,7 @@ using System.Runtime.Serialization;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Container for 3 component vector data using doubles.

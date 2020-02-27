@@ -28,11 +28,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Jobs;
-using Unity_Tools.Components;
-using UnityEngine.Profiling;
+using UnityTools.Components;
 using Debug = UnityEngine.Debug;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public static class MainThreadDispatch
     {
@@ -544,18 +543,9 @@ namespace Unity_Tools.Core
         {
             Timer.Restart();
 
-#if UNITY_EDITOR
-            Profiler.BeginSample("MTD: update");
-            Profiler.BeginSample("MTD: Sync workload");
-#endif
-
             // Always do all synchronous workload at the start to unblock waiting threads as fast as possible
             while (Timer.ElapsedMilliseconds <= maxWorkTimeMs && SynchronousWorkload.TryDequeue(out var task))
             {
-#if UNITY_EDITOR
-                Profiler.BeginSample("MTD: Sync task");
-#endif
-
                 try
                 {
                     lock (task)
@@ -586,24 +576,11 @@ namespace Unity_Tools.Core
                 {
                     task.RaiseException(e);
                 }
-
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
             }
-
-#if UNITY_EDITOR
-            Profiler.EndSample();
-            Profiler.BeginSample("MTD: Async workload");
-#endif
 
             // If there is time budget left, work of some async workload
             while (Timer.ElapsedMilliseconds <= maxWorkTimeMs && AsynchronousWorkload.TryDequeue(out var action))
             {
-#if UNITY_EDITOR
-                Profiler.BeginSample("MTD: Async task");
-#endif
-
                 try
                 {
                     action.Invoke();
@@ -612,28 +589,14 @@ namespace Unity_Tools.Core
                 {
                     Debug.LogError("An asynchronous call on the main thread caused an exception:\n" + e);
                 }
-
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
             }
-
-#if UNITY_EDITOR
-            Profiler.EndSample();
-            Profiler.BeginSample("MTD: Sync await workload");
-#endif
 
             // In case jobs were scheduled, start them now.
             JobHandle.ScheduleBatchedJobs();
 
-
             // Test all awaits whether they have finished, there's no time limit here, but should take very little time (mostly single bool checks) 
             while (SynchronousAwaits.TryTake(out var syncAwait))
             {
-#if UNITY_EDITOR
-                Profiler.BeginSample("MTD: Sync await task");
-#endif
-
                 try
                 {
                     if (syncAwait.Tester.Invoke())
@@ -653,15 +616,7 @@ namespace Unity_Tools.Core
                     // In case of exception, log it and don't put back
                     syncAwait.RaiseException(e);
                 }
-
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
             }
-
-#if UNITY_EDITOR
-            Profiler.BeginSample("MTD: Sync await putback");
-#endif
 
             // Put back all sync await to test in the next frame.
             foreach (var syncAwait in syncAwaitCache)
@@ -670,12 +625,6 @@ namespace Unity_Tools.Core
             }
 
             syncAwaitCache.Clear();
-
-#if UNITY_EDITOR
-            Profiler.EndSample();
-            Profiler.EndSample();
-            Profiler.EndSample();
-#endif
 
             Timer.Stop();
         }

@@ -27,7 +27,7 @@ using System.Text;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     /// <summary>
     /// Container for N component vector data using floats.

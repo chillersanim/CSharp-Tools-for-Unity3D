@@ -27,7 +27,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     /// The AVL tree with integer keys.

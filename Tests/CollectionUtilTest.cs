@@ -23,10 +23,10 @@
 
 using System.Collections.Generic;
 using NUnit.Framework;
-using Unity_Tools.Core;
+using UnityTools.Core;
 using UnityEngine;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public class CollectionUtilTest
     {

@@ -23,9 +23,9 @@
 
 using System;
 using NUnit.Framework;
-using Unity_Tools.Core;
+using UnityTools.Core;
 
-namespace Unity_Tools.Tests
+namespace UnityTools.Tests
 {
     public class MatrixTest
     {

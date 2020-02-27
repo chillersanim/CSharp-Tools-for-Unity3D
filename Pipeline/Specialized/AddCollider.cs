@@ -25,12 +25,12 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
 using UnityEngine;
+using UnityTools.Core;
 
 #endregion
 
-namespace Unity_Tools.Pipeline.Specialized
+namespace UnityTools.Pipeline.Specialized
 {
     #region Usings
 

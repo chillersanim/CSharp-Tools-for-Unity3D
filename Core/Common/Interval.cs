@@ -23,7 +23,7 @@
 
 using System;
 
-namespace Unity_Tools.Core
+namespace UnityTools.Core
 {
     public struct Interval<T> where T : IComparable<T>
     {

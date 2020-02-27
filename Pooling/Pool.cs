@@ -21,7 +21,7 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-namespace Unity_Tools.Pooling
+namespace UnityTools.Pooling
 {
     public sealed class Pool<T> : PoolBase<T> where T : class, new()
     {

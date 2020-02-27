@@ -24,10 +24,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity_Tools.Core;
+using UnityTools.Core;
 using UnityEngine;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     /// Reference implementation for <see cref="ISphere3DCollection{T}"/>.<br/>

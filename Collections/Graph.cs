@@ -26,9 +26,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
-using Unity_Tools.Pooling;
+using UnityTools.Pooling;
 
-namespace Unity_Tools.Collections
+namespace UnityTools.Collections
 {
     /// <summary>
     /// A graph class allows for graph queries using either directed or undirected graph representation.
