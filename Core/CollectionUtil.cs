@@ -38,7 +38,7 @@ namespace Unity_Tools.Core
         /// <param name="items">The list to search. Must be ordered in ascending order.</param>
         /// <param name="value">The value to look for.</param>
         /// <returns>Returns the zero based index.</returns>
-        public static int BinarySearchLocation<T>(this IList<T> items, T value)
+        public static int BinarySearchLocation<T>(this IReadOnlyList<T> items, T value)
         {
             var comparer = Comparer<T>.Default;
             return BinarySearchLocation(items, value, comparer);
@@ -52,7 +52,7 @@ namespace Unity_Tools.Core
         /// <param name="value">The value to look for.</param>
         /// <param name="comparer">The comparer to use for item comparison.</param>
         /// <returns>Returns the zero based index.</returns>
-        public static int BinarySearchLocation<T>(this IList<T> items, T value, IComparer<T> comparer)
+        public static int BinarySearchLocation<T>(this IReadOnlyList<T> items, T value, IComparer<T> comparer)
         {
             return BinarySearchLocation(items, value, comparer.Compare);
         }
@@ -60,15 +60,22 @@ namespace Unity_Tools.Core
         /// <summary>
         /// Searches for the index of the last element that is still smaller than the value.
         /// </summary>
-        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TCol">The type of the collection items.</typeparam>
+        /// <typeparam name="TVal">The type of the item to compare with.</typeparam>
         /// <param name="items">The list to search. Must be ordered in ascending order.</param>
         /// <param name="value">The value to look for.</param>
         /// <param name="comparer">The comparer to use for item comparison.</param>
         /// <returns>Returns the zero based index.</returns>
-        public static int BinarySearchLocation<T>(this IList<T> items, T value, Comparison<T> comparer)
+        public static int BinarySearchLocation<TCol, TVal>(this IReadOnlyList<TCol> items, TVal value,
+            Func<TCol, TVal, int> comparer)
         {
+            if (items.Count == 0)
+            {
+                return -1;
+            }
+
             var start = 0;
-            var end = items.Count - 1;
+            var end = items.Count;
 
             while (end > start)
             {
@@ -175,7 +182,7 @@ namespace Unity_Tools.Core
         /// <param name="items">The list to search.</param>
         /// <param name="filter">The filter function.</param>
         /// <returns></returns>
-        public static T[] Filter<T>(this IList<T> items, Func<T, bool> filter)
+        public static T[] Filter<T>(this IReadOnlyList<T> items, Func<T, bool> filter)
         {
             var filtered = GlobalListPool<T>.Get(items.Count);
 
@@ -234,7 +241,7 @@ namespace Unity_Tools.Core
             }
         }
 
-        public static TOut[] Map<TIn, TOut>(this IList<TIn> items, Func<TIn, TOut> mapper)
+        public static TOut[] Map<TIn, TOut>(this IReadOnlyList<TIn> items, Func<TIn, TOut> mapper)
         {
             if (items == null)
             {

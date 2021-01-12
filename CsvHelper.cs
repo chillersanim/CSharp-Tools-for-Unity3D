@@ -77,6 +77,20 @@ namespace Unity_Tools
         /// <returns>Returns the generated csv text.</returns>
         public static string ToCsv<T>(this IEnumerable<T> items, params (string title, Func<T, string> valueProvider)[] columnDefinitions)
         {
+            return ToCsv(items, (IList < (string title, Func<T, string> valueProvider) > )columnDefinitions);
+        }
+
+        /// <summary>
+        /// Generates a csv string from a set of objects using given column definitions.
+        /// </summary>
+        /// <typeparam name="T">The type of the items to parse.</typeparam>
+        /// <param name="items">The items to parse.</param>
+        /// <param name="columnDefinitions">The definition on how to generate the csv text.</param>
+        /// <exception cref="ArgumentNullException"><see cref="items"/> and <see cref="columnDefinitions"/> must not be null.</exception>
+        /// <returns>Returns the generated csv text.</returns>
+        public static string ToCsv<T>(this IEnumerable<T> items,
+            IList<(string title, Func<T, string> valueProvider)> columnDefinitions)
+        {
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
@@ -87,7 +101,7 @@ namespace Unity_Tools
                 throw new ArgumentNullException(nameof(columnDefinitions));
             }
 
-            if (columnDefinitions.Length == 0)
+            if (columnDefinitions.Count == 0)
             {
                 return string.Empty;
             }

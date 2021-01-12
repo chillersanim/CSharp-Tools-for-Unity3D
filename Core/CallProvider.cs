@@ -486,17 +486,20 @@ namespace Unity_Tools.Core
             {
                 action();
             }
-
+            
             var itemCount = PeriodicUpdateListener.Count;
-            var periodicUpdateCalls = Mathf.Min(MaxPeriodicCallsPerUpdate, itemCount);
-
-            for (var i = 0; i < periodicUpdateCalls; i++)
+            if (itemCount > 0)
             {
-                var index = (i + currentPeriodicOffset) % itemCount;
-                PeriodicUpdateListener[index].Invoke();
-            }
+                var periodicUpdateCalls = Mathf.Min(MaxPeriodicCallsPerUpdate, itemCount);
 
-            currentPeriodicOffset = (currentPeriodicOffset + periodicUpdateCalls) % itemCount;
+                for (var i = 0; i < periodicUpdateCalls; i++)
+                {
+                    var index = (i + currentPeriodicOffset) % itemCount;
+                    PeriodicUpdateListener[index].Invoke();
+                }
+
+                currentPeriodicOffset = (currentPeriodicOffset + periodicUpdateCalls) % itemCount;
+            }
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)

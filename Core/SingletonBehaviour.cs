@@ -21,7 +21,9 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using System;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity_Tools.Core
@@ -31,12 +33,18 @@ namespace Unity_Tools.Core
     /// </summary>
     /// <typeparam name="T">The type of the implementing class. Needed to provide the instance.</typeparam>
     [ExecuteInEditMode]
+    [InitializeOnLoad]
     public abstract class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
         /// <summary>
         /// The instance reference.
         /// </summary>
         [CanBeNull] private static T instance;
+
+        /// <summary>
+        /// Gets a value indicating whether accessing the singleton instance is allowed or not (disallowed when the instance has been destroyed on application quit)
+        /// </summary>
+        public static bool CanAccessInstance => instance == null && !SingletonHelper.IsQuitting;
 
         /// <summary>
         /// Gets the single class instance, if no such instance exists, a new instance will be created.
@@ -49,7 +57,17 @@ namespace Unity_Tools.Core
             {
                 if (instance == null)
                 {
-                    instance = SingletonHelper.Container.AddComponent<T>();
+                    if (SingletonHelper.IsQuitting)
+                    {
+                        throw new InvalidOperationException("Can't access the singleton instance after it has been destroyed and the application is quitting.");
+                    }
+
+                    instance = FindObjectOfType<T>();
+
+                    if (instance == null)
+                    {
+                        instance = SingletonHelper.Container.AddComponent<T>();
+                    }
                 }
 
                 Debug.Assert(instance != null, "instance != null");
@@ -92,14 +110,22 @@ namespace Unity_Tools.Core
 
             instance = this as T;
         }
+
+        protected virtual void OnApplicationQuit()
+        {
+            SingletonHelper.OnApplicationExit();
+        }
     }
 
+    [InitializeOnLoad]
     internal static class SingletonHelper
     {
         /// <summary>
         /// The gameobject that stores all automaticaly instantiated singletons.
         /// </summary>
         [CanBeNull] private static GameObject container;
+
+        public static bool IsQuitting { get; private set; }
 
         /// <summary>
         /// Gets the container object for all automaticaly instantiated singletons.
@@ -112,10 +138,38 @@ namespace Unity_Tools.Core
                 if (container == null)
                 {
                     container = new GameObject("Singleton Container");
-                    container.hideFlags = HideFlags.NotEditable;
+                    container.hideFlags = HideFlags.NotEditable | HideFlags.DontUnloadUnusedAsset;
                 }
 
                 return container;
+            }
+        }
+
+        [InitializeOnLoadMethod]
+        private static void InitializeInEditor()
+        {
+            // Required to make sure old references and values are removed, even if the editor doesn't reload the assembly
+            IsQuitting = false;
+        }
+
+        public static void OnApplicationExit()
+        {
+            IsQuitting = true;
+        }
+
+        [MenuItem("GameObject/Cleanup/Remove empty singleton containers")]
+        private static void RemoveEmptyContainers()
+        {
+            var gos = GameObject.FindObjectsOfType<GameObject>();
+            foreach (var go in gos)
+            {
+                if(go.name == "Singleton Container")
+                {
+                    if (go.GetComponents(typeof(MonoBehaviour)).Length < 1)
+                    {
+                        GameObject.DestroyImmediate(go);
+                    }
+                }
             }
         }
     }

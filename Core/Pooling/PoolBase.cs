@@ -70,7 +70,7 @@ namespace Unity_Tools.Core.Pooling
 
         protected PoolBase()
         {
-            MaxSize = 128;
+            maxSize = 128;
             items = new Stack<T>();
         }
 
