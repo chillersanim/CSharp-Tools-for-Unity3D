@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f686af979fd030649948b7a86608e099, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Active: 1
   ActiveMaterial: {fileID: 2100000, guid: 9470aa965e2dc084fb3473c2a66fefac, type: 2}
   InactiveMaterial: {fileID: 2100000, guid: 2d7fceb3dcec8fc42a1165f28ccb3b19, type: 2}
-  Active: 1
 --- !u!54 &3891150916097914475
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -97,10 +97,10 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_DynamicOccludee: 0
+  m_MotionVectors: 2
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

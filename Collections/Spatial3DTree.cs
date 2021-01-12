@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Spatial3DTree.cs
 // 
-// Created:          16.08.2019  16:33
-// Last modified:    03.12.2019  08:37
+// Created:          12.08.2019  19:04
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,10 +25,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using UnityEngine;
-using Unity_Tools.Collections.SpatialTree;
-using Unity_Tools.Collections.SpatialTree.Enumerators;
+using Unity_Tools.Collections.Internals;
 using Unity_Tools.Core;
+using UnityEngine;
 
 namespace Unity_Tools.Collections
 {
@@ -39,6 +38,16 @@ namespace Unity_Tools.Collections
     /// </typeparam>
     public class Spatial3DTree<T> : IPoint3DCollection<T>
     {
+        /// <summary>
+        /// Contains cached cast path arrays for inclusion and exclusion casts
+        /// </summary>
+        private static readonly List<PathEntry[]> CastPathCache;
+
+        /// <summary>
+        /// Field indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)
+        /// </summary>
+        private readonly bool allowDuplicates;
+
         /// <summary>
         ///     The initial offset.
         /// </summary>
@@ -54,10 +63,18 @@ namespace Unity_Tools.Collections
         /// </summary>
         [NotNull] private Spatial3DCell<T> root;
 
+        private int version;
+
+        static Spatial3DTree()
+        {
+            CastPathCache = new List<PathEntry[]>();
+        }
+
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
+        /// Initializes a new instance of the <see cref="Spatial3DTree{T}" /> class.
+        /// <param name="allowDuplicates">A value indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)</param>
         /// </summary>
-        public Spatial3DTree() : this(new Vector3(3, 3, 3), Vector3.zero)
+        public Spatial3DTree(bool allowDuplicates = false) : this(new Vector3(3, 3, 3), Vector3.zero, allowDuplicates)
         { }
 
         /// <summary>
@@ -65,9 +82,11 @@ namespace Unity_Tools.Collections
         /// </summary>
         /// <param name="size">The initial size of the root.</param>
         /// <param name="center">The center of the root.</param>
-        public Spatial3DTree(Vector3 size, Vector3 center)
+        /// <param name="allowDuplicates">A value indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two items are duplicates if value and position are equal)</param>
+        public Spatial3DTree(Vector3 size, Vector3 center, bool allowDuplicates = true)
         {
-            initialSize = size;
+            this.allowDuplicates = allowDuplicates;
+            this.initialSize = size;
             this.center = center;
             root = Spatial3DCell<T>.GetCell(this.center - initialSize / 2f, initialSize, false);
         }
@@ -94,6 +113,11 @@ namespace Unity_Tools.Collections
         public int TotalCellCount => root.GetCellCount();
 
         /// <summary>
+        /// Gets a value indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)
+        /// </summary>
+        public bool AllowsDuplicates => allowDuplicates;
+
+        /// <summary>
         ///     The count.
         /// </summary>
         public int Count => root.TotalItemAmount;
@@ -106,7 +130,10 @@ namespace Unity_Tools.Collections
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return new Spatial3DTreeEnumerator<T>(this);
+            foreach (var item in ShapeCast(new VolumeAll()))
+            {
+                yield return item;
+            }
         }
 
         /// <summary>
@@ -129,16 +156,13 @@ namespace Unity_Tools.Collections
         /// <param name="position">
         ///     The position.
         /// </param>
-        public void Add([NotNull]T item, Vector3 position)
+        public void Add(T item, Vector3 position)
         {
-            if (Equals(item, null))
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            version++;
 
             while (!FitsInRoot(position)) Grow();
 
-            root.AddItem(item, position, 1);
+            root.AddItem(item, position, 1, !allowDuplicates);
         }
 
         /// <summary>
@@ -146,6 +170,7 @@ namespace Unity_Tools.Collections
         /// </summary>
         public void Clear()
         {
+            version++;
             Spatial3DCell<T>.Pool(root);
             root = Spatial3DCell<T>.GetCell(center - initialSize / 2, initialSize);
         }
@@ -162,14 +187,81 @@ namespace Unity_Tools.Collections
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool Contains([CanBeNull]T item, Vector3 position)
+        public bool Contains(T item, Vector3 position)
         {
-            if (Equals(item, null))
+            return root.Contains(item, position);
+        }
+
+        public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IVolume
+        {
+            if (!CastPathCache.TryExtractLast(out var path))
             {
-                return false;
+                // A search depth of 64 will probably never be reached, so this is on the safe side.
+                path = new PathEntry[64];
             }
 
-            return root.Contains(item, position);
+            var startVersion = version;
+            var pathDepth = 0;
+            var cell = root;
+            var childIndex = -1;
+            var fullyInside = shape.ContainsAabb(root.Start, root.End);
+
+            while (pathDepth >= 0)
+            {
+                childIndex++;
+
+                if (cell.Children == null)
+                {
+                    foreach (var item in cell.Items)
+                    {
+                        if (fullyInside || shape.ContainsPoint(item.Position))
+                        {
+                            if (startVersion != version)
+                            {
+                                CastPathCache.Add(path);
+                                throw new InvalidOperationException("The enumerator has been modified since the last step and cannot be used anymore.");
+                            }
+
+                            yield return item.Item;
+                        }
+                    }
+                }
+                else
+                {
+                    if (childIndex < cell.Children.Length)
+                    {
+                        var child = cell.Children[childIndex];
+                        if (child != null && (fullyInside || shape.IntersectsAabb(child.Start, child.End)))
+                        {
+                            var childFullyInside = fullyInside;
+                            if (!childFullyInside)
+                            {
+                                childFullyInside = shape.ContainsAabb(child.Start, child.End);
+                            }
+
+                            path[pathDepth] = new PathEntry(cell, childIndex, fullyInside);
+                            pathDepth++;
+                            cell = child;
+                            childIndex = -1;
+                            fullyInside = childFullyInside;
+                        }
+
+                        continue;
+                    }
+                }
+
+                // Go one layer up
+                pathDepth--;
+                if (pathDepth < 0) break;
+
+                var c = path[pathDepth];
+                cell = c.Cell;
+                childIndex = c.ChildIndex;
+                fullyInside = c.Flag;
+            }
+
+            
+            CastPathCache.Add(path);
         }
 
         /// <summary>
@@ -187,16 +279,13 @@ namespace Unity_Tools.Collections
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool MoveItem([NotNull]T item, Vector3 from, Vector3 to)
+        public bool MoveItem(T item, Vector3 from, Vector3 to)
         {
-            if (Equals(item, null))
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            version++;
 
             while (!FitsInRoot(to)) Grow();
 
-            var result = root.MoveItem(item, from, to, 1);
+            var result = root.MoveItem(item, from, to, 1, !allowDuplicates);
 
             while (CanShrink()) Shrink();
 
@@ -215,13 +304,9 @@ namespace Unity_Tools.Collections
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public bool Remove([CanBeNull]T item, Vector3 position)
+        public bool Remove(T item, Vector3 position)
         {
-            if (Equals(item, null))
-            {
-                return false;
-            }
-
+            version++;
             var result = root.RemoveItem(item, position);
 
             while (CanShrink()) Shrink();
@@ -229,37 +314,7 @@ namespace Unity_Tools.Collections
             return result;
         }
 
-        public IEnumerable<T> SphereCast(Vector3 center, float radius)
-        {
-            return new SphereCastEnumerator<T>(this, center, radius);
-        }
-
-        public IEnumerable<T> BoundsCast(Bounds bounds)
-        {
-            return new BoundsCastEnumerator<T>(this, bounds);
-        }
-
-        public IEnumerable<T> ShapeCast(IShape shape)
-        {
-            return new ShapeCastEnumerator<T>(this, shape);
-        }
-
-        public IEnumerable<T> InverseSphereCast(Vector3 center, float radius)
-        {
-            return new InverseSphereCastEnumerator<T>(this, center, radius);
-        }
-
-        public IEnumerable<T> InverseBoundsCast(Bounds bounds)
-        {
-            return new InverseBoundsCastEnumerator<T>(this, bounds);
-        }
-
-        public IEnumerable<T> InverseShapeCast(IShape shape)
-        {
-            return new InverseShapeCastEnumerator<T>(this, shape);
-        }
-
-        public void AddRange([NotNull] IList<T> items, IList<Vector3> positions)
+        public void AddRange([NotNull] IList<T> items, [NotNull]IList<Vector3> positions)
         {
             if (items == null)
             {
@@ -281,6 +336,8 @@ namespace Unity_Tools.Collections
                 return;
             }
 
+            version++;
+
             var bounds = positions.Bounds();
 
             while (!FitsInRoot(bounds.min) || !FitsInRoot(bounds.max))
@@ -291,18 +348,8 @@ namespace Unity_Tools.Collections
             var cnt = items.Count;
             for (var i = 0; i < cnt; i++)
             {
-                root.AddItem(items[i], positions[i], 1);
+                root.AddItem(items[i], positions[i], 1, !allowDuplicates);
             }
-        }
-
-        public T[] FindInBounds(Bounds bounds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T[] FindInRadius(Vector3 center, float radius)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -421,6 +468,37 @@ namespace Unity_Tools.Collections
                 root = center;
 
                 Debug.Assert(center != null);
+            }
+        }
+
+        private struct PathEntry
+        {
+            /// <summary>
+            ///     The cell.
+            /// </summary>
+            public readonly Spatial3DCell<T> Cell;
+
+            /// <summary>
+            ///     The childIndex.
+            /// </summary>
+            public readonly int ChildIndex;
+
+            public readonly bool Flag;
+
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="PathEntry" /> struct.
+            /// </summary>
+            /// <param name="cell">
+            ///     The cell.
+            /// </param>
+            /// <param name="childIndex">
+            ///     The childIndex.
+            /// </param>
+            public PathEntry(Spatial3DCell<T> cell, int childIndex, bool flag)
+            {
+                Cell = cell;
+                ChildIndex = childIndex;
+                Flag = flag;
             }
         }
     }

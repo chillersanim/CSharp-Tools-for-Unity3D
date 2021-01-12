@@ -2,8 +2,8 @@
 // Project:          UnityTools
 // Filename:         Graph.cs
 // 
-// Created:          02.12.2019  11:17
-// Last modified:    03.12.2019  08:37
+// Created:          02.12.2019  14:44
+// Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
-using Unity_Tools.Core.Pooling;
+using Unity_Tools.Pooling;
 
 namespace Unity_Tools.Collections
 {

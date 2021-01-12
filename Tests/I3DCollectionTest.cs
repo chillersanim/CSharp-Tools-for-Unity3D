@@ -3,7 +3,7 @@
 // Filename:         I3DCollectionTest.cs
 // 
 // Created:          12.08.2019  19:04
-// Last modified:    25.08.2019  15:59
+// Last modified:    05.02.2020  19:40
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -22,6 +22,7 @@
 // copies or substantial portions of the Software.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using Unity_Tools.Collections;
@@ -33,9 +34,70 @@ namespace Unity_Tools.Tests
     public abstract class I3DCollectionTest<T>
     {
         [Test]
+        public void AabbCastPerformanceTest([NUnit.Framework.Range(0, 100000, 100000)]
+            int pointAmount)
+        {
+            GenerateTestCollection(pointAmount, out var instance, out var items, out var origin, out var size);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var cnt = 0;
+
+            for (var i = 0; i < 100; i++)
+            {
+                var sphere = new Aabb(RandomInAabb(origin, size), RandomInUnitAabb() * size.magnitude);
+
+                foreach (var item in instance.ShapeCast(sphere))
+                {
+                    cnt++;
+                }
+            }
+
+            stopwatch.Stop();
+            Assert.Pass($"Sphere cast time: {stopwatch.ElapsedMilliseconds / 100f} ms ({stopwatch.ElapsedTicks / 100f} ticks) Count: {cnt}\n");
+        }
+
+        [Test]
+        public void AabbCastTest([NUnit.Framework.Range(0, 1000, 250)] int pointAmount)
+        {
+            GenerateTestCollection(pointAmount, out var instance, out var items, out var origin, out var size);
+
+            for (var i = 0; i < 10; i++)
+            {
+                var aabb = new Aabb(RandomInAabb(origin, size), RandomInUnitAabb() * 100f);
+
+                var castResult = instance.ShapeCast(aabb).ToArray();
+                var reference = items.Where(item => aabb.ContainsPoint(item.Value))
+                    .ToDictionary(item => item.Key, item => item.Value);
+
+                TestForSetEquality(castResult, reference);
+            }
+        }
+
+        [Test]
+        public void InsertionPerformanceTest([NUnit.Framework.Range(0, 10000, 10000)]int pointAmount)
+        {
+            GenerateTestData(pointAmount, out var items, out var origin, out var size);
+            var collection = CreateInstance(origin, size, pointAmount);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            foreach (var item in items)
+            {
+                collection.Add(item.Key, item.Value);
+            }
+
+            stopwatch.Stop();
+
+            Assert.Pass($"Insertion time: {stopwatch.ElapsedMilliseconds} ms ({stopwatch.ElapsedTicks} ticks)\n");
+        }
+
+        [Test]
         public void InsertionTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount)
         {
-            GenerateTestData(pointAmount, out var instance, out var items, out _, out _);
+            GenerateTestCollection(pointAmount, out var instance, out var items, out _, out _);
             var dict = items.ToDictionary(item => item.Key, item => item.Value);
 
             Assert.AreEqual(items.Count, instance.Count);
@@ -46,12 +108,13 @@ namespace Unity_Tools.Tests
             var instanceItems = enumerator.ToArray();
             TestForSetEquality(instanceItems, dict);
             Assert.IsTrue(items.All(item => instance.Contains(item.Key, item.Value)));
+            TestIntegrity(instance);
         }
 
         [Test]
         public void MoveTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount, [Values(0.1f, 0.5f, 0.9f, 1f)]float changePercent)
         {
-            GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
+            GenerateTestCollection(pointAmount, out var instance, out var items, out var origin, out var size);
             var dict = items.ToDictionary(item => item.Key, item => item.Value);
 
             Assert.AreEqual(items.Count, instance.Count);
@@ -73,12 +136,32 @@ namespace Unity_Tools.Tests
             var instanceItems = enumerator.ToArray();
             TestForSetEquality(instanceItems, dict);
             Assert.IsTrue(items.All(item => instance.Contains(item.Key, item.Value)));
+            TestIntegrity(instance);
+        }
+
+        [Test]
+        public void RemovalPerformanceTest([NUnit.Framework.Range(0, 10000, 10000)]int pointAmount)
+        {
+            GenerateTestData(pointAmount, out var items, out var origin, out var size);
+            var collection = CreateInstance(origin, size, pointAmount);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            foreach (var item in items)
+            {
+                collection.Remove(item.Key, item.Value);
+            }
+
+            stopwatch.Stop();
+
+            Assert.Pass($"Removal time: {stopwatch.ElapsedMilliseconds} ms ({stopwatch.ElapsedTicks} ticks)\n");
         }
 
         [Test]
         public void RemovalTest([NUnit.Framework.Range(0, 1000, 250)]int pointAmount)
         {
-            GenerateTestData(pointAmount, out var instance, out var items, out _, out _);
+            GenerateTestCollection(pointAmount, out var instance, out var items, out _, out _);
 
             Assert.AreEqual(items.Count, instance.Count);
             var enumerator = instance.GetEnumerator();
@@ -88,71 +171,72 @@ namespace Unity_Tools.Tests
             {
                 Assert.IsTrue(instance.Remove(item.Key, item.Value));
             }
+
+            TestIntegrity(instance);
+        }
+
+        [Test]
+        public void SphereCastPerformanceTest([NUnit.Framework.Range(0, 100000, 100000)]
+            int pointAmount)
+        {
+            GenerateTestCollection(pointAmount, out var instance, out var items, out var origin, out var size);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var cnt = 0;
+
+            for (var i = 0; i < 100; i++)
+            {
+                var sphere = new Sphere(RandomInAabb(origin, size), Random.Range(0.1f, size.magnitude));
+
+                foreach (var item in instance.ShapeCast(sphere))
+                {
+                    cnt++;
+                }
+            }
+
+            stopwatch.Stop();
+            Assert.Pass($"Sphere cast time: {stopwatch.ElapsedMilliseconds / 100f} ms ({stopwatch.ElapsedTicks / 100f} ticks) Count: {cnt}\n");
         }
 
         [Test]
         public void SphereCastTest([NUnit.Framework.Range(0, 1000, 250)] int pointAmount)
         {
-            GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
+            GenerateTestCollection(pointAmount, out var instance, out var items, out var origin, out var size);
 
             for (var i = 0; i < 10; i++)
             {
-                var center = RandomInAabb(origin, size);
-                var radius = Random.Range(0.1f, size.magnitude);
-                var sqrRadius = radius * radius;
+                var sphere = new Sphere(RandomInAabb(origin, size), Random.Range(0.1f, size.magnitude));
 
-                var castResult = instance.SphereCast(center, radius).ToArray();
-                var reference = items.Where(item => (item.Value - center).sqrMagnitude <= sqrRadius)
+                var castResult = instance.ShapeCast(sphere).ToArray();
+                var reference = items.Where(item => sphere.ContainsPoint(item.Value))
                     .ToDictionary(item => item.Key, item => item.Value);
 
-                TestForSetEquality(castResult, reference);
+                TestForSetEquality(castResult, reference); 
             }
         }
 
-        [Test]
-        public void AabbCastTest([NUnit.Framework.Range(0, 1000, 250)] int pointAmount)
-        {
-            GenerateTestData(pointAmount, out var instance, out var items, out var origin, out var size);
+        protected abstract IPoint3DCollection<T> CreateInstance(Vector3 origin, Vector3 size, int capacity);
 
-            for (var i = 0; i < 10; i++)
-            {
-                var aabbOrigin = RandomInAabb(origin, size);
-                var aabbSize = RandomInUnitAabb() * 100f;
-
-                var castResult = instance.BoundsCast(new Bounds(aabbOrigin, aabbSize)).ToArray();
-                var reference = items.Where(item => item.Value.IsInAabb(aabbOrigin, aabbSize))
-                    .ToDictionary(item => item.Key, item => item.Value);
-
-                TestForSetEquality(castResult, reference);
-            }
-        }
-
-        protected Vector3 RandomInUnitAabb()
-        {
-            var x = Random.value * 2f - 1f;
-            var y = Random.value * 2f - 1f;
-            var z = Random.value * 2f - 1f;
-
-            return new Vector3(x, y, z);
-        }
-
-        protected Vector3 RandomInAabb(Vector3 origin, Vector3 halfSize)
-        {
-            var x = Random.value * 2f - 1f;
-            var y = Random.value * 2f - 1f;
-            var z = Random.value * 2f - 1f;
-
-            return new Vector3(x, y, z).ScaleComponents(halfSize) + origin;
-        }
-
-        protected void GenerateTestData(int pointAmount, out IPoint3DCollection<T> instance,
+        protected void GenerateTestCollection(int pointAmount, out IPoint3DCollection<T> instance,
             out IList<KeyValuePair<T, Vector3>> items, out Vector3 origin, out Vector3 size)
+        {
+            GenerateTestData(pointAmount, out items, out origin, out size);
+
+            instance = CreateInstance(origin, size, pointAmount);
+            Assert.NotNull(instance, "instance != null");
+
+            for (var i = 0; i < pointAmount; i++)
+            {
+                instance.Add(items[i].Key, items[i].Value); 
+            }
+        }
+
+        protected void GenerateTestData(int pointAmount, out IList<KeyValuePair<T, Vector3>> items, out Vector3 origin, out Vector3 size)
         {
             var randomSeed = 0;
             Random.InitState(randomSeed);
-
-            instance = CreateInstance();
-            Assert.NotNull(instance, "instance != null");
 
             origin = RandomInUnitAabb() * 100f;
             size = RandomInUnitAabb().AbsComponents() * 100f;
@@ -167,8 +251,27 @@ namespace Unity_Tools.Tests
                 var item = GetItem(i);
                 Assert.NotNull(item, "item != null");
                 items.Add(new KeyValuePair<T, Vector3>(item, vector));
-                instance.Add(item, vector);
             }
+        }
+
+        protected abstract T GetItem(int i);
+
+        protected Vector3 RandomInAabb(Vector3 origin, Vector3 halfSize)
+        {
+            var x = Random.value * 2f - 1f;
+            var y = Random.value * 2f - 1f;
+            var z = Random.value * 2f - 1f;
+
+            return new Vector3(x, y, z).ScaleComponents(halfSize) + origin;
+        }
+
+        protected Vector3 RandomInUnitAabb()
+        {
+            var x = Random.value * 2f - 1f;
+            var y = Random.value * 2f - 1f;
+            var z = Random.value * 2f - 1f;
+
+            return new Vector3(x, y, z);
         }
 
         protected void TestForSetEquality(IList<T> items, Dictionary<T, Vector3> reference)
@@ -184,8 +287,6 @@ namespace Unity_Tools.Tests
             Assert.IsTrue(reference.Count == 0);
         }
 
-        protected abstract IPoint3DCollection<T> CreateInstance();
-
-        protected abstract T GetItem(int i);
+        protected abstract void TestIntegrity(IPoint3DCollection<T> collection);
     }
 }

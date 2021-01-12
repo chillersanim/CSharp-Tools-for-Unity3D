@@ -3,7 +3,7 @@
 // Filename:         LinearPolylineTest.cs
 // 
 // Created:          13.08.2019  00:52
-// Last modified:    25.08.2019  15:59
+// Last modified:    05.02.2020  19:40
 // 
 // --------------------------------------------------------------------------------------
 // 
@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
-using Unity_Tools.Collections;
 using Unity_Tools.Core;
-using Unity_Tools.Polyline;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -36,14 +34,16 @@ namespace Unity_Tools.Tests
     public class LinearPolylineTest
     {
         [Test]
-        public void CreationTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000, 10000)] int pointAmount)
+        public void AddTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000, 10000)] int pointAmount)
         {
             CreateTestData(pointAmount, out var points, out var length);
 
             var polyline = new LinearPolyline();
-            Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
 
-            polyline = new LinearPolyline(points);
+            foreach (var p in points)
+            {
+                polyline.Add(p);
+            }
 
             if (pointAmount < 2)
             {
@@ -56,16 +56,14 @@ namespace Unity_Tools.Tests
         }
 
         [Test]
-        public void AddTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000, 10000)] int pointAmount)
+        public void CreationTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000, 10000)] int pointAmount)
         {
             CreateTestData(pointAmount, out var points, out var length);
 
             var polyline = new LinearPolyline();
+            Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
 
-            foreach (var p in points)
-            {
-                polyline.Add(p);
-            }
+            polyline = new LinearPolyline(points);
 
             if (pointAmount < 2)
             {
@@ -104,34 +102,7 @@ namespace Unity_Tools.Tests
             var length = 0.0;
             for (var i = 1; i < insertedPoints.Count; i++)
             {
-                length += VectorMath.PreciseDistance(insertedPoints[i], insertedPoints[i - 1]);
-            }
-
-            if (pointAmount < 2)
-            {
-                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
-            }
-            else
-            {
-                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
-            }
-        }
-
-        [Test]
-        public void ReplacementTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000)] int pointAmount)
-        {
-            CreateTestData(pointAmount, out var points, out _);
-            CreateTestData(pointAmount, out var replacementPoints, out var length);
-
-            var polyline = new LinearPolyline(points);
-
-            var replacementOrder = CollectionUtil.CreateArray(points.Length, 0, i => i + 1);
-            replacementOrder.Shuffle();
-
-            for (var i = 0; i < pointAmount; i++)
-            {
-                var index = replacementOrder[i];
-                polyline[index] = replacementPoints[index];
+                length += VectorUtil.PreciseDistance(insertedPoints[i], insertedPoints[i - 1]);
             }
 
             if (pointAmount < 2)
@@ -175,6 +146,33 @@ namespace Unity_Tools.Tests
             }
         }
 
+        [Test]
+        public void ReplacementTest([Values(0, 1, 2, 3, 4, 5, 10, 100, 1000)] int pointAmount)
+        {
+            CreateTestData(pointAmount, out var points, out _);
+            CreateTestData(pointAmount, out var replacementPoints, out var length);
+
+            var polyline = new LinearPolyline(points);
+
+            var replacementOrder = CollectionUtil.CreateArray(points.Length, 0, i => i + 1);
+            replacementOrder.Shuffle();
+
+            for (var i = 0; i < pointAmount; i++)
+            {
+                var index = replacementOrder[i];
+                polyline[index] = replacementPoints[index];
+            }
+
+            if (pointAmount < 2)
+            {
+                Assert.AreEqual(polyline.Length, 0f, float.Epsilon);
+            }
+            else
+            {
+                Assert.AreEqual(polyline.Length / length, 1, 1e-5, length.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
         private void CreateTestData(int pointAmount, out Vector3[] points, out double length)
         {
             if (pointAmount == 0)
@@ -194,7 +192,7 @@ namespace Unity_Tools.Tests
             {
                 var nextPoint = prev + Random.onUnitSphere * Random.Range(0, 10f);
                 points[i] = nextPoint;
-                preciseLength += VectorMath.PreciseDistance(points[i], points[i - 1]);
+                preciseLength += VectorUtil.PreciseDistance(points[i], points[i - 1]);
             }
 
             length = preciseLength;
