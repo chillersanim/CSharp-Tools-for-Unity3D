@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         VolumeUnion.cs
+// Filename:         Sphere.cs
 // 
 // Created:          27.01.2020  22:45
 // Last modified:    05.02.2020  19:39
@@ -26,40 +26,54 @@ using UnityEngine;
 
 namespace UnityTools.Core
 {
-    /// <summary>
-    /// A ∪ B
-    /// </summary>
-    public struct VolumeUnion<T1, T2> : IVolume where T1 : IVolume where T2 : IVolume
+    public struct Sphere : IVolume
     {
-        private readonly T1 shape1;
+        public readonly Vector3 Center;
 
-        private readonly T2 shape2;
+        public readonly float Radius;
 
-        /// <summary>
-        /// A ∪ B
-        /// </summary>
-        public VolumeUnion(T1 shape1, T2 shape2)
+        public float Diameter => this.Radius + this.Radius;
+
+        public Sphere(Vector3 center, float radius)
         {
-            this.shape1 = shape1;
-            this.shape2 = shape2;
+            this.Center = center;
+            this.Radius = radius;
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsPoint(Vector3 point)
         {
-            return shape1.ContainsPoint(point) || shape2.ContainsPoint(point);
+            var x = point.x - this.Center.x;
+            var y = point.y - this.Center.y;
+            var z = point.z - this.Center.z;
+
+            var sqrDist = x * x + y * y + z * z;
+            return sqrDist <= this.Radius * this.Radius;
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IntersectsAabb(Vector3 start, Vector3 end)
         {
-            return shape1.IntersectsAabb(start, end) || shape2.IntersectsAabb(start, end);
+            var x = Mathf.Clamp(this.Center.x, start.x, end.x) - this.Center.x;
+            var y = Mathf.Clamp(this.Center.y, start.y, end.y) - this.Center.y;
+            var z = Mathf.Clamp(this.Center.z, start.z, end.z) - this.Center.z;
+
+            var sqrDist = x * x + y * y + z * z;
+            return sqrDist <= this.Radius * this.Radius;
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsAabb(Vector3 start, Vector3 end)
         {
-            return shape1.ContainsAabb(start, end) || shape2.ContainsAabb(start, end);
+            var x = Mathf.Max(Mathf.Abs(start.x - this.Center.x), Mathf.Abs(end.x - this.Center.x));
+            var y = Mathf.Max(Mathf.Abs(start.y - this.Center.y), Mathf.Abs(end.y - this.Center.y));
+            var z = Mathf.Max(Mathf.Abs(start.z - this.Center.z), Mathf.Abs(end.z - this.Center.z));
+
+            var sqrDist = x * x + y * y + z * z;
+            return sqrDist <= this.Radius * this.Radius;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         SpecializedPool.cs
+// Filename:         GlobalListPool.cs
 // 
 // Created:          29.01.2020  19:32
 // Last modified:    05.02.2020  19:39
@@ -21,24 +21,40 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace UnityTools.Pooling
 {
-    public sealed class SpecializedPool<T> : PoolBase<T> where T : class
+    public static class ConcurrentGlobalListPool<T>
     {
-        [NotNull]
-        private readonly Func<T> constructor;
+        private static readonly ConcurrentListPool<T> Pool = new ConcurrentListPool<T>();
 
-        public SpecializedPool([NotNull]Func<T> constructor)
+        public static int MaxListCapacity
         {
-            this.constructor = constructor ?? throw new ArgumentNullException(nameof(constructor));
+            get => Pool.MaxListCapacity;
+            set => Pool.MaxListCapacity = value;
         }
 
-        protected override T CreateItem()
+        public static int MaxSize
         {
-            return constructor();
+            get => Pool.MaxSize;
+            set => Pool.MaxSize = value;
+        }
+
+        public static List<T> Get()
+        {
+            return Pool.Get();
+        }
+
+        public static List<T> Get(int minCapacity)
+        {
+            return Pool.Get(minCapacity);
+        }
+
+        public static void Put([NotNull] List<T> item)
+        {
+            Pool.Put(item);
         }
     }
 }

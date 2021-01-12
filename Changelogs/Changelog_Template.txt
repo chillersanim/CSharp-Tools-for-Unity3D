@@ -19,7 +19,7 @@ Release date: [Date]
 
 
 ------------------------
- Improvements
+ Changes
 ------------------------
 
  - [Item]
@@ -33,7 +33,7 @@ Release date: [Date]
 
 
 ------------------------
- Breakign changes
+ Breaking changes
 ------------------------
 
  - [Item]

@@ -28,7 +28,7 @@ using UnityTools.Collections;
 using UnityTools.Core;
 using UnityTools.Pooling;
 
-namespace Unity_Tools.Experimental
+namespace UnityTools.Experimental
 {
     public class MeshBuilder
     {
@@ -55,11 +55,11 @@ namespace Unity_Tools.Experimental
 
         public MeshBuilder()
         {
-            vertices = new List<VertexEntry>();
-            faces = new List<FaceEntry>();
-            edges = new List<EdgeEntry>();
+            this.vertices = new List<VertexEntry>();
+            this.faces = new List<FaceEntry>();
+            this.edges = new List<EdgeEntry>();
 
-            spatialTree = new Spatial3DTree<VertexEntry>();
+            this.spatialTree = new Spatial3DTree<VertexEntry>();
         }
 
         public MeshBuilder(float maxDistanceForVertexEquality) : this()
@@ -70,13 +70,13 @@ namespace Unity_Tools.Experimental
         public int AddEdge(int v0, int v1)
         {
             CommonUtil.Sort(ref v0, ref v1);
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
 
-            var newEdge = AddEdgeInternal(ve0, ve1);
-            var lastEdgeIndex = edges.Count - 1;
+            var newEdge = this.AddEdgeInternal(ve0, ve1);
+            var lastEdgeIndex = this.edges.Count - 1;
 
-            return edges[lastEdgeIndex] == newEdge ? lastEdgeIndex : edges.BinarySearch(newEdge);
+            return this.edges[lastEdgeIndex] == newEdge ? lastEdgeIndex : this.edges.BinarySearch(newEdge);
         }
 
         public int AddFace(int v0, int v1, int v2)
@@ -88,15 +88,15 @@ namespace Unity_Tools.Experimental
                 throw new ArgumentException("A face cannot have duplicate vertices.");
             }
 
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
-            var ve2 = vertices[v2];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
+            var ve2 = this.vertices[v2];
 
             foreach(var face in ve0.Faces)
             {
                 if (face.Vertices.Count == 3 && face.Vertices[1] == ve1 && face.Vertices[2] == ve2)
                 {
-                    return faces.BinarySearch(face);
+                    return this.faces.BinarySearch(face);
                 }
             }
 
@@ -109,9 +109,9 @@ namespace Unity_Tools.Experimental
             ve1.Faces.Add(newFace);
             ve2.Faces.Add(newFace);
 
-            var ee0 = AddEdgeInternal(ve0, ve1);
-            var ee1 = AddEdgeInternal(ve1, ve2);
-            var ee2 = AddEdgeInternal(ve0, ve2);
+            var ee0 = this.AddEdgeInternal(ve0, ve1);
+            var ee1 = this.AddEdgeInternal(ve1, ve2);
+            var ee2 = this.AddEdgeInternal(ve0, ve2);
 
             newFace.Edges.Add(ee0);
             newFace.Edges.Add(ee1);
@@ -120,8 +120,8 @@ namespace Unity_Tools.Experimental
             ee1.Faces.Add(newFace);
             ee2.Faces.Add(newFace);
 
-            faces.Add(newFace);
-            return faces.Count - 1;
+            this.faces.Add(newFace);
+            return this.faces.Count - 1;
         }
 
         public int AddFace(int v0, int v1, int v2, int v3)
@@ -133,16 +133,16 @@ namespace Unity_Tools.Experimental
                 throw new ArgumentException("A face cannot have duplicate vertices.");
             }
 
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
-            var ve2 = vertices[v2];
-            var ve3 = vertices[v3];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
+            var ve2 = this.vertices[v2];
+            var ve3 = this.vertices[v3];
 
             foreach (var face in ve0.Faces)
             {
                 if (face.Vertices.Count == 4 && face.Vertices[1] == ve1 && face.Vertices[2] == ve2 && face.Vertices[3] == ve3)
                 {
-                    return faces.BinarySearch(face);
+                    return this.faces.BinarySearch(face);
                 }
             }
 
@@ -157,10 +157,10 @@ namespace Unity_Tools.Experimental
             ve2.Faces.Add(newFace);
             ve3.Faces.Add(newFace);
 
-            var ee0 = AddEdgeInternal(ve0, ve1);
-            var ee1 = AddEdgeInternal(ve1, ve2);
-            var ee2 = AddEdgeInternal(ve2, ve3);
-            var ee3 = AddEdgeInternal(ve0, ve3);
+            var ee0 = this.AddEdgeInternal(ve0, ve1);
+            var ee1 = this.AddEdgeInternal(ve1, ve2);
+            var ee2 = this.AddEdgeInternal(ve2, ve3);
+            var ee3 = this.AddEdgeInternal(ve0, ve3);
 
             newFace.Edges.Add(ee0);
             newFace.Edges.Add(ee1);
@@ -171,13 +171,13 @@ namespace Unity_Tools.Experimental
             ee2.Faces.Add(newFace);
             ee3.Faces.Add(newFace);
 
-            faces.Add(newFace);
-            return faces.Count - 1;
+            this.faces.Add(newFace);
+            return this.faces.Count - 1;
         }
 
         public int AddFace(params int[] vertexIndices)
         {
-            var existingIndex = GetFaceIndex(vertexIndices);
+            var existingIndex = this.GetFaceIndex(vertexIndices);
             if (existingIndex >= 0)
             {
                 return existingIndex;
@@ -187,7 +187,7 @@ namespace Unity_Tools.Experimental
 
             foreach (var index in vertexIndices)
             {
-                vertexEntries.Add(vertices[index]);
+                vertexEntries.Add(this.vertices[index]);
             }
 
             var newFace = FacePool.Get();
@@ -203,17 +203,17 @@ namespace Unity_Tools.Experimental
 
             for (var i = 1; i < amount; i++)
             {
-                var ee = AddEdgeInternal(vertexEntries[i - 1], vertexEntries[i]);
+                var ee = this.AddEdgeInternal(vertexEntries[i - 1], vertexEntries[i]);
                 newFace.Edges.Add(ee);
                 ee.Faces.Add(newFace);
             }
 
-            var ee0 = AddEdgeInternal(ve0, vertexEntries[amount - 1]);
+            var ee0 = this.AddEdgeInternal(ve0, vertexEntries[amount - 1]);
             newFace.Edges.Add(ee0);
             ee0.Faces.Add(newFace);
 
-            faces.Add(newFace);
-            var lastIndex = faces.Count - 1;
+            this.faces.Add(newFace);
+            var lastIndex = this.faces.Count - 1;
 
             VertexListPool.Put(vertexEntries);
 
@@ -222,46 +222,46 @@ namespace Unity_Tools.Experimental
 
         public int AddVertex(Vector3 vertex)
         {
-            using (var enumerator = spatialTree.ShapeCast(new Sphere(vertex, maxDistForVertEq)).GetEnumerator())
+            using (var enumerator = this.spatialTree.ShapeCast(new Sphere(vertex, this.maxDistForVertEq)).GetEnumerator())
             {
                 if (enumerator.MoveNext())
                 {
-                    return vertices.BinarySearch(enumerator.Current);
+                    return this.vertices.BinarySearch(enumerator.Current);
                 }
             }
 
             var vertexEntry = VertexPool.Get();
-            vertexEntry.Id = vertices.Count > 0 ? vertices[vertices.Count - 1].Id + 1u : 1u;
+            vertexEntry.Id = this.vertices.Count > 0 ? this.vertices[this.vertices.Count - 1].Id + 1u : 1u;
             vertexEntry.Vertex = vertex;
 
-            vertices.Add(vertexEntry);
-            return vertices.Count - 1;
+            this.vertices.Add(vertexEntry);
+            return this.vertices.Count - 1;
         }
 
         public (int v0, int v1) GetEdge(int index)
         {
-            var ee = edges[index];
-            return (vertices.BinarySearch(ee.V0), vertices.BinarySearch(ee.V1));
+            var ee = this.edges[index];
+            return (this.vertices.BinarySearch(ee.V0), this.vertices.BinarySearch(ee.V1));
         }
 
         public int GetEdgeIndex(int v0, int v1)
         {
             CommonUtil.Sort(ref v0, ref v1);
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
 
-            var ee = FindEdgeEntry(ve0, ve1);
-            return ee != null ? edges.BinarySearch(ee) : -1;
+            var ee = this.FindEdgeEntry(ve0, ve1);
+            return ee != null ? this.edges.BinarySearch(ee) : -1;
         }
 
         public int[] GetFace(int index)
         {
-            var face = faces[index];
+            var face = this.faces[index];
             var result = new int[face.Vertices.Count];
 
             for (var i = 0; i < result.Length; i++)
             {
-                result[i] = vertices.BinarySearch(face.Vertices[i]);
+                result[i] = this.vertices.BinarySearch(face.Vertices[i]);
             }
 
             return result;
@@ -276,15 +276,15 @@ namespace Unity_Tools.Experimental
                 throw new ArgumentException("A face cannot have duplicate vertices.");
             }
 
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
-            var ve2 = vertices[v2];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
+            var ve2 = this.vertices[v2];
 
             foreach (var face in ve0.Faces)
             {
                 if (face.Vertices.Count == 3 && face.Vertices[1] == ve1 && face.Vertices[2] == ve2)
                 {
-                    return faces.BinarySearch(face);
+                    return this.faces.BinarySearch(face);
                 }
             }
 
@@ -300,16 +300,16 @@ namespace Unity_Tools.Experimental
                 throw new ArgumentException("A face cannot have duplicate vertices.");
             }
 
-            var ve0 = vertices[v0];
-            var ve1 = vertices[v1];
-            var ve2 = vertices[v2];
-            var ve3 = vertices[v3];
+            var ve0 = this.vertices[v0];
+            var ve1 = this.vertices[v1];
+            var ve2 = this.vertices[v2];
+            var ve3 = this.vertices[v3];
 
             foreach (var face in ve0.Faces)
             {
                 if (face.Vertices.Count == 4 && face.Vertices[1] == ve1 && face.Vertices[2] == ve2 && face.Vertices[3] == ve3)
                 {
-                    return faces.BinarySearch(face);
+                    return this.faces.BinarySearch(face);
                 }
             }
 
@@ -325,7 +325,7 @@ namespace Unity_Tools.Experimental
 
             Array.Sort(vertexIndices);
 
-            if (HasDuplicates(vertexIndices))
+            if (this.HasDuplicates(vertexIndices))
             {
                 throw new ArgumentException("A face cannot have duplicate vertices.");
             }
@@ -334,7 +334,7 @@ namespace Unity_Tools.Experimental
 
             foreach (var index in vertexIndices)
             {
-                vertexEntries.Add(vertices[index]);
+                vertexEntries.Add(this.vertices[index]);
             }
 
             var ve0 = vertexEntries[0];
@@ -357,7 +357,7 @@ namespace Unity_Tools.Experimental
                     if (match)
                     {
                         VertexListPool.Put(vertexEntries);
-                        return faces.BinarySearch(face);
+                        return this.faces.BinarySearch(face);
                     }
                 }
             }
@@ -369,18 +369,18 @@ namespace Unity_Tools.Experimental
 
         public Vector3 GetVertex(int index)
         {
-            return vertices[index].Vertex;
+            return this.vertices[index].Vertex;
         }
 
         public int GetVertexIndex(Vector3 vertex)
         {
-            var ve = FindVertexEntry(vertex);
-            return ve != null ? vertices.BinarySearch(ve) : -1;
+            var ve = this.FindVertexEntry(vertex);
+            return ve != null ? this.vertices.BinarySearch(ve) : -1;
         }
 
         public bool IsTwoManifold()
         {
-            foreach (var edgeEntry in edges)
+            foreach (var edgeEntry in this.edges)
             {
                 if (edgeEntry.Faces.Count != 2)
                 {
@@ -393,76 +393,76 @@ namespace Unity_Tools.Experimental
 
         public void RemoveEdge(int index, bool cascade)
         {
-            var edgeEntry = edges[index];
-            RemoveEdgeInternal(edgeEntry, cascade);
-            edges.RemoveAt(index);
+            var edgeEntry = this.edges[index];
+            this.RemoveEdgeInternal(edgeEntry, cascade);
+            this.edges.RemoveAt(index);
             EdgePool.Put(edgeEntry);
         }
 
         public void RemoveEdge(int v0, int v1, bool cascade)
         {
-            var index = GetEdgeIndex(v0, v1);
+            var index = this.GetEdgeIndex(v0, v1);
             if (index < 0)
             {
                 throw new ArgumentException("No edge between vertices v0 and v1 exists.");
             }
 
-            RemoveEdge(index, cascade);
+            this.RemoveEdge(index, cascade);
         }
 
         public void RemoveFace(int index)
         {
-            var faceEntry = faces[index];
-            RemoveFaceInternal(faceEntry);
-            faces.Remove(faceEntry);
+            var faceEntry = this.faces[index];
+            this.RemoveFaceInternal(faceEntry);
+            this.faces.Remove(faceEntry);
             FacePool.Put(faceEntry);
         }
 
         public void RemoveFace(int v0, int v1, int v2)
         {
-            var index = GetFaceIndex(v0, v1, v2);
+            var index = this.GetFaceIndex(v0, v1, v2);
             if (index < 0)
             {
                 throw new ArgumentException("No faces between vertices v0, v1 and v2 exists.");
             }
 
-            RemoveFace(index);
+            this.RemoveFace(index);
         }
 
         public void RemoveFace(int v0, int v1, int v2, int v3)
         {
-            var index = GetFaceIndex(v0, v1, v2, v3);
+            var index = this.GetFaceIndex(v0, v1, v2, v3);
             if (index < 0)
             {
                 throw new ArgumentException("No faces between vertices v0, v1, v2 and v3 exists.");
             }
 
-            RemoveFace(index);
+            this.RemoveFace(index);
         }
 
         public void RemoveFace(params int[] vertexIndices)
         {
-            var index = GetFaceIndex(vertexIndices);
+            var index = this.GetFaceIndex(vertexIndices);
             if (index < 0)
             {
                 throw new ArgumentException("No faces between the given vertices exists.");
             }
 
-            RemoveFace(index);
+            this.RemoveFace(index);
         }
 
         public void RemoveVertex(int index, bool cascade = false)
         {
-            var vertexEntry = vertices[index];
-            RemoveVertexInternal(vertexEntry, cascade);
-            vertices.RemoveAt(index);
-            spatialTree.Remove(vertexEntry, vertexEntry.Vertex);
+            var vertexEntry = this.vertices[index];
+            this.RemoveVertexInternal(vertexEntry, cascade);
+            this.vertices.RemoveAt(index);
+            this.spatialTree.Remove(vertexEntry, vertexEntry.Vertex);
             VertexPool.Put(vertexEntry);
         }
 
         public void RemoveVertex(Vector3 vertex, bool cascade = false)
         {
-            var vertexEntry = FindVertexEntry(vertex);
+            var vertexEntry = this.FindVertexEntry(vertex);
 
             if (vertexEntry == null)
             {
@@ -470,9 +470,9 @@ namespace Unity_Tools.Experimental
                     nameof(vertex));
             }
 
-            RemoveVertexInternal(vertexEntry, cascade);
-            vertices.Remove(vertexEntry);
-            spatialTree.Remove(vertexEntry, vertexEntry.Vertex);
+            this.RemoveVertexInternal(vertexEntry, cascade);
+            this.vertices.Remove(vertexEntry);
+            this.spatialTree.Remove(vertexEntry, vertexEntry.Vertex);
             VertexPool.Put(vertexEntry);
         }
 
@@ -483,7 +483,7 @@ namespace Unity_Tools.Experimental
 
             var meshVertices = GlobalListPool<Vector3>.Get(this.vertices.Count * 3);
 
-            foreach (var face in faces)
+            foreach (var face in this.faces)
             {
                 vertexCache.Clear();
                 indexCache.Clear();
@@ -514,18 +514,18 @@ namespace Unity_Tools.Experimental
 
         private EdgeEntry AddEdgeInternal(VertexEntry ve0, VertexEntry ve1)
         {
-            var existing = FindEdgeEntry(ve0, ve1);
+            var existing = this.FindEdgeEntry(ve0, ve1);
             if (existing != null)
             {
                 return existing;
             }
 
             var newEdge = EdgePool.Get();
-            newEdge.Id = edges.Count > 0 ? edges[edges.Count - 1].Id + 1u : 1u;
+            newEdge.Id = this.edges.Count > 0 ? this.edges[this.edges.Count - 1].Id + 1u : 1u;
             newEdge.V0 = ve0;
             newEdge.V1 = ve1;
 
-            edges.Add(newEdge);
+            this.edges.Add(newEdge);
 
             return newEdge;
         }
@@ -545,7 +545,7 @@ namespace Unity_Tools.Experimental
 
         private VertexEntry FindVertexEntry(Vector3 vertex)
         {
-            using (var enumerator = spatialTree.ShapeCast(new Sphere(vertex, maxDistForVertEq)).GetEnumerator())
+            using (var enumerator = this.spatialTree.ShapeCast(new Sphere(vertex, this.maxDistForVertEq)).GetEnumerator())
             {
                 if (enumerator.MoveNext())
                 {
@@ -582,7 +582,7 @@ namespace Unity_Tools.Experimental
             {
                 foreach (var faceEntry in edgeEntry.Faces)
                 {
-                    faces.Remove(faceEntry);
+                    this.faces.Remove(faceEntry);
 
                     foreach (var fve in faceEntry.Vertices)
                     {
@@ -633,7 +633,7 @@ namespace Unity_Tools.Experimental
             {
                 foreach (var edgeEntry in vertexEntry.Edges)
                 {
-                    edges.Remove(edgeEntry);
+                    this.edges.Remove(edgeEntry);
                     if (edgeEntry.V0 == vertexEntry)
                     {
                         edgeEntry.V1.Edges.Remove(edgeEntry);
@@ -648,7 +648,7 @@ namespace Unity_Tools.Experimental
 
                 foreach (var faceEntry in vertexEntry.Faces)
                 {
-                    faces.Remove(faceEntry);
+                    this.faces.Remove(faceEntry);
 
                     foreach (var fve in faceEntry.Vertices)
                     {
@@ -690,15 +690,15 @@ namespace Unity_Tools.Experimental
             {
                 if (ReferenceEquals(this, other)) return 0;
                 if (ReferenceEquals(null, other)) return 1;
-                return Id.CompareTo(other.Id);
+                return this.Id.CompareTo(other.Id);
             }
 
             public void Reuse()
             {
                 this.Id = 0u;
-                V0 = null;
-                V1 = null;
-                Faces.Clear();
+                this.V0 = null;
+                this.V1 = null;
+                this.Faces.Clear();
             }
         }
 
@@ -724,14 +724,14 @@ namespace Unity_Tools.Experimental
             {
                 if (ReferenceEquals(this, other)) return 0;
                 if (ReferenceEquals(null, other)) return 1;
-                return Id.CompareTo(other.Id);
+                return this.Id.CompareTo(other.Id);
             }
 
             public void Reuse()
             {
                 this.Id = 0u;
-                Vertices.Clear();
-                Edges.Clear();
+                this.Vertices.Clear();
+                this.Edges.Clear();
             }
         }
 
@@ -760,15 +760,15 @@ namespace Unity_Tools.Experimental
             {
                 if (ReferenceEquals(this, other)) return 0;
                 if (ReferenceEquals(null, other)) return 1;
-                return Id.CompareTo(other.Id);
+                return this.Id.CompareTo(other.Id);
             }
 
             public void Reuse()
             {
                 this.Id = 0u;
-                Vertex = Vector3.zero;
-                Edges.Clear();
-                Faces.Clear();
+                this.Vertex = Vector3.zero;
+                this.Edges.Clear();
+                this.Faces.Clear();
             }
         }
     }

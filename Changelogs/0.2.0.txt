@@ -52,7 +52,7 @@ Previous changes and additions are only documented in the commit history of the 
 
 
 ------------------------
- Improvements
+ Changes
 ------------------------
 
  - General: Improved project layout and namespaces structure.
@@ -73,7 +73,7 @@ Previous changes and additions are only documented in the commit history of the 
 
 
 ------------------------
- Breakign changes
+ Breaking changes
 ------------------------
 
  - Many...

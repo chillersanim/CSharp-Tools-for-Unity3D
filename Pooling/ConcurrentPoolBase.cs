@@ -28,7 +28,7 @@ using UnityTools.Core;
 
 namespace UnityTools.Pooling
 {
-    public abstract class PoolBase<T> : IPool<T> where T : class
+    public abstract class ConcurrentPoolBase<T> : IPool<T> where T : class
     {
         public int MaxSize
         {
@@ -37,40 +37,46 @@ namespace UnityTools.Pooling
             {
                 if (maxSize == value) return;
 
-                maxSize = value;
-
-                if (maxSize < 1)
+                lock (lockObject)
                 {
-                    maxSize = 1;
-                }
+                    maxSize = value;
 
-                while (items.Count > maxSize)
-                {
-                    var item = items.Pop();
-                    if (ImplementsDisposable) 
+                    if (maxSize < 1)
                     {
-                        ((IDisposable)item).Dispose();
+                        maxSize = 1;
+                    }
+
+                    while (items.Count > maxSize)
+                    {
+                        var item = items.Pop();
+                        if (ImplementsDisposable)
+                        {
+                            ((IDisposable) item).Dispose();
+                        }
                     }
                 }
             }
-        } // ReSharper disable StaticMemberInGenericType
-
+        } 
+        
+        // ReSharper disable StaticMemberInGenericType
         private static readonly bool ImplementsReusable;
 
         private static readonly bool ImplementsDisposable;
         // ReSharper enable StaticMemberInGenericType
 
+        private readonly object lockObject;
         private readonly Stack<T> items;
-        private int maxSize;
+        private volatile int maxSize;
 
-        static PoolBase()
+        static ConcurrentPoolBase()
         {
             ImplementsReusable = typeof(IReusable).IsAssignableFrom(typeof(T));
             ImplementsDisposable = typeof(IDisposable).IsAssignableFrom(typeof(T));
         }
 
-        protected PoolBase()
+        protected ConcurrentPoolBase()
         {
+            lockObject = new object();
             items = new Stack<T>();
             MaxSize = 128;
         }
@@ -78,7 +84,10 @@ namespace UnityTools.Pooling
         [NotNull]
         public T Get()
         {
-            return items.Count > 0 ? items.Pop() : CreateItem();
+            lock (lockObject)
+            {
+                return items.Count > 0 ? items.Pop() : CreateItem();
+            }
         }
 
         public void Put([NotNull]T item)
@@ -88,22 +97,25 @@ namespace UnityTools.Pooling
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (items.Count >= MaxSize)
+            lock (lockObject)
             {
-                if (ImplementsDisposable)
+                if (items.Count >= MaxSize)
                 {
-                    ((IDisposable)item).Dispose();
+                    if (ImplementsDisposable)
+                    {
+                        ((IDisposable) item).Dispose();
+                    }
+
+                    return;
                 }
 
-                return;
-            }
+                if (ImplementsReusable)
+                {
+                    ((IReusable) item).Reuse();
+                }
 
-            if (ImplementsReusable)
-            {
-                ((IReusable)item).Reuse();
+                items.Push(item);
             }
-
-            items.Push(item);
         }
 
         protected abstract T CreateItem();

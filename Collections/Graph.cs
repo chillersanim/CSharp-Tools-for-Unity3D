@@ -605,23 +605,4 @@ namespace UnityTools.Collections
         /// </summary>
         Undirected
     }
-
-    /// <summary>
-    /// Interface for graph nodes.
-    /// </summary>
-    /// <typeparam name="T">The type of the key associated with the node.</typeparam>
-    public interface IGraphNode<T> : IReadOnlyCollection<IGraphNode<T>>
-    {
-        /// <summary>
-        /// The key associated with this <see cref="IGraphNode{T}"/>.
-        /// </summary>
-        T Key { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="IGraphNode{T}"/> has a connection to the <see cref="node"/>.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        /// <returns>Returns <c>true</c> if the connection exists, <c>false</c> otherwise.</returns>
-        bool HasEdgeTo(IGraphNode<T> node);
-    }
 }

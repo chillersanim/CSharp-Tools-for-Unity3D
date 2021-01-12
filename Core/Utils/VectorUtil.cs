@@ -264,6 +264,39 @@ namespace UnityTools.Core
         }
 
         /// <summary>
+        /// Determines whether the vector has any infinity components.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
+        [PublicAPI]
+        public static bool IsInfinite(this Vector2 vector)
+        {
+            return float.IsInfinity(vector.x) || float.IsInfinity(vector.y);
+        }
+
+        /// <summary>
+        /// Determines whether the vector has any infinity components.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
+        [PublicAPI]
+        public static bool IsInfinite(this Vector3 vector)
+        {
+            return float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z);
+        }
+
+        /// <summary>
+        /// Determines whether the vector has any infinity components.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
+        [PublicAPI]
+        public static bool IsInfinite(this Vector4 vector)
+        {
+            return float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z) || float.IsInfinity(vector.w);
+        }
+
+        /// <summary>
         /// Determines whether the vector has any nan components.
         /// </summary>
         /// <param name="vector">The vector.</param>
@@ -283,6 +316,17 @@ namespace UnityTools.Core
         public static bool IsNaN(this Vector3 vector)
         {
             return float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
+        }
+
+        /// <summary>
+        /// Determines whether the vector has any nan components.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns>Returns <c>true</c> if at least one component is <see cref="float.NaN"/>, <c>false</c> otherwise.</returns>
+        [PublicAPI]
+        public static bool IsNaN(this Vector4 vector)
+        {
+            return float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z) || float.IsNaN(vector.w);
         }
 
         /// <summary>

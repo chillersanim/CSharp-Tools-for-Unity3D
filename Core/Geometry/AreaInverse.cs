@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         VolumeDifference.cs
+// Filename:         VolumeInverse.cs
 // 
 // Created:          27.01.2020  22:45
 // Last modified:    05.02.2020  19:39
@@ -21,45 +21,62 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace UnityTools.Core
 {
     /// <summary>
-    /// (¬A) ∩ (¬B)
+    /// ¬A
     /// </summary>
-    public struct VolumeDifference<T1, T2> : IVolume where T1 : IVolume where T2 : IVolume
+    public struct AreaInverse : IArea
     {
-        private readonly T1 shape1;
+        private readonly IArea shape;
 
-        private readonly T2 shape2;
+
+        /// <inheritdoc />
+        public Bounds2 Bounds => this.shape.Bounds;
+
+        /// <inheritdoc />
+        public bool Inverted => !shape.Inverted;
 
         /// <summary>
-        /// (¬A) ∩ (¬B)
+        /// ¬A
         /// </summary>
-        public VolumeDifference(T1 shape1, T2 shape2)
+        public AreaInverse(IArea shape)
         {
-            this.shape1 = shape1;
-            this.shape2 = shape2;
+            this.shape = shape;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsPoint(Vector3 point)
+        public bool ContainsPoint(Vector2 point)
         {
-            return !shape1.ContainsPoint(point) && !shape2.ContainsPoint(point);
+            return !shape.ContainsPoint(point);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsAabb(Vector3 start, Vector3 end)
+        public bool IntersectsRect(Vector2 start, Vector2 end)
         {
-            return !shape1.IntersectsAabb(start, end) && !shape2.IntersectsAabb(start, end);
+            return !shape.ContainsRect(start, end);
+        }
+
+        /// <inheritdoc />
+        public bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal)
+        {
+            if (this.shape.Raycast(orig, dir, out t, out normal))
+            {
+                normal = -normal;
+                return true;
+            }
+
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsAabb(Vector3 start, Vector3 end)
+        public bool ContainsRect(Vector2 start, Vector2 end)
         {
-            return !shape1.ContainsAabb(start, end) && !shape2.ContainsAabb(start, end);
+            return !shape.IntersectsRect(start, end);
         }
     }
 }

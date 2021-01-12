@@ -130,10 +130,7 @@ namespace UnityTools.Collections
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var item in ShapeCast(new VolumeAll()))
-            {
-                yield return item;
-            }
+            throw new NotImplementedException();
         }
 
         /// <summary>

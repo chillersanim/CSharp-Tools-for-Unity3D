@@ -32,7 +32,7 @@ using Debug = UnityEngine.Debug;
 
 namespace UnityTools.Collections
 {
-    public class PointOctree<T> : IPoint3DCollection<T>
+    public class PointQuadtree<T> : IPoint2DCollection<T>
     {
         /// <summary>
         /// The index offset for the first child index
@@ -52,7 +52,7 @@ namespace UnityTools.Collections
         /// <summary>
         /// The initial array size for the nodes container.
         /// </summary>
-        private const int InitialNodeCapacity = 64;
+        private const int InitialNodeCapacity = 16;
 
         /// <summary>
         /// The amount of different leaf content array sizes that are cached
@@ -72,7 +72,7 @@ namespace UnityTools.Collections
         /// <summary>
         /// The amount of values per node
         /// </summary>
-        private const int NodeSize = 10;
+        private const int NodeSize = 6;
 
         /// <summary>
         /// Contains cached cast path arrays for inclusion and exclusion casts
@@ -94,9 +94,9 @@ namespace UnityTools.Collections
         /// <summary>
         /// Contains the leaf containers
         /// </summary>
-        private OctreeLeaf[] leafs;
+        private QuadtreeLeaf[] leafs;
 
-        private Vector3 min, size;
+        private Vector2 min, size;
 
         private int nodeCount;
 
@@ -107,7 +107,7 @@ namespace UnityTools.Collections
 
         private int version;
 
-        static PointOctree()
+        static PointQuadtree()
         {
             ContentCache = new List<ItemEntry[]>[LeafCacheHierarchySize];
             CastPathCache = new List<CastPathEntry[]>();
@@ -118,10 +118,10 @@ namespace UnityTools.Collections
             }
         }
 
-        public PointOctree(Vector3 center, Vector3 size, bool allowDuplicates = false)
+        public PointQuadtree(Vector2 center, Vector2 size, bool allowDuplicates = false)
         {
             this.nodes = new int[InitialNodeCapacity * NodeSize];
-            this.leafs = new OctreeLeaf[InitialLeafCapacity];
+            this.leafs = new QuadtreeLeaf[InitialLeafCapacity];
 
             this.allowDuplicates = allowDuplicates;
             this.nodeCount = 1;
@@ -133,11 +133,11 @@ namespace UnityTools.Collections
 
             for (var i = 0; i < NodeSize; i++)
             {
-                nodes[i] = 0;
+                this.nodes[i] = 0;
             }
         }
 
-        public PointOctree(Vector3 center, Vector3 size, int capacity, bool allowDuplicates = false)
+        public PointQuadtree(Vector2 center, Vector2 size, int capacity, bool allowDuplicates = false)
         {
             if (capacity < 0)
             {
@@ -147,7 +147,7 @@ namespace UnityTools.Collections
             var minLeafsRequired = capacity / DefaultLeafCapacity + 1;
 
             this.nodes = new int[minLeafsRequired * NodeSize];
-            this.leafs = new OctreeLeaf[minLeafsRequired];
+            this.leafs = new QuadtreeLeaf[minLeafsRequired];
 
             this.allowDuplicates = allowDuplicates;
             this.nodeCount = 1;
@@ -159,24 +159,24 @@ namespace UnityTools.Collections
 
             for (var i = 0; i < NodeSize; i++)
             {
-                nodes[i] = 0;
+                this.nodes[i] = 0;
             }
         }
 
         /// <inheritdoc/>
-        public bool AllowsDuplicates => allowDuplicates;
+        public bool AllowsDuplicates => this.allowDuplicates;
 
         /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
-            var startVersion = version;
+            var startVersion = this.version;
 
-            for (var i = 0; i < leafCount; i++)
+            for (var i = 0; i < this.leafCount; i++)
             {
-                var leaf = leafs[i];
+                var leaf = this.leafs[i];
                 for(var j = 0; j < leaf.Count; j++)
                 {
-                    if (startVersion != version)
+                    if (startVersion != this.version)
                     {
                         throw new InvalidOperationException("The octree was modified after the enumerator was created.");
                     }
@@ -188,24 +188,24 @@ namespace UnityTools.Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         /// <inheritdoc/>
-        public int Count => nodes[1];
+        public int Count => this.nodes[1];
 
         /// <inheritdoc/>
-        public void Add(T item, Vector3 position)
+        public void Add(T item, Vector2 position)
         {
-            if (position.x < min.x || position.y < min.y || position.z < min.z ||
-                position.x > min.x + size.x || position.y > min.y + size.y || position.z > min.z + size.z)
+            if (position.x < this.min.x || position.y < this.min.y ||
+                position.x > this.min.x + this.size.x || position.y > this.min.y + this.size.y )
             {
                 throw new ArgumentOutOfRangeException(nameof(position));
             }
 
-            version++;
+            this.version++;
 
-            AddToNode(item, position, 0, 0, min, size / 2f, !allowDuplicates);
+            this.AddToNode(item, position, 0, 0, this.min, this.size / 2f, !this.allowDuplicates);
         }
 
         /// <inheritdoc/>
@@ -213,9 +213,9 @@ namespace UnityTools.Collections
         {
             this.version++;
 
-            for (var i = 0; i < leafCount; i++)
+            for (var i = 0; i < this.leafCount; i++)
             {
-                CacheContentArray(leafs[i].Content);
+                this.CacheContentArray(this.leafs[i].Content);
             }
 
             this.nodeCount = 1;
@@ -223,45 +223,39 @@ namespace UnityTools.Collections
 
             for(var i = 0; i < NodeSize; i++)
             {
-                nodes[i] = 0;
+                this.nodes[i] = 0;
             }
         }
 
         /// <inheritdoc/>
-        public bool Contains(T item, Vector3 position)
+        public bool Contains(T item, Vector2 position)
         {
-            if (position.x < min.x || position.y < min.y || position.z < min.z ||
-                position.x > min.x + size.x || position.y > min.y + size.y || position.z > min.z + size.z)
+            if (position.x < this.min.x || position.y < this.min.y ||
+                position.x > this.min.x + this.size.x || position.y > this.min.y + this.size.y)
             {
                 return false;
             }
 
             var index = 0;
-            var halfSize = size / 2f;
-            var localMin = min;
+            var halfSize = this.size / 2f;
+            var localMin = this.min;
 
             while (true)
             {
                 var childIndex = 0;
                 if (position.x > localMin.x + halfSize.x)
                 {
-                    childIndex += 4;
+                    childIndex += 2;
                     localMin.x += halfSize.x;
                 }
 
                 if (position.y > localMin.y + halfSize.y)
                 {
-                    childIndex += 2;
+                    childIndex += 1;
                     localMin.y += halfSize.y;
                 }
 
-                if (position.z > localMin.z + halfSize.z)
-                {
-                    childIndex += 1;
-                    localMin.z += halfSize.z;
-                }
-
-                var nextIndex = nodes[index + childIndex + ChildIndexOffset]; 
+                var nextIndex = this.nodes[index + childIndex + ChildIndexOffset]; 
 
                 if (nextIndex == 0)
                 {
@@ -280,7 +274,7 @@ namespace UnityTools.Collections
 
                 // The node has a leaf for that area
                 var leafIndex = -(nextIndex + 1);
-                var leaf = leafs[leafIndex];
+                var leaf = this.leafs[leafIndex];
 
                 // Test if the item is in the leaf
                 for (var i = 0; i < leaf.Count; i++)
@@ -296,21 +290,21 @@ namespace UnityTools.Collections
         }
 
         /// <inheritdoc/>
-        public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IVolume
+        public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IArea
         {
             if (!CastPathCache.TryExtractLast(out var path))
             {
                 path = new CastPathEntry[MaxDepth + 1];
             }
 
-            var startVersion = version;
+            var startVersion = this.version;
             var pathDepth = 0;
-            var localMin = min;
-            var halfSize = size / 2f;
+            var localMin = this.min;
+            var halfSize = this.size / 2f;
 
             var index = 0;
             var childIndex = ChildIndexOffset - 1;
-            var fullyInside = shape.ContainsAabb(min, min + size);
+            var fullyInside = shape.ContainsRect(this.min, this.min + this.size);
 
             while (pathDepth >= 0)
             {
@@ -318,12 +312,12 @@ namespace UnityTools.Collections
 
                 if (index < 0)
                 {
-                    var leaf = leafs[-(index + 1)];
+                    var leaf = this.leafs[-(index + 1)];
                     for (var i = 0; i < leaf.Count; i++)
                     {
                         if (fullyInside || shape.ContainsPoint(leaf.Content[i].Position))
                         {
-                            if (startVersion != version)
+                            if (startVersion != this.version)
                             {
                                 CastPathCache.Add(path);
                                 throw new InvalidOperationException("The enumerator has been modified since the last step and cannot be used anymore.");
@@ -337,7 +331,7 @@ namespace UnityTools.Collections
                 {
                     if (childIndex < NodeSize)
                     {
-                        if (nodes[index + childIndex] == 0)
+                        if (this.nodes[index + childIndex] == 0)
                         {
                             // Child is empty
                             continue;
@@ -352,27 +346,22 @@ namespace UnityTools.Collections
                             // Child aabb only matters if it is not fully inside, otherwise we won't need it for sub nodes
                             var quadrantIndex = childIndex - ChildIndexOffset;
 
-                            if ((quadrantIndex & 4) == 4)
+                            if ((quadrantIndex & 2) == 2)
                             {
                                 childMin.x += halfSize.x;
                             }
 
-                            if ((quadrantIndex & 2) == 2)
+                            if ((quadrantIndex & 1) == 1)
                             {
                                 childMin.y += halfSize.y;
                             }
 
-                            if ((quadrantIndex & 1) == 1)
-                            {
-                                childMin.z += halfSize.z;
-                            }
-
                             var childMax = childMin + halfSize;
-                            isInside = shape.IntersectsAabb(childMin, childMax);
+                            isInside = shape.IntersectsRect(childMin, childMax);
 
                             if (isInside)
                             {
-                                childFullyInside = shape.ContainsAabb(childMin, childMax);
+                                childFullyInside = shape.ContainsRect(childMin, childMax);
                             }
                         }
 
@@ -380,7 +369,7 @@ namespace UnityTools.Collections
                         {
                             path[pathDepth] = new CastPathEntry(index, childIndex, fullyInside, localMin, halfSize);
                             pathDepth++;
-                            index = nodes[index + childIndex];
+                            index = this.nodes[index + childIndex];
                             childIndex = ChildIndexOffset - 1;
                             fullyInside = childFullyInside;
                             localMin = childMin;
@@ -406,7 +395,7 @@ namespace UnityTools.Collections
             CastPathCache.Add(path);
         }
 
-        public void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IVolume
+        public void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IArea
         {
             if (output == null)
             {
@@ -419,12 +408,12 @@ namespace UnityTools.Collections
             }
 
             var pathDepth = 0;
-            var localMin = min;
-            var halfSize = size / 2f;
+            var localMin = this.min;
+            var halfSize = this.size / 2f;
 
             var index = 0;
             var childIndex = ChildIndexOffset - 1;
-            var fullyInside = shape.ContainsAabb(min, min + size);
+            var fullyInside = shape.ContainsRect(this.min, this.min + this.size);
 
             while (pathDepth >= 0)
             {
@@ -432,7 +421,7 @@ namespace UnityTools.Collections
 
                 if (index < 0)
                 {
-                    var leaf = leafs[-(index + 1)];
+                    var leaf = this.leafs[-(index + 1)];
                     for (var i = 0; i < leaf.Count; i++)
                     {
                         if (fullyInside || shape.ContainsPoint(leaf.Content[i].Position))
@@ -446,7 +435,7 @@ namespace UnityTools.Collections
                 {
                     if (childIndex < NodeSize)
                     {
-                        if (nodes[index + childIndex] == 0)
+                        if (this.nodes[index + childIndex] == 0)
                         {
                             // Child is empty
                             continue;
@@ -461,27 +450,22 @@ namespace UnityTools.Collections
                             // Child aabb only matters if it is not fully inside, otherwise we won't need it for sub nodes
                             var quadrantIndex = childIndex - ChildIndexOffset;
 
-                            if ((quadrantIndex & 4) == 4)
+                            if ((quadrantIndex & 2) == 2)
                             {
                                 childMin.x += halfSize.x;
                             }
 
-                            if ((quadrantIndex & 2) == 2)
+                            if ((quadrantIndex & 1) == 1)
                             {
                                 childMin.y += halfSize.y;
                             }
 
-                            if ((quadrantIndex & 1) == 1)
-                            {
-                                childMin.z += halfSize.z;
-                            }
-
                             var childMax = childMin + halfSize;
-                            isInside = shape.IntersectsAabb(childMin, childMax);
+                            isInside = shape.IntersectsRect(childMin, childMax);
 
                             if (isInside)
                             {
-                                childFullyInside = shape.ContainsAabb(childMin, childMax);
+                                childFullyInside = shape.ContainsRect(childMin, childMax);
                             }
                         }
 
@@ -489,7 +473,7 @@ namespace UnityTools.Collections
                         {
                             path[pathDepth] = new CastPathEntry(index, childIndex, fullyInside, localMin, halfSize);
                             pathDepth++;
-                            index = nodes[index + childIndex];
+                            index = this.nodes[index + childIndex];
                             childIndex = ChildIndexOffset - 1;
                             fullyInside = childFullyInside;
                             localMin = childMin;
@@ -516,16 +500,16 @@ namespace UnityTools.Collections
         }
 
         /// <inheritdoc/>
-        public bool MoveItem(T item, Vector3 @from, Vector3 to)
+        public bool MoveItem(T item, Vector2 @from, Vector2 to)
         {
-            if (@from.x < min.x || @from.y < min.y || @from.z < min.z ||
-                @from.x > min.x + size.x || @from.y > min.y + size.y || @from.z > min.z + size.z)
+            if (@from.x < this.min.x || @from.y < this.min.y ||
+                @from.x > this.min.x + this.size.x || @from.y > this.min.y + this.size.y)
             {
                 return false;
             }
 
-            if (to.x < min.x || to.y < min.y || to.z < min.z ||
-                to.x > min.x + size.x || to.y > min.y + size.y || to.z > min.z + size.z)
+            if (to.x < this.min.x || to.y < this.min.y ||
+                to.x > this.min.x + this.size.x || to.y > this.min.y + this.size.y )
             {
                 return false;
             }
@@ -533,31 +517,25 @@ namespace UnityTools.Collections
             this.version++;
 
             var index = 0;
-            var halfSize = size / 2f;
-            var localMin = min;
+            var halfSize = this.size / 2f;
+            var localMin = this.min;
 
             while (true)
             {
                 var childIndex = 0;
                 if (@from.x > localMin.x + halfSize.x)
                 {
-                    childIndex += 4;
+                    childIndex += 2;
                     localMin.x += halfSize.x;
                 }
 
                 if (@from.y > localMin.y + halfSize.y)
                 {
-                    childIndex += 2;
+                    childIndex += 1;
                     localMin.y += halfSize.y;
                 }
 
-                if (@from.z > localMin.z + halfSize.z)
-                {
-                    childIndex += 1;
-                    localMin.z += halfSize.z;
-                }
-
-                var nextIndex = nodes[index + childIndex + ChildIndexOffset];
+                var nextIndex = this.nodes[index + childIndex + ChildIndexOffset];
 
                 if (nextIndex == 0)
                 {
@@ -576,16 +554,15 @@ namespace UnityTools.Collections
 
                 // The node has a leaf for that area
                 var leafIndex = -(nextIndex + 1);
-                var leaf = leafs[leafIndex];
+                var leaf = this.leafs[leafIndex];
 
                 // Test if the item is in the leaf
                 for (var i = 0; i < leaf.Count; i++)
                 {
                     if (leaf.Content[i].Position == @from && Equals(leaf.Content[i].item, item))
                     {
-                        if (to.x < localMin.x || to.y < localMin.y || to.z < localMin.z ||
-                            to.x > localMin.x + halfSize.x || to.y > localMin.y + halfSize.y ||
-                            to.z > localMin.z + halfSize.z)
+                        if (to.x < localMin.x || to.y < localMin.y||
+                            to.x > localMin.x + halfSize.x || to.y > localMin.y + halfSize.y)
                         {
                             // The target area is not in this leaf, remove item
                             if (leaf.Count > 1)
@@ -597,32 +574,32 @@ namespace UnityTools.Collections
                                 }
 
                                 leaf.Content[leaf.Count - 1] = default;
-                                leafs[leafIndex] = new OctreeLeaf(leaf.Parent, leaf.Content, leaf.Count - 1);
+                                this.leafs[leafIndex] = new QuadtreeLeaf(leaf.Parent, leaf.Content, leaf.Count - 1);
                             }
                             else
                             {
                                 var content = leaf.Content;
-                                RemoveLeaf(leafIndex);
-                                CacheContentArray(content);
-                                nodes[index + childIndex + ChildIndexOffset] = 0;
+                                this.RemoveLeaf(leafIndex);
+                                this.CacheContentArray(content);
+                                this.nodes[index + childIndex + ChildIndexOffset] = 0;
                             }
 
                             // Remove the item from the item count of all containing nodes
                             var removalIndex = index;
-                            nodes[removalIndex + 1]--;
+                            this.nodes[removalIndex + 1]--;
                             while (removalIndex != 0)
                             {
-                                removalIndex = nodes[removalIndex];
-                                nodes[removalIndex + 1]--;
+                                removalIndex = this.nodes[removalIndex];
+                                this.nodes[removalIndex + 1]--;
                             }
 
-                            if (nodes[index + 1] < NodeCollapseCount)
+                            if (this.nodes[index + 1] < NodeCollapseCount)
                             {
-                                CollapseNode(index); 
+                                this.CollapseNode(index); 
                             }
 
                             // Add item again with the new position
-                            AddToNode(item, to, 0, 0, min, size / 2f, !allowDuplicates);
+                            this.AddToNode(item, to, 0, 0, this.min, this.size / 2f, !this.allowDuplicates);
                             return true;
                         }
 
@@ -636,10 +613,10 @@ namespace UnityTools.Collections
         }
 
         /// <inheritdoc/>
-        public bool Remove(T item, Vector3 position)
+        public bool Remove(T item, Vector2 position)
         {
-            if (position.x < min.x || position.y < min.y || position.z < min.z ||
-                position.x > min.x + size.x || position.y > min.y + size.y || position.z > min.z + size.z)
+            if (position.x < this.min.x || position.y < this.min.y ||
+                position.x > this.min.x + this.size.x || position.y > this.min.y + this.size.y)
             {
                 return false;
             }
@@ -647,31 +624,25 @@ namespace UnityTools.Collections
             this.version++;
 
             var index = 0;
-            var halfSize = size / 2f;
-            var localMin = min;
+            var halfSize = this.size / 2f;
+            var localMin = this.min;
 
             while (true)
             {
                 var childIndex = 0;
                 if (position.x > localMin.x + halfSize.x)
                 {
-                    childIndex += 4;
+                    childIndex += 1;
                     localMin.x += halfSize.x;
                 }
 
                 if (position.y > localMin.y + halfSize.y)
                 {
-                    childIndex += 2;
+                    childIndex += 1;
                     localMin.y += halfSize.y;
                 }
 
-                if (position.z > localMin.z + halfSize.z)
-                {
-                    childIndex += 1;
-                    localMin.z += halfSize.z;
-                }
-
-                var nextIndex = nodes[index + childIndex + ChildIndexOffset];
+                var nextIndex = this.nodes[index + childIndex + ChildIndexOffset];
 
                 if (nextIndex == 0)
                 {
@@ -690,7 +661,7 @@ namespace UnityTools.Collections
 
                 // The node has a leaf for that area
                 var leafIndex = -(nextIndex + 1);
-                var leaf = leafs[leafIndex];
+                var leaf = this.leafs[leafIndex];
 
                 // Test if the item is in the leaf
                 for (var i = 0; i < leaf.Count; i++)
@@ -706,28 +677,28 @@ namespace UnityTools.Collections
                             }
 
                             leaf.Content[leaf.Count - 1] = default;
-                            leafs[leafIndex] = new OctreeLeaf(leaf.Parent, leaf.Content, leaf.Count - 1);
+                            this.leafs[leafIndex] = new QuadtreeLeaf(leaf.Parent, leaf.Content, leaf.Count - 1);
                         }
                         else
                         {
                             var content = leaf.Content;
-                            RemoveLeaf(leafIndex);
-                            CacheContentArray(content);
-                            nodes[index + childIndex + ChildIndexOffset] = 0;
+                            this.RemoveLeaf(leafIndex);
+                            this.CacheContentArray(content);
+                            this.nodes[index + childIndex + ChildIndexOffset] = 0;
                         }
 
                         // Remove the item from the item count of all containing nodes
                         var removalIndex = index;
-                        nodes[removalIndex + 1]--;
+                        this.nodes[removalIndex + 1]--;
                         while (removalIndex != 0)
                         {
-                            removalIndex = nodes[removalIndex];
-                            nodes[removalIndex + 1]--;
+                            removalIndex = this.nodes[removalIndex];
+                            this.nodes[removalIndex + 1]--;
                         }
 
-                        if (nodes[index + 1] < NodeCollapseCount)
+                        if (this.nodes[index + 1] < NodeCollapseCount)
                         {
-                            CollapseNode(index);
+                            this.CollapseNode(index);
                         }
 
                         return true;
@@ -745,8 +716,8 @@ namespace UnityTools.Collections
         public void TestIntegrity()
         {
 #if UNITY_EDITOR
-            var untestedNodes = nodeCount - 1;
-            var untestedLeafs = leafCount;
+            var untestedNodes = this.nodeCount - 1;
+            var untestedLeafs = this.leafCount;
             var usedContentArrays = new HashSet<ItemEntry[]>();
 
             // Test that all nodes and leafes are reachable from the root node
@@ -758,30 +729,30 @@ namespace UnityTools.Collections
                 var current = stack.Pop();
                 for(var i = ChildIndexOffset; i < NodeSize; i++)
                 {
-                    var reference = nodes[current + i];
+                    var reference = this.nodes[current + i];
 
                     if (reference > 0)
                     {
-                        Debug.Assert(reference < nodeCount * NodeSize, "Child node index is out of bounds.");
-                        Debug.Assert(nodes[reference] == current, "Parent index of child node doesn't match with actual index of parent.");
+                        Debug.Assert(reference < this.nodeCount * NodeSize, "Child node index is out of bounds.");
+                        Debug.Assert(this.nodes[reference] == current, "Parent index of child node doesn't match with actual index of parent.");
                         stack.Push(reference);
                         untestedNodes--;
                     }
                     else if (reference < 0)
                     {
                         var leafIndex = -(reference + 1);
-                        Debug.Assert(leafIndex < leafCount, "Child leaf index is out of bounds.");
-                        Debug.Assert(leafs[leafIndex].Parent == current,
+                        Debug.Assert(leafIndex < this.leafCount, "Child leaf index is out of bounds.");
+                        Debug.Assert(this.leafs[leafIndex].Parent == current,
                             "Parent index of child leaf doesn't match with actual index of parent.");
-                        Debug.Assert(leafs[leafIndex].Count > 0, "Empty leaf.");
-                        Debug.Assert(leafs[leafIndex].Content != null);
-                        Debug.Assert(leafs[leafIndex].Content.Length >= leafs[leafIndex].Count,
+                        Debug.Assert(this.leafs[leafIndex].Count > 0, "Empty leaf.");
+                        Debug.Assert(this.leafs[leafIndex].Content != null);
+                        Debug.Assert(this.leafs[leafIndex].Content.Length >= this.leafs[leafIndex].Count,
                             "Leaf children out of bounds.");
-                        Debug.Assert(Mathf.IsPowerOfTwo(leafs[leafIndex].Content.Length / InitialNodeCapacity),
+                        Debug.Assert(Mathf.IsPowerOfTwo(this.leafs[leafIndex].Content.Length / InitialNodeCapacity),
                             "Leaf content array has the wrong size.");
-                        Debug.Assert(!usedContentArrays.Contains(leafs[leafIndex].Content),
+                        Debug.Assert(!usedContentArrays.Contains(this.leafs[leafIndex].Content),
                             "The leaf content array is already used by another leaf.");
-                        usedContentArrays.Add(leafs[leafIndex].Content);
+                        usedContentArrays.Add(this.leafs[leafIndex].Content);
                         untestedLeafs--;
                     }
                 }
@@ -789,7 +760,7 @@ namespace UnityTools.Collections
 
             Debug.Assert(untestedNodes == 0, "There exist unreferenced nodes.");
             Debug.Assert(untestedLeafs == 0, "There exist unreferenced leafs.");
-            Debug.Assert(usedContentArrays.Count == leafCount);
+            Debug.Assert(usedContentArrays.Count == this.leafCount);
 #endif
         }
 
@@ -797,16 +768,16 @@ namespace UnityTools.Collections
         {
             Debug.Assert(parent >= 0);
             Debug.Assert(parent % NodeSize == 0);
-            Debug.Assert(parent < nodeCount * NodeSize);
-            Debug.Assert(leafCount >= 0);
-            Debug.Assert(leafCount <= leafs.Length);
+            Debug.Assert(parent < this.nodeCount * NodeSize);
+            Debug.Assert(this.leafCount >= 0);
+            Debug.Assert(this.leafCount <= this.leafs.Length);
 
-            if (leafCount == leafs.Length)
+            if (this.leafCount == this.leafs.Length)
             {
                 // Grow the array to accomodate more leafs
-                var newLeafs = new OctreeLeaf[leafs.Length * 2];
-                leafs.CopyTo(newLeafs, 0);
-                leafs = newLeafs;
+                var newLeafs = new QuadtreeLeaf[this.leafs.Length * 2];
+                this.leafs.CopyTo(newLeafs, 0);
+                this.leafs = newLeafs;
             }
 
             ItemEntry[] leafContent;
@@ -825,26 +796,26 @@ namespace UnityTools.Collections
             }
 
             leafContent[0] = item;
-            leafs[leafCount] = new OctreeLeaf(parent, leafContent, 1);
-            leafCount++;
+            this.leafs[this.leafCount] = new QuadtreeLeaf(parent, leafContent, 1);
+            this.leafCount++;
 
-            return -leafCount;  // Leafs have negative indexing starting at -1
+            return -this.leafCount;  // Leafs have negative indexing starting at -1
         }
 
         private int AddLeaf(int parent, List<ItemEntry> items)
         {
             Debug.Assert(parent >= 0);
             Debug.Assert(parent % NodeSize == 0);
-            Debug.Assert(parent < nodeCount * NodeSize);
-            Debug.Assert(leafCount >= 0);
-            Debug.Assert(leafCount <= leafs.Length);
+            Debug.Assert(parent < this.nodeCount * NodeSize);
+            Debug.Assert(this.leafCount >= 0);
+            Debug.Assert(this.leafCount <= this.leafs.Length);
 
-            if (leafCount == leafs.Length)
+            if (this.leafCount == this.leafs.Length)
             {
                 // Grow the array to accomodate more leafs
-                var newLeafs = new OctreeLeaf[leafs.Length * 2];
-                leafs.CopyTo(newLeafs, 0);
-                leafs = newLeafs;
+                var newLeafs = new QuadtreeLeaf[this.leafs.Length * 2];
+                this.leafs.CopyTo(newLeafs, 0);
+                this.leafs = newLeafs;
             }
             
             var cacheIndex = 0;
@@ -875,73 +846,67 @@ namespace UnityTools.Collections
                 leafContent[i] = items[i];
             }
 
-            leafs[leafCount] = new OctreeLeaf(parent, leafContent, items.Count);
-            leafCount++;
+            this.leafs[this.leafCount] = new QuadtreeLeaf(parent, leafContent, items.Count);
+            this.leafCount++;
 
-            return -leafCount;  // Leafs have negative indexing starting at -1
+            return -this.leafCount;  // Leafs have negative indexing starting at -1
         }
 
         private int AddNode(int parent)
         {
             Debug.Assert(parent >= 0);
             Debug.Assert(parent % NodeSize == 0);
-            Debug.Assert(parent < nodeCount * NodeSize);
-            Debug.Assert(nodeCount >= 0);
-            Debug.Assert(nodeCount * NodeSize <= nodes.Length);
+            Debug.Assert(parent < this.nodeCount * NodeSize);
+            Debug.Assert(this.nodeCount >= 0);
+            Debug.Assert(this.nodeCount * NodeSize <= this.nodes.Length);
 
-            var index = nodeCount * NodeSize;
+            var index = this.nodeCount * NodeSize;
 
-            if(index == nodes.Length)
+            if(index == this.nodes.Length)
             {
                 // Grow the array to accomodate more nodes
-                var newNodes = new int[nodes.Length * 2];
-                nodes.CopyTo(newNodes, 0);
-                nodes = newNodes;
+                var newNodes = new int[this.nodes.Length * 2];
+                this.nodes.CopyTo(newNodes, 0);
+                this.nodes = newNodes;
             }
-            
-            nodes[index] = parent;  // The first value is the parent
-            nodes[index + 1] = 0;   // The new node has 0 items
+
+            this.nodes[index] = parent;  // The first value is the parent
+            this.nodes[index + 1] = 0;   // The new node has 0 items
             for (var i = ChildIndexOffset; i < NodeSize; i++)
             {
                 // Initialize child references
-                nodes[index + i] = 0;
+                this.nodes[index + i] = 0;
             }
 
-            nodeCount++;
+            this.nodeCount++;
             return index;
         }
 
-        private void AddToNode (T item, Vector3 position, int index, int depth, Vector3 localMin, Vector3 halfSize, bool testForDuplicate)
+        private void AddToNode (T item, Vector2 position, int index, int depth, Vector2 localMin, Vector2 halfSize, bool testForDuplicate)
         {
             while (true)
             {
                 var childIndex = 0;
                 if (position.x > localMin.x + halfSize.x)
                 {
-                    childIndex += 4;    
+                    childIndex += 2;    
                     localMin.x += halfSize.x;
                 }
 
                 if (position.y > localMin.y + halfSize.y)
                 {
-                    childIndex += 2;    
+                    childIndex += 1;    
                     localMin.y += halfSize.y;
                 }
 
-                if (position.z > localMin.z + halfSize.z)
-                {
-                    childIndex += 1;
-                    localMin.z += halfSize.z;
-                }
-
-                var nextIndex = nodes[index + childIndex + ChildIndexOffset];
-                nodes[index + 1]++; // Increase the node child count
+                var nextIndex = this.nodes[index + childIndex + ChildIndexOffset];
+                this.nodes[index + 1]++; // Increase the node child count
 
                 if (nextIndex == 0)
                 {
                     // The node doesn't have a sub node or leaf for that area
-                    var newLeafIndex = AddLeaf(index, new ItemEntry(item, position));
-                    nodes[index + childIndex + ChildIndexOffset] = newLeafIndex;
+                    var newLeafIndex = this.AddLeaf(index, new ItemEntry(item, position));
+                    this.nodes[index + childIndex + ChildIndexOffset] = newLeafIndex;
                     break;
                 }
 
@@ -958,7 +923,7 @@ namespace UnityTools.Collections
 
                 // The node has a leaf for that area
                 var leafIndex = -(nextIndex + 1);
-                var leaf = leafs[leafIndex];
+                var leaf = this.leafs[leafIndex];
 
                 // Make sure the item isn't already part of the octree
                 if (testForDuplicate)
@@ -969,11 +934,11 @@ namespace UnityTools.Collections
                         if (leaf.Content[i].Position == position && Equals(leaf.Content[i].item, item))
                         {
                             // Revert the item count because the item wasn't actually added
-                            nodes[index + 1]--;
+                            this.nodes[index + 1]--;
                             while (index != 0)
                             {
-                                index = nodes[index];
-                                nodes[index + 1]--;
+                                index = this.nodes[index];
+                                this.nodes[index + 1]--;
                             }
 
                             return;
@@ -986,7 +951,7 @@ namespace UnityTools.Collections
                 {
                     // Add the item to the leaf content and update the leaf count
                     leaf.Content[leaf.Count] = new ItemEntry(item, position);
-                    leafs[leafIndex] = new OctreeLeaf(leaf.Parent, leaf.Content, leaf.Count + 1);
+                    this.leafs[leafIndex] = new QuadtreeLeaf(leaf.Parent, leaf.Content, leaf.Count + 1);
                     break;
                 }
 
@@ -1000,24 +965,24 @@ namespace UnityTools.Collections
                     var content = leaf.Content;
                     var cnt = leaf.Count;
 
-                    RemoveLeaf(leafIndex);                      // Remove the leaf
-                    nextIndex = AddNode(index);                 // Create a new node
-                    nodes[index + childIndex + ChildIndexOffset] = nextIndex;  // Replace the leaf reference with the node reference
+                    this.RemoveLeaf(leafIndex);                      // Remove the leaf
+                    nextIndex = this.AddNode(index);                 // Create a new node
+                    this.nodes[index + childIndex + ChildIndexOffset] = nextIndex;  // Replace the leaf reference with the node reference
                     index = nextIndex;                          // Continue with the current item
 
                     for(var i = 0; i < cnt; i++)
                     {
-                        AddToNode(content[i].item, content[i].Position, index, depth, localMin, halfSize, false);
+                        this.AddToNode(content[i].item, content[i].Position, index, depth, localMin, halfSize, false);
                     }
 
-                    CacheContentArray(content);
+                    this.CacheContentArray(content);
                 }
                 else
                 {
                     // The max depth has been reached, expand the leaf
-                    var newContent = ExpandContentArray(leaf.Content);
+                    var newContent = this.ExpandContentArray(leaf.Content);
                     newContent[leaf.Count] = new ItemEntry(item, position);
-                    leafs[leafIndex] = new OctreeLeaf(leaf.Parent, newContent, leaf.Count + 1);
+                    this.leafs[leafIndex] = new QuadtreeLeaf(leaf.Parent, newContent, leaf.Count + 1);
                     break;
                 }
             }
@@ -1051,13 +1016,13 @@ namespace UnityTools.Collections
         private void CollapseNode(int index)
         {
             Debug.Assert(index >= 0);
-            Debug.Assert(index < nodeCount * NodeSize);
+            Debug.Assert(index < this.nodeCount * NodeSize);
             Debug.Assert(index % NodeSize == 0);
-            Debug.Assert(nodes[index + 1] < NodeCollapseCount);
+            Debug.Assert(this.nodes[index + 1] < NodeCollapseCount);
 
             for(var i = ChildIndexOffset; i < NodeSize; i++)
             {
-                Debug.Assert(nodes[index + i] <= 0, "If a node has few enough items to be collapsed, it can't be that the node contains child nodes.");
+                Debug.Assert(this.nodes[index + i] <= 0, "If a node has few enough items to be collapsed, it can't be that the node contains child nodes.");
             }
 
             if (index == 0)
@@ -1067,50 +1032,50 @@ namespace UnityTools.Collections
             }
             
             // Node is bellow collapse threshold -> collapse into leaf
-            var itemCache = GlobalListPool<ItemEntry>.Get(nodes[index + 1]);
+            var itemCache = GlobalListPool<ItemEntry>.Get(this.nodes[index + 1]);
 
             for (var i = ChildIndexOffset; i < NodeSize; i++)
             {
-                var reference = nodes[index + i];
-                nodes[index + i] = 0;
+                var reference = this.nodes[index + i];
+                this.nodes[index + i] = 0;
 
                 if (reference < 0)
                 {
                     var leafIndex = -(reference + 1);
-                    var leaf = leafs[leafIndex];
+                    var leaf = this.leafs[leafIndex];
 
                     for (var j = 0; j < leaf.Count; j++)
                     {
                         itemCache.Add(leaf.Content[j]);
                     }
 
-                    CacheContentArray(leaf.Content);
-                    RemoveLeaf(leafIndex);
+                    this.CacheContentArray(leaf.Content);
+                    this.RemoveLeaf(leafIndex);
                 }
             }
 
-            var parent = nodes[index];
-            var newLeafIndex = AddLeaf(parent, itemCache);
+            var parent = this.nodes[index];
+            var newLeafIndex = this.AddLeaf(parent, itemCache);
 
             for (var i = ChildIndexOffset; i < NodeSize; i++)
             { 
-                if (nodes[parent + i] == index)
+                if (this.nodes[parent + i] == index)
                 {
-                    nodes[parent + i] = newLeafIndex;
+                    this.nodes[parent + i] = newLeafIndex;
                 } 
             }
-             
-            RemoveNode(index);
+
+            this.RemoveNode(index);
             GlobalListPool<ItemEntry>.Put(itemCache);
 
-            if (parent == nodeCount * NodeSize)
+            if (parent == this.nodeCount * NodeSize)
             {
                 // In case parent was the last node and was used to replace the current node
             }
 
-            if (nodes[parent + 1] < NodeCollapseCount)
+            if (this.nodes[parent + 1] < NodeCollapseCount)
             {
-                CollapseNode(parent);
+                this.CollapseNode(parent);
             }
         }
 
@@ -1168,59 +1133,59 @@ namespace UnityTools.Collections
         private void RemoveLeaf(int index)
         {
             Debug.Assert(index >= 0);
-            Debug.Assert(index < leafCount);
-            Debug.Assert(leafs[index].Parent < nodeCount * NodeSize);
+            Debug.Assert(index < this.leafCount);
+            Debug.Assert(this.leafs[index].Parent < this.nodeCount * NodeSize);
 
-            leafCount--;
+            this.leafCount--;
 
-            if (index < leafCount)
+            if (index < this.leafCount)
             {
-                leafs[index] = leafs[leafCount];
-                leafs[leafCount] = default;
+                this.leafs[index] = this.leafs[this.leafCount];
+                this.leafs[this.leafCount] = default;
 
-                var parentIndex = leafs[index].Parent;
-                var leafReference = -(leafCount + 1);
+                var parentIndex = this.leafs[index].Parent;
+                var leafReference = -(this.leafCount + 1);
                 for (var i = ChildIndexOffset; i < NodeSize; i++)
                 {
-                    if (nodes[parentIndex + i] == leafReference)
+                    if (this.nodes[parentIndex + i] == leafReference)
                     {
                         // Update reference to the moved entry
-                        nodes[parentIndex + i] = -(index + 1);
+                        this.nodes[parentIndex + i] = -(index + 1);
                         break;
                     }
                 }
             }
             else
             {
-                leafs[index] = default;
+                this.leafs[index] = default;
             }
         }
 
         private void RemoveNode(int index)
         {
             Debug.Assert(index >= 0);
-            Debug.Assert(index < nodeCount * NodeSize);
+            Debug.Assert(index < this.nodeCount * NodeSize);
             Debug.Assert(index % NodeSize == 0);
             Debug.Assert(index != 0, "Can't remove root node");
 
-            nodeCount--;
-            var lastIndex = nodeCount * NodeSize;
+            this.nodeCount--;
+            var lastIndex = this.nodeCount * NodeSize;
             if (index < lastIndex)
             {
                 // Replace with the last node to prevent empty entries
                 for (var i = 0; i < NodeSize; i++)
                 {
-                    nodes[index + i] = nodes[lastIndex + i];
+                    this.nodes[index + i] = this.nodes[lastIndex + i];
                 }
 
                 // Update child reference of parent
-                var parentIndex = nodes[index];
+                var parentIndex = this.nodes[index];
                 for (var i = ChildIndexOffset; i < NodeSize; i++)
                 {
-                    if (nodes[parentIndex + i] == lastIndex)
+                    if (this.nodes[parentIndex + i] == lastIndex)
                     {
                         // Update reference to the moved entry
-                        nodes[parentIndex + i] = index;
+                        this.nodes[parentIndex + i] = index;
                         break;
                     }
                 }
@@ -1228,24 +1193,24 @@ namespace UnityTools.Collections
                 // Update parent references of children
                 for (var i = ChildIndexOffset; i < NodeSize; i++)
                 {
-                    var child = nodes[index + i];
+                    var child = this.nodes[index + i];
                     if (child > 0)
                     {
-                        nodes[child] = index;
+                        this.nodes[child] = index;
                     }
                     else if (child < 0)
                     {
                         var leafIndex = -(child + 1);
-                        var leaf = leafs[leafIndex];
-                        leafs[leafIndex] = new OctreeLeaf(index, leaf.Content, leaf.Count);
+                        var leaf = this.leafs[leafIndex];
+                        this.leafs[leafIndex] = new QuadtreeLeaf(index, leaf.Content, leaf.Count);
                     }
                 }
             }
         }
 
-        ~PointOctree()
+        ~PointQuadtree()
         {
-            Clear();
+            this.Clear();
         }
 
         private struct CastPathEntry
@@ -1256,11 +1221,11 @@ namespace UnityTools.Collections
 
             public readonly bool Flag;
 
-            public readonly Vector3 LocalMin;
+            public readonly Vector2 LocalMin;
 
-            public readonly Vector3 HalfSize;
+            public readonly Vector2 HalfSize;
 
-            public CastPathEntry(int index, int childIndex, bool flag, Vector3 localMin, Vector3 halfSize)
+            public CastPathEntry(int index, int childIndex, bool flag, Vector2 localMin, Vector2 halfSize)
             {
                 this.Index = index;
                 this.ChildIndex = childIndex;
@@ -1274,16 +1239,16 @@ namespace UnityTools.Collections
         {
             public readonly T item;
 
-            public readonly Vector3 Position;
+            public readonly Vector2 Position;
 
-            public ItemEntry(T item, Vector3 position)
+            public ItemEntry(T item, Vector2 position)
             {
                 this.item = item;
                 this.Position = position;
             }
         }
 
-        private struct OctreeLeaf
+        private struct QuadtreeLeaf
         {
             public readonly int Parent;
 
@@ -1291,7 +1256,7 @@ namespace UnityTools.Collections
 
             public readonly int Count;
 
-            public OctreeLeaf(int parent, ItemEntry[] content, int count)
+            public QuadtreeLeaf(int parent, ItemEntry[] content, int count)
             {
                 this.Parent = parent;
                 this.Content = content;

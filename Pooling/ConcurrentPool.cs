@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         SpecializedPool.cs
+// Filename:         Pool.cs
 // 
 // Created:          29.01.2020  19:32
 // Last modified:    05.02.2020  19:39
@@ -21,24 +21,13 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using System;
-using JetBrains.Annotations;
-
 namespace UnityTools.Pooling
 {
-    public sealed class SpecializedPool<T> : PoolBase<T> where T : class
+    public sealed class ConcurrentPool<T> : ConcurrentPoolBase<T> where T : class, new()
     {
-        [NotNull]
-        private readonly Func<T> constructor;
-
-        public SpecializedPool([NotNull]Func<T> constructor)
-        {
-            this.constructor = constructor ?? throw new ArgumentNullException(nameof(constructor));
-        }
-
         protected override T CreateItem()
         {
-            return constructor();
+            return new T();
         }
     }
 }

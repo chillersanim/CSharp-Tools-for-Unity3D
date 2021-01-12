@@ -1,8 +1,8 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         VolumeEmpty.cs
+// Filename:         SpecializedPool.cs
 // 
-// Created:          27.01.2020  22:45
+// Created:          29.01.2020  19:32
 // Last modified:    05.02.2020  19:39
 // 
 // --------------------------------------------------------------------------------------
@@ -21,32 +21,24 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
-using System.Runtime.CompilerServices;
-using UnityEngine;
+using System;
+using JetBrains.Annotations;
 
-namespace UnityTools.Core
+namespace UnityTools.Pooling
 {
-    /// <summary>
-    /// The empty volume containing nothing.
-    /// </summary>
-    public struct VolumeEmpty : IVolume
+    public sealed class ConcurrentSpecializedPool<T> : ConcurrentPoolBase<T> where T : class
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsPoint(Vector3 point)
+        [NotNull]
+        private readonly Func<T> constructor;
+
+        public ConcurrentSpecializedPool([NotNull]Func<T> constructor)
         {
-            return false;
+            this.constructor = constructor ?? throw new ArgumentNullException(nameof(constructor));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsAabb(Vector3 start, Vector3 end)
+        protected override T CreateItem()
         {
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsAabb(Vector3 start, Vector3 end)
-        {
-            return false;
+            return constructor();
         }
     }
 }

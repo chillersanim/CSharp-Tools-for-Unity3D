@@ -302,6 +302,39 @@ namespace UnityTools.Core
         }
 
         /// <summary>
+        /// Removes the item from the items list by swapping it with the last element and then removing it.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The items list.</param>
+        /// <param name="item">The item to remove.</param>
+        public static void RemoveUnordered<T>(this IList<T> items, T item)
+        {
+            var index = items.IndexOf(item);
+            if (index < items.Count - 1)
+            {
+                items[index] = items[items.Count - 1];
+            }
+
+            items.RemoveAt(items.Count - 1);
+        }
+
+        /// <summary>
+        /// Removes the item at the specified index from the items list by swapping it with the last element and then removing it.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The items list.</param>
+        /// <param name="index">The index of the item to remove.</param>
+        public static void RemoveAtUnordered<T>(this IList<T> items, int index)
+        {
+            if (index < items.Count - 1)
+            {
+                items[index] = items[items.Count - 1];
+            }
+
+            items.RemoveAt(items.Count - 1);
+        }
+
+        /// <summary>
         /// Randomizes the order of the items.
         /// </summary>
         /// <typeparam name="T">The type of the item.</typeparam>

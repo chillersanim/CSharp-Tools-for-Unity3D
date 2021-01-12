@@ -47,21 +47,13 @@ namespace UnityTools.Components
 
         private readonly CallController onGizmosController = new CallController();
 
-        private readonly CallController fixedUpdateController = new CallController();
-
-        private readonly CallController onGuiController = new CallController();
-
-        private readonly CallController updateController = new CallController();
-
-#else
-
-        private readonly CallController fixedUpdateController = new CallController();
-
-        private readonly CallController onGuiController = new CallController();
-
-        private readonly CallController updateController = new CallController();
-
 #endif
+
+        private readonly CallController fixedUpdateController = new CallController();
+
+        private readonly CallController onGuiController = new CallController();
+
+        private readonly CallController updateController = new CallController();
 
         private readonly List<Action> periodicUpdateListeners = new List<Action>();
 
@@ -74,6 +66,43 @@ namespace UnityTools.Components
         private int periodicUpdateIndex = 0;
 
         private float maxPeriodicUpdateDuration;
+
+        private bool keepCallOrder = false;
+
+        /// <summary>
+        /// Value indicating whether the call order must stay the same (true) or can be shuffled (false).
+        /// </summary>
+        /// <remarks>
+        /// If the calls need to be issued in the same order as components got registered, or if a reordering of the call order would cause problems, this property should be set to <c>true</c>.<br/>
+        /// However, if the call order isn't important, you should set it to <c>false</c>, to improve performance when removing call listeners.
+        /// </remarks>
+        public static bool KeepCallOrder
+        {
+            get
+            {
+                if (CanAccessInstance)
+                {
+                    return Instance.keepCallOrder;
+                }
+
+                return false;
+            }
+            set
+            {
+                if (CanAccessInstance)
+                {
+                    Instance.keepCallOrder = value;
+                    Instance.fixedUpdateController.KeepCallOrder = value;
+                    Instance.onGuiController.KeepCallOrder = value;
+                    Instance.updateController.KeepCallOrder = value;
+                    
+#if UNITY_EDITOR
+                    Instance.editorOnlyUpdateController.KeepCallOrder = value;
+                    Instance.onGizmosController.KeepCallOrder = value;
+#endif
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value defining how much time is allocated per Update for PeriodicUpdate invocations, in seconds.

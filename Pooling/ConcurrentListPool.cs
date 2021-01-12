@@ -26,14 +26,16 @@ using System.Collections.Generic;
 
 namespace UnityTools.Pooling
 {
-    public sealed class ListPool<T> : IPool<List<T>>
+    public sealed class ConcurrentListPool<T> : IPool<List<T>>
     {
+        private readonly object lockObject;
         private readonly List<List<T>> lists;
         private int maxListCapacity;
         private int maxSize;
 
-        public ListPool()
+        public ConcurrentListPool()
         {
+            lockObject = new object();
             maxSize = 128;
             maxListCapacity = 4096;
             lists = new List<List<T>>();
@@ -49,18 +51,21 @@ namespace UnityTools.Pooling
                     return;
                 }
 
-                maxListCapacity = value;
-
-                if (maxListCapacity < 1)
+                lock (lockObject)
                 {
-                    maxListCapacity = 1;
-                }
+                    maxListCapacity = value;
 
-                foreach (var list in lists)
-                {
-                    if (list.Capacity > maxListCapacity)
+                    if (maxListCapacity < 1)
                     {
-                        list.Capacity = maxListCapacity;
+                        maxListCapacity = 1;
+                    }
+
+                    foreach (var list in lists)
+                    {
+                        if (list.Capacity > maxListCapacity)
+                        {
+                            list.Capacity = maxListCapacity;
+                        }
                     }
                 }
             }
@@ -76,16 +81,19 @@ namespace UnityTools.Pooling
                     return;
                 }
 
-                maxSize = value;
-
-                if (maxSize < 1)
+                lock (lockObject)
                 {
-                    maxSize = 1;
-                }
+                    maxSize = value;
 
-                while (lists.Count > maxSize)
-                {
-                    ExtractSmallest(0);
+                    if (maxSize < 1)
+                    {
+                        maxSize = 1;
+                    }
+
+                    while (lists.Count > maxSize)
+                    {
+                        ExtractSmallest(0);
+                    }
                 }
             }
         }
@@ -110,17 +118,20 @@ namespace UnityTools.Pooling
 
             item.Clear();
 
-            if (lists.Count >= maxSize)
+            lock (lockObject)
             {
-                return;
-            }
+                if (lists.Count >= maxSize)
+                {
+                    return;
+                }
 
-            if (item.Capacity > maxListCapacity)
-            {
-                item.Capacity = maxListCapacity;
-            }
+                if (item.Capacity > maxListCapacity)
+                {
+                    item.Capacity = maxListCapacity;
+                }
 
-            lists.Add(item);
+                lists.Add(item);
+            }
         }
 
         public List<T> Get(int minCapacity)
@@ -139,27 +150,30 @@ namespace UnityTools.Pooling
             var minIndex = -1;
             var minCapacity = int.MaxValue;
 
-            for (var i = 0; i < lists.Count; i++)
+            lock (lockObject)
             {
-                var list = lists[i];
-                var capacity = list.Capacity;
-                if (capacity >= requiredCapacity && capacity < minCapacity)
+                for (var i = 0; i < lists.Count; i++)
                 {
-                    minCapacity = capacity;
-                    minIndex = i;
+                    var list = lists[i];
+                    var capacity = list.Capacity;
+                    if (capacity >= requiredCapacity && capacity < minCapacity)
+                    {
+                        minCapacity = capacity;
+                        minIndex = i;
+                    }
                 }
+
+                if (minIndex == -1)
+                {
+                    return null;
+                }
+
+                var result = lists[minIndex];
+                lists[minIndex] = lists[lists.Count - 1];
+                lists.RemoveAt(lists.Count - 1);
+
+                return result;
             }
-
-            if (minIndex == -1)
-            {
-                return null;
-            }
-
-            var result = lists[minIndex];
-            lists[minIndex] = lists[lists.Count - 1];
-            lists.RemoveAt(lists.Count - 1);
-
-            return result;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// Solution:         Unity Tools
 // Project:          UnityTools
-// Filename:         VolumeAll.cs
+// Filename:         Aabb.cs
 // 
 // Created:          27.01.2020  22:45
 // Last modified:    05.02.2020  19:39
@@ -26,27 +26,47 @@ using UnityEngine;
 
 namespace UnityTools.Core
 {
-    /// <summary>
-    /// The universal volume containing everything.
-    /// </summary>
-    public struct VolumeAll : IVolume
+    public struct Aabb : IVolume
     {
+        public readonly Vector3 Min;
+
+        public readonly Vector3 Max;
+
+        public Vector3 Center => (this.Min + this.Max) / 2f;
+
+        public Vector3 Extend => (this.Max - this.Min) / 2f;
+
+        public Vector3 Size => (this.Max - this.Min);
+
+        public Aabb(Vector3 center, Vector3 size)
+        {
+            var extend = size.AbsComponents() / 2f;
+            this.Min = center - extend;
+            this.Max = center + extend;
+        }
+
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsPoint(Vector3 point)
         {
-            return true;
+            return point.x >= this.Min.x && point.y >= this.Min.y && point.z >= this.Min.z &&
+                   point.x <= this.Max.x && point.y <= this.Max.y && point.z <= this.Max.z;
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IntersectsAabb(Vector3 start, Vector3 end)
         {
-            return true;
+            return this.Min.x <= end.x && this.Min.y <= end.y && this.Min.z <= end.z &&
+                   this.Max.x >= start.x && this.Max.y >= start.y && this.Max.z >= start.z;
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsAabb(Vector3 start, Vector3 end)
         {
-            return true;
+            return this.Min.x <= start.x && this.Min.y <= start.y && this.Min.z <= start.z &&
+                   this.Max.x >= end.x && this.Max.y >= end.y && this.Max.z >= end.z;
         }
     }
 }

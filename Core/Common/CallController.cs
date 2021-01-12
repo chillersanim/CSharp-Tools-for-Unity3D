@@ -40,15 +40,34 @@ namespace UnityTools.Core
         private int activeCount;
         private Action[] activeItems;
 
-        public CallController()
+        private bool keepCallOrder;
+
+        public CallController(bool keepCallOrder = false)
         {
-            itemsToAdd = new List<Action>();
-            itemsToRemove = new List<Action>();
-            activeItems = new Action[InitialActiveSize];
-            activeCount = 0;
+            this.itemsToAdd = new List<Action>();
+            this.itemsToRemove = new List<Action>();
+            this.activeItems = new Action[InitialActiveSize];
+            this.activeCount = 0;
+            this.keepCallOrder = keepCallOrder;
         }
 
+        /// <summary>
+        /// The amount of registered listeners.
+        /// </summary>
         public int Count => activeCount - itemsToRemove.Count + itemsToAdd.Count;
+
+        /// <summary>
+        /// Value indicating whether the call order must stay the same (true) or can be shuffled (false).
+        /// </summary>
+        /// <remarks>
+        /// If the calls need to be issued in the same order as components got registered, or if a reordering of the call order would cause problems, this property should be set to <c>true</c>.<br/>
+        /// However, if the call order isn't important, you should set it to <c>false</c>, to improve performance when removing call listeners.
+        /// </remarks>
+        public bool KeepCallOrder
+        {
+            get => keepCallOrder;
+            set => keepCallOrder = value;
+        }
 
         public void AddListener(Action listener)
         {
@@ -196,14 +215,28 @@ namespace UnityTools.Core
                 {
                     if (activeItems[i] == itemToRemove)
                     {
-                        if (i < activeCount - 1)
+                        if (keepCallOrder)
                         {
-                            activeItems[i] = activeItems[activeCount - 1];
+                            // Move later items forward and keep the order
+                            for (var j = i; j < activeCount - 1; j++)
+                            {
+                                activeItems[j] = activeItems[j + 1];
+                            }
+
                             activeItems[activeCount - 1] = null;
                         }
                         else
                         {
-                            activeItems[i] = null;
+                            // Just replace the item to remove with the last item
+                            if (i < activeCount - 1)
+                            {
+                                activeItems[i] = activeItems[activeCount - 1];
+                                activeItems[activeCount - 1] = null;
+                            }
+                            else
+                            {
+                                activeItems[i] = null;
+                            }
                         }
 
                         activeCount--;
@@ -259,15 +292,34 @@ namespace UnityTools.Core
         private int activeCount;
         private Action<T>[] activeItems;
 
-        public CallController()
+        private bool keepCallOrder;
+
+        public CallController(bool keepCallOrder = false)
         {
-            itemsToAdd = new List<Action<T>>();
-            itemsToRemove = new List<Action<T>>();
-            activeItems = new Action<T>[InitialActiveSize];
-            activeCount = 0;
+            this.itemsToAdd = new List<Action<T>>();
+            this.itemsToRemove = new List<Action<T>>();
+            this.activeItems = new Action<T>[InitialActiveSize];
+            this.activeCount = 0;
+            this.keepCallOrder = keepCallOrder;
         }
 
+        /// <summary>
+        /// The amount of registered listeners.
+        /// </summary>
         public int Count => activeCount - itemsToRemove.Count + itemsToAdd.Count;
+
+        /// <summary>
+        /// Value indicating whether the call order must stay the same (true) or can be shuffled (false).
+        /// </summary>
+        /// <remarks>
+        /// If the calls need to be issued in the same order as components got registered, or if a reordering of the call order would cause problems, this property should be set to <c>true</c>.<br/>
+        /// However, if the call order isn't important, you should set it to <c>false</c>, to improve performance when removing call listeners.
+        /// </remarks>
+        public bool KeepCallOrder
+        {
+            get => keepCallOrder;
+            set => keepCallOrder = value;
+        }
 
         public void AddListener(Action<T> listener)
         {
@@ -427,14 +479,28 @@ namespace UnityTools.Core
                 {
                     if (activeItems[i] == itemToRemove)
                     {
-                        if (i < activeCount - 1)
+                        if (keepCallOrder)
                         {
-                            activeItems[i] = activeItems[activeCount - 1];
+                            // Move later items forward and keep the order
+                            for (var j = i; j < activeCount - 1; j++)
+                            {
+                                activeItems[j] = activeItems[j + 1];
+                            }
+
                             activeItems[activeCount - 1] = null;
                         }
                         else
                         {
-                            activeItems[i] = null;
+                            // Just replace the item to remove with the last item
+                            if (i < activeCount - 1)
+                            {
+                                activeItems[i] = activeItems[activeCount - 1];
+                                activeItems[activeCount - 1] = null;
+                            }
+                            else
+                            {
+                                activeItems[i] = null;
+                            }
                         }
 
                         activeCount--;
