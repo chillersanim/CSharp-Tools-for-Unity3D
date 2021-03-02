@@ -9,6 +9,7 @@ Release date: [Date]
 ------------------------
 
 This update introduces new components, thread safe pooling, improvements to existing components and bug fixes.
+Some components were removed, as they were fundamentally faulty, they may be reintroduced at a later stage.
 
 
 ------------------------
@@ -22,6 +23,8 @@ This update introduces new components, thread safe pooling, improvements to exis
  - New struct: Core/Geometry/AreaInverse.cs
  - New interface: Core/Interfaces/IArea.cs							Interface for 2D shapes.
  - New class: Experimental/PolyMesh.cs								(WIP - Not working) An experimental implementation of a polygon mesh, that allows for efficient mesh queries and modifications, should replace experimental MeshBuilder
+ - New class: Components/WorkManager.cs								A manager class that provides functionality to queue work tasks and works them of sequentially, work tasks can be run asynchronously or on the Unity main thread.
+ - New class: Experimental/PolyMesh.cs								(WIP) An experimental implementation of a polygon mesh, that allows for efficient mesh queries and modifications, should replace experimental MeshBuilder
  - New class: Pooling/ConcurrentGlobalListPool.cs					A thread safe implementation of the global list pool
  - New class: Pooling/ConcurrentGlobalPool.cs						A thread safe implementation of the global pool
  - New class: Pooling/ConcurrentListPool.cs							A thread safe implementation of the list pool
@@ -32,6 +35,13 @@ This update introduces new components, thread safe pooling, improvements to exis
 
 ------------------------
  Changes
+=======
+ - New class: Pooling/ConcurrentSpecializedPool.cs					A thread safe implementation of the specialized pool
+
+
+------------------------
+ Improvements
+>>>>>>> Stashed changes
 ------------------------
 
  - Collections: Moved AvlNodes into AvlTree 
@@ -43,6 +53,8 @@ This update introduces new components, thread safe pooling, improvements to exis
  - Core: In CatmulRomSpline, added method GetSegmentData to extract the segment data making up the spline (4*vector3 per segment: a, b, c, d).
  - Core: Removed VolumeAll, VolumeEmpty, VolumeIntersection, VolumeUnion and VolumeDifference, as they didn't work with in a concave case, which made them unusable in the general case.
  - Core: Renamed Core/Primitives/ folder to Core/Geometry/. No namespace adaption needed.
+ - Core: In CallController, introduced the option to keep the call order when removing listeners, this allows for deterministic simulations.
+ - Components: In CallProvider, introduced the option to keep the call order when removing listeners, this allows for determinstic simulations. 
  - Examples: Added example file for using the main thread dispatch (Async raycasting example)
  - Pooling: Created concurrent (thread safe) variants of all pools in UnityTools.Pooling namespace 
 
