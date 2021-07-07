@@ -75,7 +75,9 @@ namespace UnityTools.Examples.Area
             if (this.voxelArea == null)
             {
                 this.GenerateData();
-            }  
+            }
+
+            Gizmos.matrix = this.transform.localToWorldMatrix;
 
             this.voxelArea.DrawGizmos();
         }

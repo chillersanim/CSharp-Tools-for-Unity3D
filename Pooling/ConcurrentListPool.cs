@@ -37,7 +37,7 @@ namespace UnityTools.Pooling
         {
             lockObject = new object();
             maxSize = 128;
-            maxListCapacity = 4096;
+            maxListCapacity = 8 * 1024 * 1024;
             lists = new List<List<T>>();
         }
 

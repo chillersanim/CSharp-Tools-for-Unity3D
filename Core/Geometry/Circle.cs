@@ -27,7 +27,7 @@ using UnityEngine.XR;
 
 namespace UnityTools.Core
 {
-    public struct Circle : IArea
+    public readonly struct Circle : IArea
     {
         public readonly Vector2 Center;
 
@@ -35,7 +35,7 @@ namespace UnityTools.Core
 
         public float Diameter => this.Radius + this.Radius;
 
-        public Circle(Vector2 center, float radius)
+        public Circle(in Vector2 center, in float radius)
         {
             this.Center = center;
             this.Radius = radius;
@@ -43,7 +43,7 @@ namespace UnityTools.Core
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsPoint(Vector2 point)
+        public bool ContainsPoint(in Vector2 point)
         {
             var x = point.x - this.Center.x;
             var y = point.y - this.Center.y;
@@ -54,7 +54,7 @@ namespace UnityTools.Core
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsRect(Vector2 start, Vector2 end)
+        public bool IntersectsRect(in Vector2 start, in Vector2 end)
         {
             var x = Mathf.Clamp(this.Center.x, start.x, end.x) - this.Center.x;
             var y = Mathf.Clamp(this.Center.y, start.y, end.y) - this.Center.y;
@@ -64,7 +64,7 @@ namespace UnityTools.Core
         }
 
         /// <inheritdoc />
-        public bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal)
+        public bool Raycast(in Vector2 orig, in Vector2 dir, out float t, out Vector2 normal)
         {
             t = float.PositiveInfinity;
 
@@ -112,7 +112,7 @@ namespace UnityTools.Core
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsRect(Vector2 start, Vector2 end)
+        public bool ContainsRect(in Vector2 start, in Vector2 end)
         {
             var x = Mathf.Max(Mathf.Abs(start.x - this.Center.x), Mathf.Abs(end.x - this.Center.x));
             var y = Mathf.Max(Mathf.Abs(start.y - this.Center.y), Mathf.Abs(end.y - this.Center.y));

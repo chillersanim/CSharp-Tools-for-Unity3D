@@ -31,10 +31,6 @@ using Object = UnityEngine.Object;
 
 namespace UnityTools.Core
 {
-    #region Usings
-
-    #endregion
-
     /// <summary>
     ///     The unity object util.
     /// </summary>
@@ -164,7 +160,7 @@ namespace UnityTools.Core
 
             return go;
         }
-
+        
         /// <summary>
         ///     The make object name unique.
         /// </summary>

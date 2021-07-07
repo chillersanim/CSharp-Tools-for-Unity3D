@@ -21,6 +21,9 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using System.Collections;
+using System.Collections.Generic;
+
 namespace UnityTools.Pooling
 {
     public interface IPool<T> where T : class

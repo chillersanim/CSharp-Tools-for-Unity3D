@@ -334,8 +334,21 @@ namespace UnityTools.Core
             items.RemoveAt(items.Count - 1);
         }
 
+        public static void ReverseInPlace<T>(this IList<T> items)
+        {
+            var half = items.Count / 2;
+            var last = items.Count - 1;
+
+            for (var i = 0; i < half; i++)
+            {
+                var tmp = items[i];
+                items[i] = items[last - i];
+                items[last - i] = tmp;
+            }
+        }
+
         /// <summary>
-        /// Randomizes the order of the items.
+        /// Randomizes the order of the items using <see cref="Random"/> to generate random values.
         /// </summary>
         /// <typeparam name="T">The type of the item.</typeparam>
         /// <param name="items">The items to be randomized</param>
@@ -350,6 +363,29 @@ namespace UnityTools.Core
             for (var i = 0; i < cnt; i++)
             {
                 var newIndex = Random.Range(0, cnt);
+                var tmp = items[newIndex];
+                items[newIndex] = items[i];
+                items[i] = tmp;
+            }
+        }
+
+        /// <summary>
+        /// Randomizes the order of the items.
+        /// </summary>
+        /// <typeparam name="T">The type of the item.</typeparam>
+        /// <param name="items">The items to be randomized</param>
+        /// <param name="random">A random instance that will be used for shuffling.</param>
+        public static void Shuffle<T>(this IList<T> items, System.Random random)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            var cnt = items.Count;
+            for (var i = 0; i < cnt; i++)
+            {
+                var newIndex = random.Next(0, cnt);
                 var tmp = items[newIndex];
                 items[newIndex] = items[i];
                 items[i] = tmp;

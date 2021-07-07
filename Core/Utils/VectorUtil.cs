@@ -40,31 +40,40 @@ namespace UnityTools.Core
         public static readonly Vector2 NegInf2 = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
 
         public static readonly Vector3 NegInf3 = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+
         public static readonly Vector2 PosInf2 = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
 
         public static readonly Vector3 PosInf3 = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
 
-        public static Vector2 AbsComponents(this Vector2 vector)
+        public static readonly Vector2Int MaxValue2 = new Vector2Int(int.MaxValue, int.MaxValue);
+
+        public static readonly Vector2Int MinValue2 = new Vector2Int(int.MinValue, int.MinValue);
+
+        public static readonly Vector3Int MaxValue3 = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
+
+        public static readonly Vector3Int MinValue3 = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+
+        public static Vector2 AbsComponents(in this Vector2 vector)
         {
             return new Vector2(Mathf.Abs(vector.x), Mathf.Abs(vector.y));
         }
 
-        public static Vector2Int AbsComponents(this Vector2Int vector)
+        public static Vector2Int AbsComponents(in this Vector2Int vector)
         {
             return new Vector2Int(Mathf.Abs(vector.x), Mathf.Abs(vector.y));
         }
 
-        public static Vector3 AbsComponents(this Vector3 vector)
+        public static Vector3 AbsComponents(in this Vector3 vector)
         {
             return new Vector3(Mathf.Abs(vector.x), Mathf.Abs(vector.y), Mathf.Abs(vector.z));
         }
 
-        public static Vector3Int AbsComponents(this Vector3Int vector)
+        public static Vector3Int AbsComponents(in this Vector3Int vector)
         {
             return new Vector3Int(Mathf.Abs(vector.x), Mathf.Abs(vector.y), Mathf.Abs(vector.z));
         }
 
-        public static Vector4 AbsComponents(this Vector4 vector)
+        public static Vector4 AbsComponents(in this Vector4 vector)
         {
             return new Vector4(Mathf.Abs(vector.x), Mathf.Abs(vector.y), Mathf.Abs(vector.z), Mathf.Abs(vector.w));
         }
@@ -76,13 +85,13 @@ namespace UnityTools.Core
                 return (Vector2.zero, Vector2.zero);
             }
 
-            var min = vectors[0];
-            var max = min;
+            var min = Vector2.positiveInfinity;
+            var max = Vector2.negativeInfinity;
 
             foreach (var v in vectors)
             {
-                min = Min(min, v);
-                max = Max(max, v);
+                min = Min(in min, in v);
+                max = Max(in max, in v);
             }
 
             return (min, max);
@@ -95,53 +104,54 @@ namespace UnityTools.Core
                 return (Vector2Int.zero, Vector2Int.zero);
             }
 
-            var min = vectors[0];
-            var max = min;
+            var min = MaxValue2;
+            var max = MinValue2;
 
             foreach (var v in vectors)
             {
-                min = Min(min, v);
-                max = Max(max, v);
+                min = Min(in min, in v);
+                max = Max(in max, in v);
             }
 
             return (min, max);
         }
 
-        public static Bounds Bounds(this IList<Vector3> vectors)
+        public static (Vector3 min, Vector3 max) Bounds(this IList<Vector3> vectors)
         {
             if (vectors.Count == 0)
             {
-                return new Bounds();
+                return (Vector3.zero, Vector3.zero);
             }
 
-            var bounds = new Bounds(vectors[0], Vector3.zero);
+            var min = Vector3.positiveInfinity;
+            var max = Vector3.negativeInfinity;
 
             foreach (var v in vectors)
             {
-                bounds.Encapsulate(v);
+                min = Min(in min, in v);
+                max = Max(in max, in v);
             }
 
-            return bounds;
+            return (min, max);
         }
 
-        public static BoundsInt Bounds(this IList<Vector3Int> vectors)
+        public static (Vector3Int min, Vector3Int max) Bounds(this IList<Vector3Int> vectors)
         {
             if (vectors.Count == 0)
             {
-                return new BoundsInt();
+                return (Vector3Int.zero, Vector3Int.zero);
             }
 
-            var min = vectors[0];
-            var max = min;
+            var min = MaxValue3;
+            var max = MinValue3;
 
             foreach (var v in vectors)
             {
-                min = Min(min, v);
-                max = Max(max, v);
+                min = Min(in min, in v);
+                max = Max(in max, in v);
             }
 
-            var size = max - min;
-            return new BoundsInt(min.x, min.y, min.z, size.x, size.y, size.z);
+            return (min, max);
         }
 
         /// <summary>
@@ -152,7 +162,7 @@ namespace UnityTools.Core
         /// <param name="max">The maximum.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector2 ClampComponents(this Vector2 vector, Vector2 min, Vector2 max)
+        public static Vector2 ClampComponents(in this Vector2 vector, in Vector2 min, in Vector2 max)
         {
             return new Vector2(
                 Mathf.Clamp(vector.x, min.x, max.x),
@@ -168,7 +178,7 @@ namespace UnityTools.Core
         /// <param name="max">The maximum.</param>
         /// <returns>Vector2Int.</returns>
         [PublicAPI]
-        public static Vector2Int ClampComponents(this Vector2Int vector, Vector2Int min, Vector2Int max)
+        public static Vector2Int ClampComponents(in this Vector2Int vector, in Vector2Int min, in Vector2Int max)
         {
             return new Vector2Int(
                 Mathf.Clamp(vector.x, min.x, max.x),
@@ -184,7 +194,7 @@ namespace UnityTools.Core
         /// <param name="max">The maximum.</param>
         /// <returns>Vector3.</returns>
         [PublicAPI]
-        public static Vector3 ClampComponents(this Vector3 vector, Vector3 min, Vector3 max)
+        public static Vector3 ClampComponents(in this Vector3 vector, in Vector3 min, in Vector3 max)
         {
             return new Vector3(
                 Mathf.Clamp(vector.x, min.x, max.x),
@@ -201,7 +211,7 @@ namespace UnityTools.Core
         /// <param name="max">The maximum.</param>
         /// <returns>Vector3Int.</returns>
         [PublicAPI]
-        public static Vector3Int ClampComponents(this Vector3Int vector, Vector3Int min, Vector3Int max)
+        public static Vector3Int ClampComponents(in this Vector3Int vector, in Vector3Int min, in Vector3Int max)
         {
             return new Vector3Int(
                 Mathf.Clamp(vector.x, min.x, max.x),
@@ -218,7 +228,7 @@ namespace UnityTools.Core
         /// <param name="max">The maximum.</param>
         /// <returns>Vector4.</returns>
         [PublicAPI]
-        public static Vector4 ClampComponents(this Vector4 vector, Vector4 min, Vector4 max)
+        public static Vector4 ClampComponents(in this Vector4 vector, in Vector4 min, in Vector4 max)
         {
             return new Vector4(
                 Mathf.Clamp(vector.x, min.x, max.x),
@@ -236,7 +246,7 @@ namespace UnityTools.Core
         /// <param name="size">The size of the aabb.</param>
         /// <returns><c>true</c> if the vector is inside or on the aabb; otherwise, <c>false</c>.</returns>
         [PublicAPI]
-        public static bool IsInAabb(this Vector3 vector, Vector3 center, Vector3 size)
+        public static bool IsInAabb(in this Vector3 vector, in Vector3 center, in Vector3 size)
         {
             var halfSize = size / 2f;
             var min = center - halfSize;
@@ -254,7 +264,7 @@ namespace UnityTools.Core
         /// <param name="radius">The radius of the sphere.</param>
         /// <returns><c>true</c> if the vector is inside or on the sphere; otherwise, <c>false</c>.</returns>
         [PublicAPI]
-        public static bool IsInSphere(this Vector3 vector, Vector3 center, float radius)
+        public static bool IsInSphere(in this Vector3 vector, in Vector3 center, in float radius)
         {
             var x = vector.x - center.x;
             var y = vector.y - center.y;
@@ -269,7 +279,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsInfinite(this Vector2 vector)
+        public static bool IsInfinite(in this Vector2 vector)
         {
             return float.IsInfinity(vector.x) || float.IsInfinity(vector.y);
         }
@@ -280,7 +290,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsInfinite(this Vector3 vector)
+        public static bool IsInfinite(in this Vector3 vector)
         {
             return float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z);
         }
@@ -291,7 +301,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if for at least one component <see cref="float.IsInfinity"/> returns true, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsInfinite(this Vector4 vector)
+        public static bool IsInfinite(in this Vector4 vector)
         {
             return float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z) || float.IsInfinity(vector.w);
         }
@@ -302,7 +312,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if at least one component is <see cref="float.NaN"/>, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsNaN(this Vector2 vector)
+        public static bool IsNaN(in this Vector2 vector)
         {
             return float.IsNaN(vector.x) || float.IsNaN(vector.y);
         }
@@ -313,7 +323,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if at least one component is <see cref="float.NaN"/>, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsNaN(this Vector3 vector)
+        public static bool IsNaN(in this Vector3 vector)
         {
             return float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
         }
@@ -324,7 +334,7 @@ namespace UnityTools.Core
         /// <param name="vector">The vector.</param>
         /// <returns>Returns <c>true</c> if at least one component is <see cref="float.NaN"/>, <c>false</c> otherwise.</returns>
         [PublicAPI]
-        public static bool IsNaN(this Vector4 vector)
+        public static bool IsNaN(in this Vector4 vector)
         {
             return float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z) || float.IsNaN(vector.w);
         }
@@ -336,11 +346,11 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector2 Max(Vector2 a, Vector2 b)
+        public static Vector2 Max(in Vector2 a, in Vector2 b)
         {
             return new Vector2(
-                Mathf.Max(a.x, b.x),
-                Mathf.Max(a.y, b.y)
+                a.x > b.x ? a.x : b.x,
+                a.y > b.y ? a.y : b.y
             );
         }
 
@@ -351,11 +361,11 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector2Int Max(Vector2Int a, Vector2Int b)
+        public static Vector2Int Max(in Vector2Int a, in Vector2Int b)
         {
             return new Vector2Int(
-                Mathf.Max(a.x, b.x),
-                Mathf.Max(a.y, b.y)
+                a.x > b.x ? a.x : b.x,
+                a.y > b.y ? a.y : b.y
             );
         }
 
@@ -366,12 +376,12 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector3 Max(Vector3 a, Vector3 b)
+        public static Vector3 Max(in Vector3 a, in Vector3 b)
         {
             return new Vector3(
-                Mathf.Max(a.x, b.x),
-                Mathf.Max(a.y, b.y),
-                Mathf.Max(a.z, b.z)
+                a.x > b.x ? a.x : b.x,
+                a.y > b.y ? a.y : b.y,
+                a.z > b.z ? a.z : b.z
             );
         }
 
@@ -382,12 +392,12 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector3Int Max(Vector3Int a, Vector3Int b)
+        public static Vector3Int Max(in Vector3Int a, in Vector3Int b)
         {
             return new Vector3Int(
-                Mathf.Max(a.x, b.x),
-                Mathf.Max(a.y, b.y),
-                Mathf.Max(a.z, b.z)
+                a.x > b.x ? a.x : b.x,
+                a.y > b.y ? a.y : b.y,
+                a.z > b.z ? a.z : b.z
             );
         }
 
@@ -398,13 +408,13 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector4 Max(Vector4 a, Vector4 b)
+        public static Vector4 Max(in Vector4 a, in Vector4 b)
         {
             return new Vector4(
-                Mathf.Max(a.x, b.x),
-                Mathf.Max(a.y, b.y),
-                Mathf.Max(a.z, b.z),
-                Mathf.Max(a.w, b.w)
+                a.x > b.x ? a.x : b.x,
+                a.y > b.y ? a.y : b.y,
+                a.z > b.z ? a.z : b.z,
+                a.w > b.w ? a.w : b.w
             );
         }
 
@@ -415,11 +425,11 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector2 Min(Vector2 a, Vector2 b)
+        public static Vector2 Min(in Vector2 a, in Vector2 b)
         {
             return new Vector2(
-                Mathf.Min(a.x, b.x),
-                Mathf.Min(a.y, b.y)
+                a.x < b.x ? a.x : b.x,
+                a.y < b.y ? a.y : b.y
             );
         }
 
@@ -430,11 +440,11 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector2Int Min(Vector2Int a, Vector2Int b)
+        public static Vector2Int Min(in Vector2Int a, in Vector2Int b)
         {
             return new Vector2Int(
-                Mathf.Min(a.x, b.x),
-                Mathf.Min(a.y, b.y)
+                a.x < b.x ? a.x : b.x,
+                a.y < b.y ? a.y : b.y
             );
         }
 
@@ -445,12 +455,12 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector3 Min(Vector3 a, Vector3 b)
+        public static Vector3 Min(in Vector3 a, in Vector3 b)
         {
             return new Vector3(
-                Mathf.Min(a.x, b.x),
-                Mathf.Min(a.y, b.y),
-                Mathf.Min(a.z, b.z)
+                a.x < b.x ? a.x : b.x,
+                a.y < b.y ? a.y : b.y,
+                a.z < b.z ? a.z : b.z
             );
         }
 
@@ -461,12 +471,12 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector3Int Min(Vector3Int a, Vector3Int b)
+        public static Vector3Int Min(in Vector3Int a, in Vector3Int b)
         {
             return new Vector3Int(
-                Mathf.Min(a.x, b.x),
-                Mathf.Min(a.y, b.y),
-                Mathf.Min(a.z, b.z)
+                a.x < b.x ? a.x : b.x,
+                a.y < b.y ? a.y : b.y,
+                a.z < b.z ? a.z : b.z
             );
         }
 
@@ -477,17 +487,17 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>Vector2.</returns>
         [PublicAPI]
-        public static Vector4 Min(Vector4 a, Vector4 b)
+        public static Vector4 Min(in Vector4 a, in Vector4 b)
         {
             return new Vector4(
-                Mathf.Min(a.x, b.x),
-                Mathf.Min(a.y, b.y),
-                Mathf.Min(a.z, b.z),
-                Mathf.Min(a.w, b.w)
+                a.x < b.x ? a.x : b.x,
+                a.y < b.y ? a.y : b.y,
+                a.z < b.z ? a.z : b.z,
+                a.w < b.w ? a.w : b.w
             );
         }
 
-        public static double PreciseDistance(Vector3 a, Vector3 b)
+        public static double PreciseDistance(in Vector3 a, in Vector3 b)
         {
             var x = (double) (a.x) - b.x;
             var y = (double) (a.y) - b.y;
@@ -501,7 +511,7 @@ namespace UnityTools.Core
         /// </summary>
         /// <param name="v">The vector.</param>
         /// <param name="scale">The scale.</param>
-        public static Vector2 ScaleComponents(this Vector2 v, Vector2 scale)
+        public static Vector2 ScaleComponents(in this Vector2 v, in Vector2 scale)
         {
             return new Vector2(v.x * scale.x, v.y * scale.y);
         }
@@ -511,7 +521,7 @@ namespace UnityTools.Core
         /// </summary>
         /// <param name="v">The vector.</param>
         /// <param name="scale">The scale.</param>
-        public static Vector2Int ScaleComponents(this Vector2Int v, Vector2Int scale)
+        public static Vector2Int ScaleComponents(in this Vector2Int v, in Vector2Int scale)
         {
             return new Vector2Int(v.x * scale.x, v.y * scale.y);
         }
@@ -521,7 +531,7 @@ namespace UnityTools.Core
         /// </summary>
         /// <param name="v">The vector.</param>
         /// <param name="scale">The scale.</param>
-        public static Vector3 ScaleComponents(this Vector3 v, Vector3 scale)
+        public static Vector3 ScaleComponents(in this Vector3 v, in Vector3 scale)
         {
             return new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
         }
@@ -531,7 +541,7 @@ namespace UnityTools.Core
         /// </summary>
         /// <param name="v">The vector.</param>
         /// <param name="scale">The scale.</param>
-        public static Vector3Int ScaleComponents(this Vector3Int v, Vector3Int scale)
+        public static Vector3Int ScaleComponents(in this Vector3Int v, in Vector3Int scale)
         {
             return new Vector3Int(v.x * scale.x, v.y * scale.y, v.z * scale.z);
         }
@@ -543,7 +553,7 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>System.Single.</returns>
         [PublicAPI]
-        public static float SqrDistance(Vector2 a, Vector2 b)
+        public static float SqrDistance(in Vector2 a, in Vector2 b)
         {
             var x = a.x - b.x;
             var y = a.y - b.y;
@@ -557,7 +567,7 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>System.Single.</returns>
         [PublicAPI]
-        public static float SqrDistance(Vector2Int a, Vector2Int b)
+        public static float SqrDistance(in Vector2Int a, in Vector2Int b)
         {
             float x = a.x - b.x;
             float y = a.y - b.y;
@@ -571,7 +581,7 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>System.Single.</returns>
         [PublicAPI]
-        public static float SqrDistance(Vector3 a, Vector3 b)
+        public static float SqrDistance(in Vector3 a, in Vector3 b)
         {
             var x = a.x - b.x;
             var y = a.y - b.y;
@@ -586,7 +596,7 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>System.Single.</returns>
         [PublicAPI]
-        public static float SqrDistance(Vector3Int a, Vector3Int b)
+        public static float SqrDistance(in Vector3Int a, in Vector3Int b)
         {
             float x = a.x - b.x;
             float y = a.y - b.y;
@@ -601,13 +611,29 @@ namespace UnityTools.Core
         /// <param name="b">The b.</param>
         /// <returns>System.Single.</returns>
         [PublicAPI]
-        public static float SqrDistance(Vector4 a, Vector4 b)
+        public static float SqrDistance(in Vector4 a, in Vector4 b)
         {
             var x = a.x - b.x;
             var y = a.y - b.y;
             var z = a.z - b.z;
             var w = a.w - b.w;
             return x * x + y * y + z * z + w * w;
+        }
+        
+        /// <summary>
+        /// Shortcut method for: <b>new Vector2(v.x, v.z)</b>
+        /// </summary>
+        public static Vector2 AsXZ(in this Vector3 v)
+        {
+            return new Vector2(v.x, v.z);
+        }
+
+        /// <summary>
+        /// Shortcut method for: <b>new Vector3(v.x, 0f, v.y)</b>
+        /// </summary>
+        public static Vector3 AsX0Y(in this Vector2 v)
+        {
+            return new Vector3(v.x, 0f, v.y);
         }
     }
 }

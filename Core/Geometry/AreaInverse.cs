@@ -50,19 +50,19 @@ namespace UnityTools.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsPoint(Vector2 point)
+        public bool ContainsPoint(in Vector2 point)
         {
             return !shape.ContainsPoint(point);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsRect(Vector2 start, Vector2 end)
+        public bool IntersectsRect(in Vector2 start, in Vector2 end)
         {
             return !shape.ContainsRect(start, end);
         }
 
         /// <inheritdoc />
-        public bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal)
+        public bool Raycast(in Vector2 orig, in Vector2 dir, out float t, out Vector2 normal)
         {
             if (this.shape.Raycast(orig, dir, out t, out normal))
             {
@@ -74,7 +74,7 @@ namespace UnityTools.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsRect(Vector2 start, Vector2 end)
+        public bool ContainsRect(in Vector2 start, in Vector2 end)
         {
             return !shape.IntersectsRect(start, end);
         }

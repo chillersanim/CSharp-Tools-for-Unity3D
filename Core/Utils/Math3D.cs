@@ -87,9 +87,9 @@ namespace UnityTools.Core
         /// <returns>
         ///     The nearest point in the AABB
         /// </returns>
-        public static Vector3 ClosestPointInAabb(Vector3 p, Vector3 min, Vector3 max)
+        public static Vector3 ClosestPointInAabb(in Vector3 p, in Vector3 min, in Vector3 max)
         {
-            return p.ClampComponents(min, max);
+            return p.ClampComponents(in min, in max);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     Returns the nearest point in the sphere to the point
         /// </returns>
-        public static Vector3 ClosestPointInSphere(Vector3 p, Vector3 c, float r)
+        public static Vector3 ClosestPointInSphere(in Vector3 p, in Vector3 c, in float r)
         {
             return Vector3.ClampMagnitude(p - c, r);
         }
@@ -129,9 +129,9 @@ namespace UnityTools.Core
         /// <returns>
         ///     The nearest point on the line
         /// </returns>
-        public static Vector3 ClosestPointOnLine(Vector3 p, Vector3 a, Vector3 b)
+        public static Vector3 ClosestPointOnLine(in Vector3 p, in Vector3 a, in Vector3 b)
         {
-            return a + RelativeClosestPositionToLine(p, a, b) * (b - a);
+            return a + RelativeClosestPositionToLine(in p, in a, in b) * (b - a);
         }
 
         /// <summary>
@@ -150,9 +150,9 @@ namespace UnityTools.Core
         /// <returns>
         ///     The nearest point on the line segment to the point
         /// </returns>
-        public static Vector3 ClosestPointOnLineSegment(Vector3 p, Vector3 start, Vector3 end)
+        public static Vector3 ClosestPointOnLineSegment(in Vector3 p, in Vector3 start, in Vector3 end)
         {
-            return start + Mathf.Clamp01(RelativeClosestPositionToLine(p, start, end)) * (end - start);
+            return start + Mathf.Clamp01(RelativeClosestPositionToLine(in p, in start, in end)) * (end - start);
         }
 
         /// <summary>
@@ -171,9 +171,9 @@ namespace UnityTools.Core
         /// <returns>
         ///     The closest position on the ray to the point
         /// </returns>
-        public static Vector3 ClosestPointOnRay(Vector3 p, Vector3 start, Vector3 direction)
+        public static Vector3 ClosestPointOnRay(in Vector3 p, in Vector3 start, in Vector3 direction)
         {
-            return start + Mathf.Max(0, RelativeClosestPositionToLine(p, start, start + direction)) * direction;
+            return start + Mathf.Max(0, RelativeClosestPositionToLine(in p, in start, start + direction)) * direction;
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     The <see cref="Vector3" />.
         /// </returns>
-        public static Vector3 FurthestPositionInAabb(Vector3 p, Vector3 min, Vector3 max)
+        public static Vector3 FurthestPositionInAabb(in Vector3 p, in Vector3 min, in Vector3 max)
         {
             var x = Mathf.Abs(min.x - p.x) > Mathf.Abs(max.x - p.x) ? min.x : max.x;
             var y = Mathf.Abs(min.y - p.y) > Mathf.Abs(max.y - p.y) ? min.y : max.y;
@@ -245,11 +245,11 @@ namespace UnityTools.Core
         /// <param name="next">The vertex that comes after the current one in order.</param>
         /// <param name="normal">The normal of the counter clockwise shape.</param>
         /// <returns>Returns an value [0, 360], that represents the inner angle.</returns>
-        public static float InnerAngle(Vector3 prev, Vector3 current, Vector3 next, Vector3 normal)
+        public static float InnerAngle(in Vector3 prev, in Vector3 current, in Vector3 next, in Vector3 normal)
         {
             var a = next - current;
             var b = prev - current;
-            var triN = TriangleNormal(prev, current, next);
+            var triN = TriangleNormal(in prev, in current, in next);
             var isClockwise = Vector3.Angle(triN, normal) < 90f;
             var angle = Vector3.Angle(a, b);
 
@@ -279,7 +279,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     <c>True</c> when the spheres intersect, otherwise <c>false</c>.
         /// </returns>
-        public static bool IsIntersectingSphereSphere(Vector3 c0, float r0, Vector3 c1, float r1)
+        public static bool IsIntersectingSphereSphere(in Vector3 c0, in float r0, in Vector3 c1, in float r1)
         {
             var radius = r0 + r1;
             return (c1 - c0).sqrMagnitude < radius * radius;
@@ -301,13 +301,13 @@ namespace UnityTools.Core
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public static bool IsLinearExtension(Vector3 v0, Vector3 v1, Vector3 v2, float maxError = 1e-5f)
+        public static bool IsLinearExtension(in Vector3 v0, in Vector3 v1, in Vector3 v2, in float maxError = 1e-5f)
         {
             var cross = Vector3.Cross(v1 - v0, v2 - v0);
             return cross.sqrMagnitude <= maxError * maxError;
         }
 
-        public static bool IsPointInSphere(Vector3 itemPosition, Vector3 center, float radius)
+        public static bool IsPointInSphere(in Vector3 itemPosition, in Vector3 center, in float radius)
         {
             return (itemPosition - center).sqrMagnitude <= radius * radius;
         }
@@ -330,9 +330,9 @@ namespace UnityTools.Core
         /// <returns>
         ///     <c>True</c> when the point lies inside the triangle, otherwise <c>false</c>
         /// </returns>
-        public static bool IsPointInTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 point)
+        public static bool IsPointInTriangle(in Vector3 p0, in Vector3 p1, in Vector3 p2, in Vector3 point)
         {
-            var bary = PointToBarycentric(p0, p1, p2, point);
+            var bary = PointToBarycentric(in p0, in p1, in p2, in point);
 
             // Check if point is in triangle
             return bary.x >= 0 && bary.y >= 0 && bary.x + bary.y < 1;
@@ -470,15 +470,12 @@ namespace UnityTools.Core
         ///     The <see cref="float?" />.
         /// </returns>
         public static float? LinePlaneIntersection(
-            Vector3 start,
-            Vector3 direction,
-            Vector3 planeNormal,
-            float planeDistance)
+            in Vector3 start,
+            in Vector3 direction,
+            in Vector3 planeNormal,
+            in float planeDistance)
         {
-            if (!Mathf.Approximately(planeNormal.sqrMagnitude, 1))
-            {
-                planeNormal = planeNormal.normalized;
-            }
+            Debug.Assert(Mathf.Abs(planeNormal.sqrMagnitude) - 1f <= 1e-5, "Math3D.LinePlaneIntersection: Argument planeNormal is not a normalized vector.");
 
             if (Mathf.Approximately(Vector3.Dot(direction, planeNormal), 0))
             {
@@ -587,7 +584,7 @@ namespace UnityTools.Core
         ///     The barycentric coordinates of the point as <see cref="Vector2" /> where <see cref="Vector2.x" /> represents
         ///     <c>u</c> and <see cref="Vector2.y" /> represents <c>v</c>
         /// </returns>
-        public static Vector3 PointToBarycentric(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 point)
+        public static Vector3 PointToBarycentric(in Vector3 p0, in Vector3 p1, in Vector3 p2, in Vector3 point)
         {
             var v0 = p1 - p0;
             var v1 = p2 - p0;
@@ -616,7 +613,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     The <see cref="float" />.
         /// </returns>
-        public static float PolylineLength(this IList<(Vector3 point, Vector3)> polyline)
+        public static float PolylineLength(this IList<(Vector3 point, Vector3 normal)> polyline)
         {
             var length = 0f;
 
@@ -646,7 +643,7 @@ namespace UnityTools.Core
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         public static (Vector3 point, Vector3 normal)[] PolylineSegment(
-            this IList<(Vector3 point, Vector3 normal)> polyline,
+            this IList<(Vector3 point, Vector3 normal)> polyline, 
             float start,
             float size)
         {
@@ -725,12 +722,12 @@ namespace UnityTools.Core
         /// <returns>
         ///     The area size
         /// </returns>
-        public static float QuadrilateralArea(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+        public static float QuadrilateralArea(in Vector3 p0, in Vector3 p1, in Vector3 p2, in Vector3 p3)
         {
             return 0.5f * Vector3.Cross(p2 - p0, p3 - p1).magnitude;
         }
 
-        public static bool RayPlaneIntersection(Vector3 orig, Vector3 dir, Vector3 normal, Vector3 planeOrig, out Vector3 hit)
+        public static bool RayPlaneIntersection(in Vector3 orig, in Vector3 dir, in Vector3 normal, in Vector3 planeOrig, out Vector3 hit)
         {
             // Code adapted from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
             // Not verified
@@ -749,18 +746,18 @@ namespace UnityTools.Core
         }
 
         public static bool RayTriangleIntersect(
-            Vector3 orig, Vector3 dir,
-            Vector3 v0, Vector3 v1, Vector3 v2, 
+            in Vector3 orig, in Vector3 dir,
+            in Vector3 v0, in Vector3 v1, in Vector3 v2, 
             out Vector3 hit)
         {
-            var normal = TriangleNormal(v0, v1, v2);
+            var normal = TriangleNormal(in v0, in v1, in v2);
 
-            if (!RayPlaneIntersection(orig, dir, normal, v0, out hit))
+            if (!RayPlaneIntersection(in orig, in dir, in normal, in v0, out hit))
             {
                 return false;
             }
 
-            if (!IsPointInTriangle(v0, v1, v2, hit))
+            if (!IsPointInTriangle(in v0, in v1, in v2, in hit))
             {
                 return false;
             }
@@ -786,7 +783,7 @@ namespace UnityTools.Core
         ///     The return value relates to the following: [Closest Point] = <see cref="a" /> + [Return Value] * (<see cref="b" />-
         ///     <see cref="a" />)
         /// </returns>
-        public static float RelativeClosestPositionToLine(Vector3 p, Vector3 a, Vector3 b)
+        public static float RelativeClosestPositionToLine(in Vector3 p, in Vector3 a, in Vector3 b)
         {
             var abx = b.x - a.x;
             var aby = b.y - a.y;
@@ -810,7 +807,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     Returns the calculated volume.
         /// </returns>
-        public static float SignedVolumeOfTetrahedron(Vector3 p1, Vector3 p2, Vector3 p3)
+        public static float SignedVolumeOfTetrahedron(in Vector3 p1, in Vector3 p2, in Vector3 p3)
         {
             var v321 = p3.x * p2.y * p1.z;
             var v231 = p2.x * p3.y * p1.z;
@@ -831,7 +828,7 @@ namespace UnityTools.Core
         /// <param name="x2">The second x satisfying the equation. Is equal to x1 if only one solution exists.</param>
         /// <param name="x3">The third x satisfying the equation. Is equal to x2 if only one or two solutions exists.</param>
         /// <returns>Returns the amount of solutions found.</returns>
-        public static int SolveCubic(float u, float v, float w, out float x1, out float x2, out float x3)
+        public static int SolveCubic(in float u, in float v, in float w, out float x1, out float x2, out float x3)
         {
             /*
              * Source declaration:
@@ -845,7 +842,7 @@ namespace UnityTools.Core
             {
                 // No constant offset, one result is 0, divide by x and solve the now quadratic equation for the rest.
                 x1 = 0f;
-                return 1 + SolveQuadratic(u, v, out x2, out x3);
+                return 1 + SolveQuadratic(in u, in v, out x2, out x3);
             }
 
             var uu = u * u;
@@ -902,11 +899,11 @@ namespace UnityTools.Core
         /// <param name="x3">The third x satisfying the equation. Is equal to x2 if only one or two solutions exists.</param>
         /// <returns>Returns the amount of solutions found, or <c>-1</c> if infinite solutions exist.</returns>
         /// <remarks> If a cannot be zero, then it is faster to use the optimized SolveCubic method using u = u/a, v = c/a, w = d/a. </remarks>
-        public static int SolveCubic(float a, float b, float c, float d, out float x1, out float x2, out float x3)
+        public static int SolveCubic(in float a, in float b, in float c, in float d, out float x1, out float x2, out float x3)
         {
             if (Mathf.Approximately(a, 0))
             {
-                var cnt = SolveQuadratic(b, c, out x1, out x2);
+                var cnt = SolveQuadratic(in b, in c, out x1, out x2);
                 x3 = x2;
                 return cnt;
             }
@@ -920,7 +917,7 @@ namespace UnityTools.Core
         /// <param name="u">The constant offset.</param>
         /// <param name="x">The x satisfying the equation.</param>
         /// <returns>Always has exactly 1 solution in this case.</returns>
-        public static int SolveLinear(float u, out float x)
+        public static int SolveLinear(in float u, out float x)
         {
             x = -u;
             return 1;
@@ -934,7 +931,7 @@ namespace UnityTools.Core
         /// <param name="x">The x satisfying the equation.</param>
         /// <returns>Returns the amount of solutions found, or <c>-1</c> if infinite solutions exist.</returns>
         /// <remarks> If a cannot be zero, then it is faster to use the optimized SolveLinear method using u = u/a. </remarks>
-        public static int SolveLinear(float a, float b, out float x)
+        public static int SolveLinear(in float a, in float b, out float x)
         {
             x = -b / a;
             return Mathf.Approximately(a, 0) ? (Mathf.Approximately(b, 0) ? -1 : 0) : 1;
@@ -948,7 +945,7 @@ namespace UnityTools.Core
         /// <param name="x1">The first x satisfying the equation.</param>
         /// <param name="x2">The second x satisfying the equation. Is equal to x1 if only one solution exists.</param>
         /// <returns>Returns the amount of solutions found, or <c>-1</c> if infinite solutions exist.</returns>
-        public static int SolveQuadratic(float u, float v, out float x1, out float x2)
+        public static int SolveQuadratic(in float u, in float v, out float x1, out float x2)
         {
             var sqr = u * u - 4f * v;
 
@@ -983,11 +980,11 @@ namespace UnityTools.Core
         /// <param name="x2">The second x satisfying the equation. Is equal to x1 if only one solution exists.</param>
         /// <returns>Returns the amount of solutions found, or <c>-1</c> if infinite solutions exist.</returns>
         /// <remarks> If a cannot be zero, then it is faster to use the optimized SolveQuadratic method using u = u/a, v = c/a. </remarks>
-        public static int SolveQuadratic(float a, float b, float c, out float x1, out float x2)
+        public static int SolveQuadratic(in float a, in float b, in float c, out float x1, out float x2)
         {
             if (Mathf.Approximately(a, 0))
             {
-                var cnt = SolveLinear(b, c, out x1);
+                var cnt = SolveLinear(in b, in c, out x1);
                 x2 = x1;
                 return cnt;
             }
@@ -1008,7 +1005,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     The segment volume.
         /// </returns>
-        public static float SphereSegmentVolume(float radius, float height)
+        public static float SphereSegmentVolume(in float radius, in float height)
         {
             return height * height * height * Mathf.PI * (3 * radius - height) / 3f;
         }
@@ -1025,13 +1022,8 @@ namespace UnityTools.Core
         /// <returns>
         ///     The <see cref="float" />.
         /// </returns>
-        public static float SphereSegmentVolumeClamped(float radius, float height)
+        public static float SphereSegmentVolumeClamped(in float radius, in float height)
         {
-            if (radius < 0)
-            {
-                radius = -radius;
-            }
-
             return SphereSegmentVolume(radius, Mathf.Clamp(height, 0, 2 * radius));
         }
 
@@ -1050,7 +1042,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     The cartesian vector
         /// </returns>
-        public static Vector3 SphericalToCartesian(float azimuth, float elevation, float radius = 1f)
+        public static Vector3 SphericalToCartesian(float azimuth, float elevation, in float radius = 1f)
         {
             azimuth *= Mathf.Deg2Rad;
             elevation *= Mathf.Deg2Rad;
@@ -1073,7 +1065,7 @@ namespace UnityTools.Core
         /// <param name="offset">
         ///     The offset
         /// </param>
-        public static void TranslatePoints(this IList<Vector3> points, Vector3 offset)
+        public static void TranslatePoints(this IList<Vector3> points, in Vector3 offset)
         {
             for (var i = 0; i < points.Count; i++)
             {
@@ -1096,12 +1088,12 @@ namespace UnityTools.Core
         /// <returns>
         ///     The area size
         /// </returns>
-        public static float TriangleArea(Vector3 p0, Vector3 p1, Vector3 p2)
+        public static float TriangleArea(in Vector3 p0, in Vector3 p1, in Vector3 p2)
         {
             return 0.5f * Vector3.Cross(p0 - p1, p2 - p1).magnitude;
         }
 
-        public static Vector3 TriangleCenter(Vector3 p0, Vector3 p1, Vector3 p2)
+        public static Vector3 TriangleCenter(in Vector3 p0, in Vector3 p1, in Vector3 p2)
         {
             return 1f / 3f * (p0 + p1 + p2);
         }
@@ -1121,7 +1113,7 @@ namespace UnityTools.Core
         /// <returns>
         ///     Returns the triangle normal
         /// </returns>
-        public static Vector3 TriangleNormal(Vector3 p0, Vector3 p1, Vector3 p2)
+        public static Vector3 TriangleNormal(in Vector3 p0, in Vector3 p1, in Vector3 p2)
         {
             return Vector3.Cross(p1 - p0, p2 - p1).normalized;
         }
@@ -1161,7 +1153,7 @@ namespace UnityTools.Core
                 var p2 = vertices[triangles[i + 1]];
                 var p3 = vertices[triangles[i + 2]];
 
-                volume += SignedVolumeOfTetrahedron(p1, p2, p3);
+                volume += SignedVolumeOfTetrahedron(in p1, in p2, in p3);
             }
 
             return Mathf.Abs(volume);

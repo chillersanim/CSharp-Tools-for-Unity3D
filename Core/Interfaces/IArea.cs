@@ -35,12 +35,12 @@ namespace UnityTools.Core
         bool Inverted { get; }
 
         /// <summary>
-        ///     Determines whether the <see cref="IArea" /> fully intersects with the rect.
+        ///     Determines whether the <see cref="IArea" /> fully overlaps the rect.
         /// </summary>
         /// <param name="start">The start of the rect.</param>
         /// <param name="end">The end of the rect.</param>
-        /// <returns>Returns <c>true</c> if the rect is fully inside the shape, <c>false</c> otherwise.</returns>
-        bool ContainsRect(Vector2 start, Vector2 end);
+        /// <returns>Returns <c>true</c> if the rect is fully overlapped by the shape, <c>false</c> otherwise.</returns>
+        bool ContainsRect(in Vector2 start, in Vector2 end);
 
         /// <summary>
         ///     Determines whether the <see cref="IArea" /> contains the point.
@@ -51,10 +51,10 @@ namespace UnityTools.Core
         /// <returns>
         ///     <c>true</c> if the point is contained; otherwise, <c>false</c>.
         /// </returns>
-        bool ContainsPoint(Vector2 point);
+        bool ContainsPoint(in Vector2 point);
 
         /// <summary>
-        ///     Determines whether the <see cref="IArea" /> contains or touches the rect.
+        ///     Determines whether the <see cref="IArea" /> overlaps some or all of the rect area.
         /// </summary>
         /// <param name="start">
         ///     The start of the rect.
@@ -63,10 +63,10 @@ namespace UnityTools.Core
         ///     The end of the rect.
         /// </param>
         /// <returns>
-        ///     <c>true</c> if the specified start contains or touches the rect; otherwise, <c>false</c>.
+        ///     <c>true</c> if the <see cref="IArea"/> has any overlap with the rect; otherwise, <c>false</c>.
         /// </returns>
-        bool IntersectsRect(Vector2 start, Vector2 end);
+        bool IntersectsRect(in Vector2 start, in Vector2 end);
 
-        bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal);
+        bool Raycast(in Vector2 orig, in Vector2 dir, out float t, out Vector2 normal);
     }
 }

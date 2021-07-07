@@ -4,47 +4,31 @@ using UnityEngine;
 
 namespace UnityTools.Core
 {
+    [Serializable]
     public struct Rect : IArea
     {
-        private readonly Vector2 center;
+        public static readonly Rect zero = new Rect(Vector2.zero, Vector2.zero);
 
-        private readonly Vector2 halfSize;
+        private Vector2 center;
 
-        private readonly float sin;
+        private Vector2 halfSize;
 
-        private readonly float cos;
+        private float sin;
 
-        private readonly float rotation;
+        private float cos;
 
-        public Vector2 Center => this.center;
+        private float rotation;
 
-        public Vector2 Extend => this.halfSize;
+        public readonly Vector2 Center => this.center;
 
-        public Vector2 Size => this.halfSize * 2f;
+        public readonly Vector2 Extend => this.halfSize;
 
-        public float Rotation => this.rotation;
+        public readonly Vector2 Size => this.halfSize * 2f;
 
-        public Rect(Vector2 center, Vector2 size)
-        {
-            this.center = center;
-            this.halfSize = size.AbsComponents() / 2f;
-            this.sin = 0f;
-            this.cos = 1f;
-            this.rotation = 0f;
-        }
-
-        public Rect(Vector2 center, Vector2 size, float rotation)
-        {
-            this.center = center;
-            this.halfSize = size.AbsComponents() / 2f;
-            this.rotation = rotation;
-            
-            this.sin = Mathf.Sin(rotation);
-            this.cos = Mathf.Cos(rotation);
-        }
+        public readonly float Rotation => this.rotation;
 
         /// <inheritdoc />
-        public Bounds2 Bounds
+        public readonly Bounds2 Bounds
         {
             get
             {
@@ -55,11 +39,30 @@ namespace UnityTools.Core
         }
 
         /// <inheritdoc />
-        public bool Inverted => false;
+        public readonly bool Inverted => false;
+
+        public Rect(in Vector2 center, in Vector2 size)
+        {
+            this.center = center;
+            this.halfSize = size.AbsComponents() / 2f;
+            this.sin = 0f;
+            this.cos = 1f;
+            this.rotation = 0f;
+        }
+
+        public Rect(in Vector2 center, in Vector2 size, in float rotation)
+        {
+            this.center = center;
+            this.halfSize = size.AbsComponents() / 2f;
+            this.rotation = rotation;
+            
+            this.sin = Mathf.Sin(rotation);
+            this.cos = Mathf.Cos(rotation);
+        }
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsRect(Vector2 start, Vector2 end)
+        public readonly bool ContainsRect(in Vector2 start, in Vector2 end)
         {
             return this.ContainsPoint(start) &&
                    this.ContainsPoint(end) &&
@@ -69,7 +72,7 @@ namespace UnityTools.Core
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsPoint(Vector2 point)
+        public readonly bool ContainsPoint(in Vector2 point)
         {
             var sinX = this.sin * this.halfSize.x;
             var sinY = this.sin * this.halfSize.y;
@@ -96,7 +99,7 @@ namespace UnityTools.Core
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsRect(Vector2 start, Vector2 end)
+        public readonly bool IntersectsRect(in Vector2 start, in Vector2 end)
         {
             var sinX = this.sin * this.halfSize.x;
             var sinY = this.sin * this.halfSize.y;
@@ -154,7 +157,7 @@ namespace UnityTools.Core
         }
 
         /// <inheritdoc />
-        public bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal)
+        public readonly bool Raycast(in Vector2 orig, in Vector2 dir, out float t, out Vector2 normal)
         {
             t = float.PositiveInfinity;
             normal = Vector2.zero;
@@ -210,6 +213,16 @@ namespace UnityTools.Core
             }
 
             return !float.IsPositiveInfinity(t);
+        }
+
+        public static Rect FromMinMax(in Vector2 min, in Vector2 max)
+        {
+            return new Rect((min + max) / 2f, max - min);
+        }
+
+        public static Rect Span(in Vector2 p0, in Vector2 p1)
+        {
+            return new Rect(Vector2.Min(p0, p1), Vector2.Max(p0, p1));
         }
     }
 }

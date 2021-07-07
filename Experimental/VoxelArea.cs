@@ -8,7 +8,7 @@ namespace UnityTools.Experimental
 {
     public class VoxelArea : IArea
     {
-        private const float LeafSize = 0.03125f;
+        private const float LeafSize = 0.03125f*4;
 
         private const float MinMargin = 0.1f;
 
@@ -40,25 +40,25 @@ namespace UnityTools.Experimental
         }
 
         /// <inheritdoc />
-        public bool ContainsRect(Vector2 start, Vector2 end)
+        public bool ContainsRect(in Vector2 start, in Vector2 end)
         {
             return this.root.ContainsRect(start, end);
         }
 
         /// <inheritdoc />
-        public bool ContainsPoint(Vector2 point)
+        public bool ContainsPoint(in Vector2 point)
         {
             return this.root.ContainsPoint(point);
         }
 
         /// <inheritdoc />
-        public bool IntersectsRect(Vector2 start, Vector2 end)
+        public bool IntersectsRect(in Vector2 start, in Vector2 end)
         {
             return this.root.IntersectsRect(start, end);
         }
 
         /// <inheritdoc />
-        public bool Raycast(Vector2 orig, Vector2 dir, out float t, out Vector2 normal)
+        public bool Raycast(in Vector2 orig, in Vector2 dir, out float t, out Vector2 normal)
         {
             return this.root.Raycast(orig, dir, out t, out normal);
         }
@@ -92,6 +92,18 @@ namespace UnityTools.Experimental
             AddToNode(this.root, area, this.depth);
 
             this.ShrinkToFit();
+        }
+
+        public void Clear()
+        {
+            var wasInverted = this.Inverted;
+            this.root = new Node(-Vector2.one * LeafSize, Vector2.one * LeafSize * 2f, false);
+            this.depth = 1;
+
+            if (wasInverted)
+            {
+                this.root.Invert();
+            }
         }
 
         public void Invert()
@@ -1504,58 +1516,6 @@ namespace UnityTools.Experimental
                         this.Vertex = this.Center;
                         break;
                 }
-
-                /*switch (this.InsideFlag)
-                {
-                    case 0:     // ¬BL ¬TL ¬BR ¬TR  (No vertex)
-                        this.Vertex = this.Center;
-                        break;
-                    case 1:     //  BL ¬TL ¬BR ¬TR
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosBottom, this.TanBottom);
-                        break;
-                    case 2:     // ¬BL  TL ¬BR ¬TR 
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosTop, this.TanTop);
-                        break;
-                    case 3:     //  BL  TL ¬BR ¬TR
-                        this.Vertex = this.GetVertex(this.PosTop, this.TanTop, this.PosBottom, this.TanBottom);
-                        break;
-                    case 4:     // ¬BL ¬TL  BR ¬TR
-                        this.Vertex = this.GetVertex(this.PosRight, this.TanRight, this.PosBottom, this.TanBottom);
-                        break;
-                    case 5:     //  BL ¬TL  BR ¬TR
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosRight, this.TanRight);
-                        break;
-                    case 6:     // ¬BL  TL  BR ¬TR
-                        this.Vertex = this.GetVertexAll();
-                        break;
-                    case 7:     //  BL  TL  BR ¬TR
-                        this.Vertex = this.GetVertex(this.PosTop, this.TanTop, this.PosRight, this.TanRight);
-                        break;
-                    case 8:     // ¬BL ¬TL ¬BR  TR
-                        this.Vertex = this.GetVertex(this.PosTop, this.TanTop, this.PosRight, this.TanRight);
-                        break;
-                    case 9:     //  BL ¬TL ¬BR  TR
-                        this.Vertex = this.GetVertexAll();
-                        break;
-                    case 10:    // ¬BL  TL ¬BR  TR
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosRight, this.TanRight);
-                        break;
-                    case 11:    //  BL  TL ¬BR  TR
-                        this.Vertex = this.GetVertex(this.PosRight, this.TanRight, this.PosBottom, this.TanBottom);
-                        break;
-                    case 12:    // ¬BL ¬TL  BR  TR
-                        this.Vertex = this.GetVertex(this.PosTop, this.TanTop, this.PosBottom, this.TanBottom);
-                        break;
-                    case 13:    //  BL ¬TL  BR  TR
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosTop, this.TanTop);
-                        break;
-                    case 14:    // ¬BL  TL  BR  TR
-                        this.Vertex = this.GetVertex(this.PosLeft, this.TanLeft, this.PosBottom, this.TanBottom);
-                        break;
-                    case 15:    //  BL  TL  BR  TR  (No vertex)
-                        this.Vertex = this.Center;
-                        break;
-                }*/
             }
 
             private Vector2 GetVertex(Vector2 p0, Vector2 n0, Vector2 p1, Vector2 n1)

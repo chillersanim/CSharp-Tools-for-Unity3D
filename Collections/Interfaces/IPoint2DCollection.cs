@@ -49,7 +49,7 @@ namespace UnityTools.Collections
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="position">The position.</param>
-        void Add([NotNull] T item, Vector2 position);
+        void Add([NotNull] in T item, in Vector2 position);
 
         /// <summary>
         /// Clears this collection.
@@ -62,7 +62,7 @@ namespace UnityTools.Collections
         /// <param name="item">The item.</param>
         /// <param name="position">The position.</param>
         /// <returns>Returns <c>true</c> if at the position the item was found, <c>false</c> otherwise.</returns>
-        bool Contains([CanBeNull] T item, Vector2 position);
+        bool Contains([CanBeNull] in T item, in Vector2 position);
 
         /// <summary>
         /// Moves the item from the old position to the new position. 
@@ -72,7 +72,7 @@ namespace UnityTools.Collections
         /// <param name="to">The new position.</param>
         /// <returns>Returns <c>true</c> if the item was moved successfully, <c>false</c> otherwise.</returns>
         /// <remarks>This operation is equal to the call of <see cref="Remove"/>(item, from) and then <see cref="Add"/>(item, to).</remarks>
-        bool MoveItem([NotNull] T item, Vector2 from, Vector2 to);
+        bool MoveItem([NotNull] in T item, in Vector2 from, in Vector2 to);
 
         /// <summary>
         /// Removes the item at the given position from the collection.
@@ -80,7 +80,7 @@ namespace UnityTools.Collections
         /// <param name="item">The item.</param>
         /// <param name="position">The position.</param>
         /// <returns>Returns <c>true</c> if the item was successfully removed, <c>false</c> otherwise.</returns>
-        bool Remove([CanBeNull] T item, Vector2 position);
+        bool Remove([CanBeNull] in T item, in Vector2 position);
 
         /// <summary>
         /// Returns an enumerator that iterates through all items that are inside the given shape.
@@ -96,6 +96,6 @@ namespace UnityTools.Collections
         /// <typeparam name="TShape">The type of the shape to cast for.</typeparam>
         /// <param name="shape">The shape to use.</param>
         /// <param name="output">The output in which to store the shape cast result.</param>
-        void ShapeCast<TShape>(TShape shape, IList<T> output) where TShape : IArea;
+        void ShapeCast<TShape>(in TShape shape, IList<T> output) where TShape : IArea;
     }
 }

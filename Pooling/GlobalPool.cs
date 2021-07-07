@@ -21,6 +21,7 @@
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace UnityTools.Pooling
@@ -43,6 +44,11 @@ namespace UnityTools.Pooling
         public static void Put([NotNull] T item)
         {
             Pool.Put(item);
+        }
+
+        public static void PutMany([NotNull] ICollection<T> collection)
+        {
+            Pool.PutMany(collection);
         }
     }
 }

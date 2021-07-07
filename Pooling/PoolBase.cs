@@ -106,6 +106,26 @@ namespace UnityTools.Pooling
             items.Push(item);
         }
 
+        public void PutMany([NotNull] ICollection<T> collection)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            foreach (var item in collection)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                this.Put(item);
+            }
+
+            collection.Clear();
+        }
+
         protected abstract T CreateItem();
     }
 }
