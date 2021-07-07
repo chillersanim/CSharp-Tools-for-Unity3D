@@ -20,13 +20,16 @@ Some components were removed, as they were fundamentally faulty, they may be rei
  - New class: Collections/PointQuadtree.cs							A quadtree implementation like the PointOctree but for 2D.
  - New interface: Collections/Interfaces/IPoint2DCollection.cs		Interface for 2D point collections.
  - New class: Components/WorkManager.cs								A manager class that provides functionality to queue work tasks and works them of sequentially, work tasks can be run asynchronously or on the Unity main thread.
- - New struct: Core/Geometry/AreaInverse.cs
- - New interface: Core/Interfaces/IArea.cs							Interface for 2D shapes.
- - New class: Experimental/PolyMesh.cs								(WIP - Not working) An experimental implementation of a polygon mesh, that allows for efficient mesh queries and modifications, should replace experimental MeshBuilder
+ - New class: Core/Common/StopwatchExt.cs							An alternative stopwatch implementation that allows to record checkpoints which simplifies measuring time of multiple code segments.
+ - New struct: Core/Geometry/AreaInverse.cs							A 2d area that represents the outside of another 2d area.
+ - New struct: Core/Geometry/Capsule2.cs							A 2d area that represents a line with radius, also known as stadium-shape
+ - New interface: Core/Interfaces/IArea.cs							Interface for 2D shapes. 
+ - New class: Core/Utils/ColorUtil.cs								Helper class for color based operations.
  - New class: Components/WorkManager.cs								A manager class that provides functionality to queue work tasks and works them of sequentially, work tasks can be run asynchronously or on the Unity main thread.
  - New class: Experimental/PolyMesh.cs								(WIP) An experimental implementation of a polygon mesh, that allows for efficient mesh queries and modifications, should replace experimental MeshBuilder
- - New class: Pooling/ConcurrentGlobalListPool.cs					A thread safe implementation of the global list pool
+ - New class: Experimental/VoxelArea2.cs							(WIP) A 2d area for arbitrary shapes using a voxel-tree, supports boolean operations
  - New class: Pooling/ConcurrentGlobalPool.cs						A thread safe implementation of the global pool
+ - New class: Pooling/ConcurrentGlobalListPool.cs					A thread safe implementation of the global list pool
  - New class: Pooling/ConcurrentListPool.cs							A thread safe implementation of the list pool
  - New class: Pooling/ConcurrentPool.cs								A thread safe implementation of the pool
  - New class: Pooling/ConcurrentPoolBase.cs							A thread safe implementation of the pool base
@@ -35,13 +38,6 @@ Some components were removed, as they were fundamentally faulty, they may be rei
 
 ------------------------
  Changes
-=======
- - New class: Pooling/ConcurrentSpecializedPool.cs					A thread safe implementation of the specialized pool
-
-
-------------------------
- Improvements
->>>>>>> Stashed changes
 ------------------------
 
  - Collections: Moved AvlNodes into AvlTree 
@@ -76,3 +72,4 @@ Some components were removed, as they were fundamentally faulty, they may be rei
  - Made all pools sealed, as they weren't intended to be inherited.
  - Made AvlNodes.cs private, use the AvlTree for queries instead.
  - Removed faulty structs: VolumeAll, VolumeEmpty, VolumeIntersection, VolumeUnion and VolumeDifference
+ - Removed Dots features to remove dependency on Dots package: NativePolyMesh, NativeCatmulRomSpline
