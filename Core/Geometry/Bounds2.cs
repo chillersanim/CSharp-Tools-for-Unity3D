@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UnityTools.Core
 {
     [Serializable]
-    public struct Bounds2 : IArea
+    public struct Bounds2 : IArea, IEquatable<Bounds2>
     {
         public static readonly Bounds2 zero = new Bounds2(Vector2.zero, Vector2.zero);
 
@@ -60,29 +60,19 @@ namespace UnityTools.Core
             set => this.Size = value * 2f;
         }
 
-        public Bounds2(in Vector2 center, in Vector2 size)
-        {
-            var halfSize = size.AbsComponents() / 2f;
-            this.min = center - halfSize;
-            this.max = center + halfSize;
-        }
-
-        public static Bounds2 operator *(in Bounds2 bounds, in float scale)
-        {
-            if (scale < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(scale), "A bounding box cannot be scaled negatively.");
-            }
-
-            return new Bounds2(bounds.Center, bounds.Size * scale);
-        }
-
         /// <inheritdoc />
         public readonly Bounds2 Bounds => this;
 
         /// <inheritdoc />
         public readonly bool Inverted => this.max.x < this.min.x || this.max.y < this.min.y;
 
+        public Bounds2(in Vector2 center, in Vector2 size)
+        {
+            var halfSize = size.AbsComponents() / 2f;
+            this.min = center - halfSize;
+            this.max = center + halfSize;
+        }
+        
         public readonly Vector2 ClosestPointInBounds(in Vector2 point)
         {
             return point.ClampComponents(in this.min, in this.max);
@@ -147,6 +137,27 @@ namespace UnityTools.Core
             if (bounds.max.y > this.max.y)
             {
                 this.max.y = bounds.max.y;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Equals(Bounds2 other)
+        {
+            return this.min.Equals(other.min) && this.max.Equals(other.max);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is Bounds2 other && Equals(other);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (this.min.GetHashCode() * 397) ^ this.max.GetHashCode();
             }
         }
         
@@ -216,6 +227,16 @@ namespace UnityTools.Core
         public static Bounds2 FromMinMax(in Vector2 min, in Vector2 max)
         {
             return new Bounds2{min = min, max = max};
+        }
+
+        public static Bounds2 operator *(in Bounds2 bounds, in float scale)
+        {
+            if (scale < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(scale), "A bounding box cannot be scaled negatively.");
+            }
+
+            return new Bounds2(bounds.Center, bounds.Size * scale);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

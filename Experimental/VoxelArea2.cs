@@ -49,7 +49,7 @@ namespace UnityTools.Experimental
 
         private int leafCount;
 
-        private int firstDeletedLeaf;
+        //private int firstDeletedLeaf;
 
         private Vector2 min;
 
@@ -80,7 +80,7 @@ namespace UnityTools.Experimental
             this.firstDeletedNode = -1;
             this.leafs = new Leaf[InitialLeafCount];
             this.leafCount = 0;
-            this.firstDeletedLeaf = -1;
+            //this.firstDeletedLeaf = -1;
             this.min = Vector2.zero;
             this.size = Vector2.one;
             this.inverted = false;
@@ -136,11 +136,11 @@ namespace UnityTools.Experimental
         {
             // TODO: Finish implementing AddToNode
             ref var node = ref this.nodes[nodeIndex];
-            var notFullFlag = 0;
+            //var notFullFlag = 0;
 
             for (var i = 0; i < 4; i++)
             {
-                var notFull = false;
+                //var notFull = false;
                 var nodeMin = localMin;
 
                 if (i > 2)

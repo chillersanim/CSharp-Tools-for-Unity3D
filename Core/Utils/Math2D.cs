@@ -128,7 +128,7 @@ namespace UnityTools.Core
             var a = p1 - p0;
             var b = p2 - p0;
             var cross = a.x * b.y - a.y * b.x;
-            return cross <= maxError;
+            return Mathf.Abs(cross) < maxError;
         }
 
         public static bool IsPointOnLine(in Vector2 point, in Vector2 start, in Vector2 end, in float maxError = 1e-5f)

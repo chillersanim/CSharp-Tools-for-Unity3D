@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace UnityTools.Collections
         /// <summary>
         /// The default capacity of a leaf content array
         /// </summary>
-        private const int DefaultLeafCapacity = 64;
+        private const int DefaultLeafCapacity = 16;
 
         /// <summary>
         /// The initial array size for the leafs container.
@@ -57,7 +58,7 @@ namespace UnityTools.Collections
         /// <summary>
         /// The amount of different leaf content array sizes that are cached
         /// </summary>
-        private const int LeafCacheHierarchySize = 3;
+        private const int LeafCacheHierarchySize = 5;
 
         /// <summary>
         /// The maximum depth of the tree before simply expanding leaf capacity on adding items
@@ -67,7 +68,7 @@ namespace UnityTools.Collections
         /// <summary>
         /// The threshold of node items before a node gets collapsed into a leaf
         /// </summary>
-        private const int NodeCollapseCount = 32;
+        private const int NodeCollapseCount = 12;
 
         /// <summary>
         /// The amount of values per node
@@ -77,12 +78,12 @@ namespace UnityTools.Collections
         /// <summary>
         /// Contains cached cast path arrays for inclusion and exclusion casts
         /// </summary>
-        private static readonly List<CastPathEntry[]> CastPathCache;
+        private static readonly ConcurrentBag<CastPathEntry[]> CastPathCache;
 
         /// <summary>
         /// Contains cached leaf arrays of increasing size (ContentCache[i].Length = defaultLeafCapacity^i; 0 <= i < defaultCacheHierarchySize)
         /// </summary>
-        private static readonly List<ItemEntry[]>[] ContentCache;
+        private static readonly ConcurrentBag<ItemEntry[]>[] ContentCache;
 
         /// <summary>
         /// Field indicating whether duplicate elements are detected and duplicate entries are prevented when adding or moving items (Two item entries are duplicates if item and position are equal)
@@ -109,12 +110,12 @@ namespace UnityTools.Collections
 
         static PointQuadtree()
         {
-            ContentCache = new List<ItemEntry[]>[LeafCacheHierarchySize];
-            CastPathCache = new List<CastPathEntry[]>();
+            ContentCache = new ConcurrentBag<ItemEntry[]>[LeafCacheHierarchySize];
+            CastPathCache = new ConcurrentBag<CastPathEntry[]>();
 
             for (var i = 0; i < LeafCacheHierarchySize; i++)
             {
-                ContentCache[i] = new List<ItemEntry[]>();
+                ContentCache[i] = new ConcurrentBag<ItemEntry[]>();
             }
         }
 
@@ -292,7 +293,9 @@ namespace UnityTools.Collections
         /// <inheritdoc/>
         public IEnumerable<T> ShapeCast<TShape>(TShape shape) where TShape : IArea
         {
-            if (!CastPathCache.TryExtractLast(out var path))
+            CastPathEntry[] path;
+
+            if (!CastPathCache.TryTake(out path))
             {
                 path = new CastPathEntry[MaxDepth + 1];
             }
@@ -402,7 +405,7 @@ namespace UnityTools.Collections
                 throw new ArgumentNullException(nameof(output));
             }
 
-            if (!CastPathCache.TryExtractLast(out var path))
+            if (!CastPathCache.TryTake(out var path))
             {
                 path = new CastPathEntry[MaxDepth + 1];
             }
@@ -823,18 +826,9 @@ namespace UnityTools.Collections
                 this.leafs = newLeafs;
             }
 
-            ItemEntry[] leafContent;
-            var cache = ContentCache[0];
-            if (cache.Count > 0)
+
+            if (!ContentCache[0].TryTake(out var leafContent))
             {
-                // Extract the item container from the cache
-                leafContent = cache[cache.Count - 1];
-                cache.RemoveAt(cache.Count - 1);
-                Debug.Assert(leafContent != null);
-            }
-            else
-            {
-                // Cache is empty, create a new container
                 leafContent = new ItemEntry[DefaultLeafCapacity];
             }
 
@@ -869,18 +863,8 @@ namespace UnityTools.Collections
                 cacheIndex++;
             }
 
-            ItemEntry[] leafContent;
-            var cache = ContentCache[cacheIndex];
-            if (cache.Count > 0)
+            if (!ContentCache[cacheIndex].TryTake(out var leafContent))
             {
-                // Extract the item container from the cache
-                leafContent = cache[cache.Count - 1];
-                cache.RemoveAt(cache.Count - 1);
-                Debug.Assert(leafContent != null);
-            }
-            else
-            {
-                // Cache is empty, create a new container
                 leafContent = new ItemEntry[cacheSize];
             }
 
@@ -1142,14 +1126,7 @@ namespace UnityTools.Collections
                     // If there is a cache for larger content arrays
                     if(i < LeafCacheHierarchySize)
                     {
-                        var cache = ContentCache[i];
-                        var index = cache.Count - 1;
-                        if (index >= 0)
-                        {
-                            // If the cache is not empty
-                            result = cache[index];
-                            cache.RemoveAt(index);
-                        }
+                        ContentCache[i].TryTake(out result);
                     }
 
                     break;
