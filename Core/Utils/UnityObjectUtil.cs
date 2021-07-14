@@ -60,6 +60,65 @@ namespace UnityTools.Core
         }
 
         /// <summary>
+        ///     The get or add component.
+        /// </summary>
+        /// <param name="component">
+        ///     The component.
+        /// </param>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        ///     The <see cref="T" />.
+        /// </returns>
+        public static T GetOrAddComponent<T>(this Component component)
+            where T : Component
+        {
+            var go = component.gameObject;
+            return go.GetOrAddComponent<T>();
+        }
+
+        /// <summary>
+        ///     The get or add component.
+        /// </summary>
+        /// <param name="go">
+        ///     The go.
+        /// </param>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        ///     The <see cref="T" />.
+        /// </returns>
+        public static T GetOrAddComponentInChildren<T>(this GameObject go)
+            where T : Component
+        {
+            var comp = go.GetComponentInChildren<T>();
+            if (comp == null)
+            {
+                comp = go.AddComponent<T>();
+            }
+
+            return comp;
+        }
+
+        /// <summary>
+        ///     The get or add component.
+        /// </summary>
+        /// <param name="component">
+        ///     The component.
+        /// </param>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        ///     The <see cref="T" />.
+        /// </returns>
+        public static T GetOrAddComponentInChildren<T>(this Component component)
+            where T : Component
+        {
+            var go = component.gameObject;
+            return go.GetOrAddComponentInChildren<T>();
+        }
+
+        /// <summary>
         ///     The get or create child.
         /// </summary>
         /// <param name="go">
@@ -76,17 +135,14 @@ namespace UnityTools.Core
         /// </returns>
         public static GameObject GetOrCreateChild(this GameObject go, string name, bool ignoreCase = false)
         {
-            if (ignoreCase)
-            {
-                name = name.ToLowerInvariant();
-            }
-
             for (var i = 0; i < go.transform.childCount; i++)
             {
                 var child = go.transform.GetChild(i).gameObject;
-                var childName = ignoreCase ? child.name.ToLowerInvariant() : child.name;
+                bool match;
 
-                if (childName == name)
+                match = string.Equals(child.name, name, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
+
+                if (match)
                 {
                     return child;
                 }
