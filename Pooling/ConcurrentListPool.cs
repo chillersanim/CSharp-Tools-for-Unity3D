@@ -98,6 +98,9 @@ namespace UnityTools.Pooling
             }
         }
 
+        /// <inheritdoc />
+        public bool HasPooledItems => this.lists.Count > 0;
+
         public List<T> Get()
         {
             var smallest = ExtractSmallest(0);

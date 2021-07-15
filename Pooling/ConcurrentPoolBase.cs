@@ -81,6 +81,9 @@ namespace UnityTools.Pooling
             MaxSize = 128;
         }
 
+        /// <inheritdoc />
+        public bool HasPooledItems => this.items.Count > 0;
+
         [NotNull]
         public T Get()
         {

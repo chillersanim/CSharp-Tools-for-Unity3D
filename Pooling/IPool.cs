@@ -30,6 +30,8 @@ namespace UnityTools.Pooling
     {
         int MaxSize { get; set; }
 
+        bool HasPooledItems { get; }
+
         T Get();
 
         void Put(T item);
